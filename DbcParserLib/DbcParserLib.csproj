@@ -6,7 +6,7 @@
     <Authors>Emanuel Feru</Authors>
     <Description>DbcParserLib is a .NET dbc file parser library for CAN network signals. This library can also be used to pack and unpack CAN signals.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl></PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/EFeru/DbcParser</PackageProjectUrl>
     <RepositoryUrl>https://github.com/EFeru/DbcParser</RepositoryUrl>
     <PackageTags>dbc can parser reader pack unpack signal</PackageTags>
     <AnalysisLevel>latest</AnalysisLevel>
