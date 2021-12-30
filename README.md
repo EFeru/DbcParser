@@ -14,7 +14,7 @@ Below is a quick preview of the extracted data using a [Tesla dbc file](https://
 
 ## Quickstart
 
-Install the library via Nuget Packages and add at the top of your file:
+Install the library via [Nuget Packages](https://www.nuget.org/packages/DbcParserLib/) and add at the top of your file:
 ```cs
 using DbcParserLib;
 ```
