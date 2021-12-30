@@ -9,7 +9,7 @@ Probably **the first .NET DBC file parser**. Includes packing and unpacking func
 
 Below is a quick preview of the extracted data using a [Tesla dbc file](https://github.com/commaai/opendbc/blob/master/tesla_can.dbc) taken from [commaai/opendbc](https://github.com/commaai/opendbc) project:
 
-![Preview](/Docs/pics/dbcparser_preview.png)
+![Preview](https://raw.githubusercontent.com/EFeru/DbcParser/main/Docs/pics/dbcparser_preview.png)
 
 
 ## Quickstart
