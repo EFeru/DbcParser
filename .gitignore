@@ -1,0 +1,7 @@
+
+.vs
+DbcParserLib/obj
+DbcParserLib/bin/Debug
+Demo/obj
+Demo/bin/Debug
+*.ini
