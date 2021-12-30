@@ -38,7 +38,7 @@ namespace DbcParserLib
         public string Name;
         public byte StartBit;
         public byte Length;
-        public byte ByteOrder;
+        public byte ByteOrder = 1;
         public byte IsSigned;
         public double InitialValue;
         public double Factor = 1;
