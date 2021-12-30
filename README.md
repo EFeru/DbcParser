@@ -41,8 +41,8 @@ sig.Length = 14;
 sig.StartBit = 2;
 sig.IsSigned = 1;
 sig.ByteOrder = 1; // 0 = Big Endian (Motorola), 1 = Little Endian (Intel)
-sig.Factor = 0.01F;
-sig.Offset = 20F;
+sig.Factor = 0.01;
+sig.Offset = 20;
 ulong TxMsg = dbc.TxSignalPack(-34.3, sig);
 double val = dbc.RxSignalUnpack(TxMsg, sig);
 ```
@@ -56,6 +56,7 @@ TxMsg |= dbc.TxSignalPack(value3, sig3);
 // ...
 // Send TxMsg on CAN
 ```
+The user needs to make sure that the signals do not overlap with each other by properly specifying the `Length` and `StartBit`.
 
 ## Contributions
 

@@ -50,8 +50,8 @@ namespace Demo
             //sig.StartBit = 2;
             //sig.IsSigned = 1;
             //sig.ByteOrder = 1;
-            //sig.Factor = 0.01F;
-            //sig.Offset = 20F;
+            //sig.Factor = 0.01;
+            //sig.Offset = 20;
             //ulong TxMsg = dbc.TxSignalPack(-34.3, sig);
             //double val = dbc.RxSignalUnpack(TxMsg, sig);
         }

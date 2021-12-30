@@ -11,9 +11,9 @@
     <PackageTags>dbc can parser reader pack unpack signal</PackageTags>
     <AnalysisLevel>latest</AnalysisLevel>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
-    <PackageReleaseNotes>Added .NET 4.6 support.</PackageReleaseNotes>
+    <PackageReleaseNotes>Converted float to double.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
 </Project>

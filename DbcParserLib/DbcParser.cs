@@ -40,11 +40,11 @@ namespace DbcParserLib
         public byte Length;
         public byte ByteOrder;
         public byte IsSigned;
-        public float InitialValue;
-        public float Factor = 1;
-        public float Offset;
-        public float Minimum;
-        public float Maximum;
+        public double InitialValue;
+        public double Factor = 1;
+        public double Offset;
+        public double Minimum;
+        public double Maximum;
         public string Unit;
         public string[] Receiver;
         public string ValueTable;
@@ -173,10 +173,10 @@ namespace DbcParserLib
             else
                 sig.IsSigned = 1;
 
-            sig.Factor      = float.Parse(records[6 + mux].Split(new string[] { "," }, StringSplitOptions.None)[0]);
-            sig.Offset      = float.Parse(records[6 + mux].Split(new string[] { "," }, StringSplitOptions.None)[1]);
-            sig.Minimum     = float.Parse(records[7 + mux]);
-            sig.Maximum     = float.Parse(records[8 + mux]);
+            sig.Factor      = double.Parse(records[6 + mux].Split(new string[] { "," }, StringSplitOptions.None)[0]);
+            sig.Offset      = double.Parse(records[6 + mux].Split(new string[] { "," }, StringSplitOptions.None)[1]);
+            sig.Minimum     = double.Parse(records[7 + mux]);
+            sig.Maximum     = double.Parse(records[8 + mux]);
             sig.Unit        = records[9 + mux].Split(new string[] { "\"" }, StringSplitOptions.None)[1];
             sig.Receiver    = records[10 + mux].Split(new string[] { "," }, StringSplitOptions.None);  // can be multiple receivers splitted by ","
 
