@@ -85,14 +85,14 @@ namespace DbcParserLib
                 string[] data;
 
                 // Parse for Windows new line "\r\n"
-                data = dbcAsString.Split(Environment.NewLine, StringSplitOptions.None);
+                data = dbcAsString.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
 
                 // Extra check in case the new line is "\n" for Unix or "\r" for Mac
                 if (data.Length < 3)
                 {
-                    data = dbcAsString.Split("\n", StringSplitOptions.None);
+                    data = dbcAsString.Split(new string[] { "\n" }, StringSplitOptions.None);
                     if (data.Length < 3)
-                        data = dbcAsString.Split("\r", StringSplitOptions.None);
+                        data = dbcAsString.Split(new string[] { "\r" }, StringSplitOptions.None);
                 }
 
                 for (int i = 0; i < data.Length; i++)
@@ -138,13 +138,13 @@ namespace DbcParserLib
 
         private void AddNodes(string nodesStr)
         {
-            Nodes = nodesStr.Split(" ", StringSplitOptions.None)[1..].ToList();
+            Nodes = nodesStr.Split(new string[] { " " }, StringSplitOptions.None).Skip(1).ToList();
         }
 
         private void AddMessage(string msgStr)
         {
             Message msg = new Message();
-            string[] record = msgStr.Split(" ", StringSplitOptions.None);
+            string[] record = msgStr.Split(new string[] { " " }, StringSplitOptions.None);
 
             msg.ID = ulong.Parse(record[1]);
             msg.Name = record[2].Substring(0, record[2].Length - 1);
@@ -173,12 +173,12 @@ namespace DbcParserLib
             else
                 sig.IsSigned = 1;
 
-            sig.Factor      = float.Parse(records[6 + mux].Split(",", StringSplitOptions.None)[0]);
-            sig.Offset      = float.Parse(records[6 + mux].Split(",", StringSplitOptions.None)[1]);
+            sig.Factor      = float.Parse(records[6 + mux].Split(new string[] { "," }, StringSplitOptions.None)[0]);
+            sig.Offset      = float.Parse(records[6 + mux].Split(new string[] { "," }, StringSplitOptions.None)[1]);
             sig.Minimum     = float.Parse(records[7 + mux]);
             sig.Maximum     = float.Parse(records[8 + mux]);
-            sig.Unit        = records[9 + mux].Split("\"", StringSplitOptions.None)[1];
-            sig.Receiver    = records[10 + mux].Split(",", StringSplitOptions.None);  // can be multiple receivers splitted by ","
+            sig.Unit        = records[9 + mux].Split(new string[] { "\"" }, StringSplitOptions.None)[1];
+            sig.Receiver    = records[10 + mux].Split(new string[] { "," }, StringSplitOptions.None);  // can be multiple receivers splitted by ","
 
             Messages[idxMsg].Signals.Add(sig);
         }
@@ -250,7 +250,7 @@ namespace DbcParserLib
         {
             try
             {
-                string[] records = valTableStr.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+                string[] records = valTableStr.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
 
                 string sigName = records[2];
                 foreach (var msg in Messages)

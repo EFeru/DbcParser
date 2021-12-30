@@ -1,18 +1,20 @@
 
 # DbcParser
 
+[![](https://img.shields.io/nuget/dt/dbcparserlib?color=004880&label=downloads&logo=NuGet)](https://www.nuget.org/packages/DbcParserLib/)
+[![](https://img.shields.io/nuget/vpre/dbcparserlib?color=%23004880&label=NuGet&logo=NuGet)](https://www.nuget.org/packages/DbcParserLib/)
 [![GitHub](https://img.shields.io/github/license/dbcparser/dbcparser?color=%231281c0)](LICENSE)
 
-Probably **the first .NET DBC file parser**. Includes also packing and unpacking functionality for sending and receiving CAN signals.
+Probably **the first .NET DBC file parser**. Includes packing and unpacking functionality for sending and receiving CAN signals.
 
-A quick preview is shown using a [Tesla dbc file](https://github.com/commaai/opendbc/blob/master/tesla_can.dbc) taken from [commaai](https://github.com/commaai/opendbc)
+Below is a quick preview of the extracted data using a [Tesla dbc file](https://github.com/commaai/opendbc/blob/master/tesla_can.dbc) taken from [commaai/opendbc]](https://github.com/commaai/opendbc) project:
 
 ![Preview](/Docs/pics/dbcparser_preview.png)
 
 
 ## Quickstart
 
-Install the library via Manage Nuget Packages and add at the top of your file:
+Install the library via Nuget Packages and add at the top of your file:
 ```cs
 using DbcParserLib;
 ```
@@ -32,7 +34,7 @@ dbc.Messages[j].Signals[k]
 
 ### Packing/Unpacking signals
 
-Example for packing/unpacking a signal: 14 bits, Min: -61.92, Max: 101.91
+Example for packing/unpacking a signal: `14` bits, Min: `-61.92`, Max: `101.91`
 ```cs
 Signal sig = new Signal();
 sig.Length = 14;
@@ -41,7 +43,7 @@ sig.IsSigned = 1;
 sig.ByteOrder = 1; // 0 = Big Endian (Motorola), 1 = Little Endian (Intel)
 sig.Factor = 0.01F;
 sig.Offset = 20F;
-ulong TxMsg = dbc.TxSignalPack(340.3, sig);
+ulong TxMsg = dbc.TxSignalPack(-34.3, sig);
 double val = dbc.RxSignalUnpack(TxMsg, sig);
 ```
 

@@ -52,7 +52,7 @@ namespace Demo
             //sig.ByteOrder = 1;
             //sig.Factor = 0.01F;
             //sig.Offset = 20F;
-            //ulong TxMsg = dbc.TxSignalPack(340.3, sig);
+            //ulong TxMsg = dbc.TxSignalPack(-34.3, sig);
             //double val = dbc.RxSignalUnpack(TxMsg, sig);
         }
 
