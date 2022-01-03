@@ -25,6 +25,7 @@ namespace DbcParserLib
     public class Message
     {
         public ulong ID;
+        public bool IsExtID;
         public string Name;
         public byte DLC;
         public string Transmitter;
@@ -141,12 +142,25 @@ namespace DbcParserLib
             Nodes = nodesStr.Split(new string[] { " " }, StringSplitOptions.None).Skip(1).ToList();
         }
 
+        private bool CheckExtID(ref ulong id)
+        {
+            // For extended ID bit 31 is always 1
+            if (id >= 0x80000000UL)
+            {
+                id -= 0x80000000UL;
+                return true;
+            }
+            else
+                return false;
+        }
+
         private void AddMessage(string msgStr)
         {
             Message msg = new Message();
             string[] record = msgStr.Split(new string[] { " " }, StringSplitOptions.None);
 
             msg.ID = ulong.Parse(record[1]);
+            msg.IsExtID = CheckExtID(ref msg.ID);
             msg.Name = record[2].Substring(0, record[2].Length - 1);
             msg.DLC = byte.Parse(record[3]);
             msg.Transmitter = record[4];
