@@ -225,7 +225,7 @@ namespace DbcParserLib
                     int idxSig = msg.Signals.FindIndex(x => x.Name == sigName);
                     if (idxSig >= 0)
                     {
-                        msg.Signals[idxSig].InitialValue = float.Parse(records[5]);
+                        msg.Signals[idxSig].InitialValue = float.Parse(records[5]) * msg.Signals[idxSig].Factor + msg.Signals[idxSig].Offset;
                         break;
                     }
                 }
