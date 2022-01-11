@@ -24,7 +24,7 @@ namespace DbcParserLib
 {
     public class Message
     {
-        public ulong ID;
+        public uint ID;
         public bool IsExtID;
         public string Name;
         public byte DLC;
@@ -35,7 +35,7 @@ namespace DbcParserLib
 
     public class Signal
     {
-        public ulong ID;
+        public uint ID;
         public string Name;
         public byte StartBit;
         public byte Length;
@@ -142,12 +142,12 @@ namespace DbcParserLib
             Nodes = nodesStr.Split(new string[] { " " }, StringSplitOptions.None).Skip(1).ToList();
         }
 
-        private bool CheckExtID(ref ulong id)
+        private bool CheckExtID(ref uint id)
         {
             // For extended ID bit 31 is always 1
-            if (id >= 0x80000000UL)
+            if (id >= 0x80000000)
             {
-                id -= 0x80000000UL;
+                id -= 0x80000000;
                 return true;
             }
             else
@@ -159,7 +159,7 @@ namespace DbcParserLib
             Message msg = new Message();
             string[] record = msgStr.Split(new string[] { " " }, StringSplitOptions.None);
 
-            msg.ID = ulong.Parse(record[1]);
+            msg.ID = uint.Parse(record[1]);
             msg.IsExtID = CheckExtID(ref msg.ID);
             msg.Name = record[2].Substring(0, record[2].Length - 1);
             msg.DLC = byte.Parse(record[3]);
@@ -168,7 +168,7 @@ namespace DbcParserLib
             Messages.Add(msg);
         }
 
-        private void AddSignal(int idxMsg, ulong msgID, string sigStr)
+        private void AddSignal(int idxMsg, uint msgID, string sigStr)
         {
             Signal sig = new Signal();
             int mux = 0;
