@@ -8,13 +8,13 @@
     ".NETCoreApp,Version=v5.0": {
       "Demo/1.0.0": {
         "dependencies": {
-          "DbcParserLib": "1.0.3"
+          "DbcParserLib": "1.0.4"
         },
         "runtime": {
           "Demo.dll": {}
         }
       },
-      "DbcParserLib/1.0.3": {
+      "DbcParserLib/1.0.4": {
         "runtime": {
           "DbcParserLib.dll": {}
         }
@@ -27,7 +27,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "DbcParserLib/1.0.3": {
+    "DbcParserLib/1.0.4": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

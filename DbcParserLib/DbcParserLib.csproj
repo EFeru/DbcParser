@@ -11,9 +11,9 @@
     <PackageTags>dbc can parser reader pack unpack signal</PackageTags>
     <AnalysisLevel>latest</AnalysisLevel>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
-    <PackageReleaseNotes>Added support for messages with Extended ID.</PackageReleaseNotes>
+    <PackageReleaseNotes>Upated ID datatype</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
   </PropertyGroup>
 
 </Project>
