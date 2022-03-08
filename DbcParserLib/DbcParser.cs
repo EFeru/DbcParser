@@ -10,6 +10,7 @@ using int32_T = System.Int32;
 using uint32_T = System.UInt32;
 using int64_T = System.Int64;
 using uint64_T = System.UInt64;
+using System.Globalization;
 
 /* 
  * ------------------------------------
@@ -159,10 +160,10 @@ namespace DbcParserLib
             Message msg = new Message();
             string[] record = msgStr.Split(new string[] { " " }, StringSplitOptions.None);
 
-            msg.ID = uint.Parse(record[1]);
+            msg.ID = uint.Parse(record[1], CultureInfo.InvariantCulture);
             msg.IsExtID = CheckExtID(ref msg.ID);
             msg.Name = record[2].Substring(0, record[2].Length - 1);
-            msg.DLC = byte.Parse(record[3]);
+            msg.DLC = byte.Parse(record[3], CultureInfo.InvariantCulture);
             msg.Transmitter = record[4];
 
             Messages.Add(msg);
@@ -179,18 +180,18 @@ namespace DbcParserLib
 
             sig.ID          = msgID;
             sig.Name        = records[1];
-            sig.StartBit    = byte.Parse(records[3 + mux]);
-            sig.Length      = byte.Parse(records[4 + mux]);
-            sig.ByteOrder   = byte.Parse(records[5 + mux].Substring(0, 1));   // 0 = MSB (Motorola), 1 = LSB (Intel)
+            sig.StartBit    = byte.Parse(records[3 + mux], CultureInfo.InvariantCulture);
+            sig.Length      = byte.Parse(records[4 + mux], CultureInfo.InvariantCulture);
+            sig.ByteOrder   = byte.Parse(records[5 + mux].Substring(0, 1), CultureInfo.InvariantCulture);   // 0 = MSB (Motorola), 1 = LSB (Intel)
             if (records[5 + mux].Substring(1, 1) == "+")
                 sig.IsSigned = 0;
             else
                 sig.IsSigned = 1;
 
-            sig.Factor      = double.Parse(records[6 + mux].Split(new string[] { "," }, StringSplitOptions.None)[0]);
-            sig.Offset      = double.Parse(records[6 + mux].Split(new string[] { "," }, StringSplitOptions.None)[1]);
-            sig.Minimum     = double.Parse(records[7 + mux]);
-            sig.Maximum     = double.Parse(records[8 + mux]);
+            sig.Factor      = double.Parse(records[6 + mux].Split(new string[] { "," }, StringSplitOptions.None)[0], CultureInfo.InvariantCulture);
+            sig.Offset      = double.Parse(records[6 + mux].Split(new string[] { "," }, StringSplitOptions.None)[1], CultureInfo.InvariantCulture);
+            sig.Minimum     = double.Parse(records[7 + mux], CultureInfo.InvariantCulture);
+            sig.Maximum     = double.Parse(records[8 + mux], CultureInfo.InvariantCulture);
             sig.Unit        = records[9 + mux].Split(new string[] { "\"" }, StringSplitOptions.None)[1];
             sig.Receiver    = records[10 + mux].Split(new string[] { "," }, StringSplitOptions.None);  // can be multiple receivers splitted by ","
 
@@ -203,10 +204,10 @@ namespace DbcParserLib
             {
                 string[] records = cycleStr.Split(new string[] {" " , ";" }, StringSplitOptions.RemoveEmptyEntries);
 
-                ulong msgID = ulong.Parse(records[3]);
+                ulong msgID = ulong.Parse(records[3], CultureInfo.InvariantCulture);
                 int idxMsg = Messages.FindIndex(x => x.ID == msgID);
                 if (idxMsg >= 0)
-                    Messages[idxMsg].CycleTime = int.Parse(records[4]);
+                    Messages[idxMsg].CycleTime = int.Parse(records[4], CultureInfo.InvariantCulture);
             }
             catch
             {
@@ -225,7 +226,7 @@ namespace DbcParserLib
                     int idxSig = msg.Signals.FindIndex(x => x.Name == sigName);
                     if (idxSig >= 0)
                     {
-                        msg.Signals[idxSig].InitialValue = float.Parse(records[5]) * msg.Signals[idxSig].Factor + msg.Signals[idxSig].Offset;
+                        msg.Signals[idxSig].InitialValue = float.Parse(records[5], CultureInfo.InvariantCulture) * msg.Signals[idxSig].Factor + msg.Signals[idxSig].Offset;
                         break;
                     }
                 }
