@@ -11,9 +11,9 @@
     <PackageTags>dbc can parser reader pack unpack signal</PackageTags>
     <AnalysisLevel>latest</AnalysisLevel>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
-    <PackageReleaseNotes>Upated ID datatype</PackageReleaseNotes>
+    <PackageReleaseNotes>Added Culture invariant</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.4</Version>
+    <Version>1.0.5</Version>
   </PropertyGroup>
 
 </Project>

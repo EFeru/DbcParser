@@ -6,7 +6,7 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v5.0": {
-      "DbcParserLib/1.0.4": {
+      "DbcParserLib/1.0.5": {
         "runtime": {
           "DbcParserLib.dll": {}
         }
@@ -14,7 +14,7 @@
     }
   },
   "libraries": {
-    "DbcParserLib/1.0.4": {
+    "DbcParserLib/1.0.5": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
