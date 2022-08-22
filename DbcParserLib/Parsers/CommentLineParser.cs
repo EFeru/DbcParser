@@ -1,61 +1,64 @@
 using System;
+using System.Linq;
 
 namespace DbcParserLib.Parsers
 {
     public class CommentLineParser : ILineParser
     {
-        private const string CommentLineStarter = "CM_";
+        private const string CommentLineStarter = "CM_ ";
 
-        public bool TryParse(string line, DbcBuilder builder)
+        public bool TryParse(string line, IDbcBuilder builder)
         {
-            if(line.TrimStart().StartsWith(CommentLineStarter) == false)
+            var cleanLine = line.Trim(' ', ';');
+
+            if (cleanLine.StartsWith(CommentLineStarter) == false)
                 return false;
 
-            if (line.TrimStart().StartsWith("CM_ SG_ "))
+            if (cleanLine.StartsWith("CM_ SG_"))
             {
-                SetSignalComment(line, builder);
+                SetSignalComment(cleanLine, builder);
                 return true;
             }
             
-            if (line.TrimStart().StartsWith("CM_ BU_ "))
+            if (cleanLine.StartsWith("CM_ BU_"))
             {
-                SetNodeComment(line, builder);
+                SetNodeComment(cleanLine, builder);
                 return true;
             }
 
-            if (line.TrimStart().StartsWith("CM_ BO_ "))
+            if (cleanLine.StartsWith("CM_ BO_"))
             {
-                SetMessageComment(line, builder);
+                SetMessageComment(cleanLine, builder);
                 return true;
             }
 
             return false;
         }
 
-        private void SetSignalComment(string sigCommentStr, DbcBuilder builder)
+        private static void SetSignalComment(string sigCommentStr, IDbcBuilder builder)
         {
-            string[] records = sigCommentStr.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
-            if(records.Length >= 5 && uint.TryParse(records[2], out var messageId))
+            string[] records = sigCommentStr.SplitBySpace();
+            if(records.Length > 4 && uint.TryParse(records[2], out var messageId))
             {
-                builder.AddSignalComment(messageId, records[3], records[4].Trim(' ', '"', ';'));
+                builder.AddSignalComment(messageId, records[3], string.Join(Helpers.Space, records.Skip(4)).Trim(' ', '"', ';'));
             }
         }
 
-        private void SetNodeComment(string sigCommentStr, DbcBuilder builder)
+        private static void SetNodeComment(string sigCommentStr, IDbcBuilder builder)
         {
-            string[] records = sigCommentStr.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
-            if(records.Length == 3)
+            string[] records = sigCommentStr.SplitBySpace();
+            if (records.Length > 3)
             {
-                builder.AddNodeComment(records[1].Trim(), records[2].Trim(' ', '"', ';'));
+                builder.AddNodeComment(records[2].Trim(), string.Join(Helpers.Space, records.Skip(3)).Trim(' ', '"', ';'));
             }
         }
 
-        private void SetMessageComment(string sigCommentStr, DbcBuilder builder)
+        private static void SetMessageComment(string sigCommentStr, IDbcBuilder builder)
         {
-            string[] records = sigCommentStr.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
-            if(records.Length == 4 && uint.TryParse(records[2], out var messageId))
+            string[] records = sigCommentStr.SplitBySpace();
+            if (records.Length > 3 && uint.TryParse(records[2], out var messageId))
             {
-                builder.AddMessageComment(messageId, records[3].Trim(' ', '"', ';'));
+                builder.AddMessageComment(messageId, string.Join(Helpers.Space, records.Skip(3)).Trim(' ', '"', ';'));
             }
         }
     }

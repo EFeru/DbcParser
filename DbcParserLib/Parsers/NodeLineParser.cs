@@ -5,14 +5,14 @@ namespace DbcParserLib.Parsers
 {
     public class NodeLineParser : ILineParser
     {
-        private const string NodeLineStarter = "BU_";
+        private const string NodeLineStarter = "BU_:";
 
-        public bool TryParse(string line, DbcBuilder builder)
+        public bool TryParse(string line, IDbcBuilder builder)
         {
             if(line.TrimStart().StartsWith(NodeLineStarter) == false)
                 return false;
 
-            foreach(var nodeName in line.Split(' ').Skip(1))
+            foreach(var nodeName in line.SplitBySpace().Skip(1))
             {
                 var node = new Node()
                 {

@@ -46,7 +46,7 @@ namespace DbcParserLib
         private const string MultiplexorLabel = "M";
         private const string MultiplexedLabel = "m";
 
-        public static MultiplexingInfo Multiplexing(this Signal signal)
+        public static MultiplexingInfo MultiplexingInfo(this Signal signal)
         {
             if(string.IsNullOrWhiteSpace(signal.Multiplexing))
                 return new MultiplexingInfo(MultiplexingRole.None);
@@ -65,9 +65,9 @@ namespace DbcParserLib
             return new MultiplexingInfo(MultiplexingRole.Unknown);
         }
 
-        public static bool Multiplexed(this Message message)
+        public static bool IsMultiplexed(this Message message)
         {
-            return message.Signals.Any(s => s.Multiplexing().Role == MultiplexingRole.Multiplexor);
+            return message.Signals.Any(s => s.MultiplexingInfo().Role == MultiplexingRole.Multiplexor);
         }
     }
 }

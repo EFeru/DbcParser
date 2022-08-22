@@ -4,7 +4,7 @@ using DbcParserLib.Model;
 
 namespace DbcParserLib
 {
-    public class DbcBuilder
+    public class DbcBuilder : IDbcBuilder
     {
         private readonly ISet<Node> m_nodes = new HashSet<Node>(new NodeEqualityComparer());
         private readonly IDictionary<string, string> m_namedTables = new Dictionary<string, string>();
@@ -27,7 +27,7 @@ namespace DbcParserLib
 
         public void AddSignal(Signal signal)
         {
-            if(m_currentMessage != null)
+            if (m_currentMessage != null)
             {
                 signal.ID = m_currentMessage.ID;
                 m_signals[m_currentMessage.ID][signal.Name] = signal;
@@ -36,7 +36,7 @@ namespace DbcParserLib
 
         public void AddSignalComment(uint messageID, string signalName, string comment)
         {
-            if(TryGetValueMessageSignal(messageID, signalName, out var signal))
+            if (TryGetValueMessageSignal(messageID, signalName, out var signal))
             {
                 signal.Comment = comment;
             }
@@ -45,7 +45,7 @@ namespace DbcParserLib
         public void AddNodeComment(string nodeName, string comment)
         {
             var node = m_nodes.FirstOrDefault(n => n.Name.Equals(nodeName));
-            if(node != null)
+            if (node != null)
             {
                 node.Comment = comment;
             }
@@ -53,7 +53,7 @@ namespace DbcParserLib
 
         public void AddMessageComment(uint messageID, string comment)
         {
-            if(m_messages.TryGetValue(messageID, out var message))
+            if (m_messages.TryGetValue(messageID, out var message))
             {
                 message.Comment = comment;
             }
@@ -66,7 +66,7 @@ namespace DbcParserLib
 
         public void LinkTableValuesToSignal(uint messageId, string signalName, string values)
         {
-            if(TryGetValueMessageSignal(messageId, signalName, out var signal))
+            if (TryGetValueMessageSignal(messageId, signalName, out var signal))
             {
                 signal.ValueTable = values;
             }
@@ -74,7 +74,7 @@ namespace DbcParserLib
 
         private bool TryGetValueMessageSignal(uint messageId, string signalName, out Signal signal)
         {
-            if(m_signals.TryGetValue(messageId, out var signals) && signals.TryGetValue(signalName, out signal))
+            if (m_signals.TryGetValue(messageId, out var signals) && signals.TryGetValue(signalName, out signal))
             {
                 return true;
             }
@@ -85,7 +85,7 @@ namespace DbcParserLib
 
         public void LinkNamedTableToSignal(uint messageId, string signalName, string tableName)
         {
-            if(m_namedTables.TryGetValue(tableName, out var values))
+            if (m_namedTables.TryGetValue(tableName, out var values))
             {
                 LinkTableValuesToSignal(messageId, signalName, values);
             }
@@ -93,11 +93,11 @@ namespace DbcParserLib
 
         public Dbc Build()
         {
-            foreach(var message in m_messages)
+            foreach (var message in m_messages)
             {
                 message.Value.Signals.Clear();
                 message.Value.Signals.AddRange(m_signals[message.Key].Values);
-            } 
+            }
 
             return new Dbc(m_nodes.ToArray(), m_messages.Values.ToArray());
         }
@@ -108,9 +108,9 @@ namespace DbcParserLib
         public bool Equals(Node b1, Node b2)
         {
             if (b2 == null && b1 == null)
-            return true;
+                return true;
             else if (b1 == null || b2 == null)
-            return false;
+                return false;
             else if(b1.Name == b2.Name)
                 return true;
             else

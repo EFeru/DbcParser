@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using System.Linq;
 
 namespace DbcParserLib.Parsers
 {
@@ -7,16 +8,21 @@ namespace DbcParserLib.Parsers
     {
         private const string ValueTableLineStarter = "VAL_";
 
-        public bool TryParse(string line, DbcBuilder builder)
+        public bool TryParse(string line, IDbcBuilder builder)
         {
             if(line.TrimStart().StartsWith(ValueTableLineStarter) == false)
                 return false;
 
+            var records = line
+                .Trim(' ', ';')
+                .Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
 
-            string[] records = line.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
-            if(line.TrimStart().StartsWith("VAL_TABLE"))
+            if (records.Length == 1)
+                return false;
+
+            if (line.TrimStart().StartsWith("VAL_TABLE_ "))
             {
-                builder.AddNamedValueTable(records[1], records[2]);
+                builder.AddNamedValueTable(records[1], string.Join(" ", records.Skip(2)));
                 return true;
             }
             
@@ -34,7 +40,7 @@ namespace DbcParserLib.Parsers
                     var sb = new StringBuilder();
                     for(var i = 3; i < records.Length - 1; i += 2)
                     {
-                        var withoutQuotes = records[i+1].Trim(';', '"');
+                        var withoutQuotes = records[i+1];
                         sb.AppendLine($"{records[i]} {withoutQuotes}");
                     }
                     builder.LinkTableValuesToSignal(messageId, records[2], sb.ToString());

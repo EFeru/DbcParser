@@ -51,7 +51,7 @@ namespace DbcParserLib
             return builder.Build();
         }
 
-        private static void ParseLine(string line, DbcBuilder builder)
+        private static void ParseLine(string line, IDbcBuilder builder)
         {
             if(string.IsNullOrWhiteSpace(line))
                 return;

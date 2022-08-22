@@ -5,9 +5,9 @@ namespace DbcParserLib.Parsers
 {
     public class SignalLineParser : ILineParser
     {
-        private const string SignalLineStarter = "SG_";
+        private const string SignalLineStarter = "SG_ ";
 
-        public bool TryParse(string line, DbcBuilder builder)
+        public bool TryParse(string line, IDbcBuilder builder)
         {
             if(line.TrimStart().StartsWith(SignalLineStarter) == false)
                 return false;
@@ -16,7 +16,7 @@ namespace DbcParserLib.Parsers
             return true;
         }
 
-        private void AddSignal(string line, DbcBuilder builder)
+        private static void AddSignal(string line, IDbcBuilder builder)
         {
             Signal sig = new Signal();
             int mux = 0;
