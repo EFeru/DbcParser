@@ -1,7 +1,16 @@
-
+# User-specific files
+*.suo
+*.user
+*.sln.docstates
 .vs
+
+# Build results
 DbcParserLib/obj
 DbcParserLib/bin/Debug
 Demo/obj
 Demo/bin/Debug
+DbcParserLib.Tests/obj/
+DbcParserLib.Tests/bin/
+
+# Misc
 *.ini
