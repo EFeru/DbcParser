@@ -1,0 +1,10 @@
+^CM_ SG_ (\d+) (\w+) "(.+)";$
+
+^BO_ (\d+) ([\w\s]+): (\d+) ([\w\s]+)$
+
+^\s*SG_\s+([\w]+)\s*([\w]*)\s*:\s*(\d+)\|(\d+)@([01])([+-])\s+\(([0-9.-]+),([0-9.-]+)\)\s+\[([0-9.-]+)\|([0-9.-]+)\]\s+"([\w\/]*)"\s+([\w,]+)$
+
+https://github.com/stefanhoelzl/CANpy/blob/master/docs/DBC_Specification.md
+
+Missing CM_ for BU and BO
+

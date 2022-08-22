@@ -30,6 +30,7 @@ namespace DbcParserLib
         public string Name;
         public byte DLC;
         public string Transmitter;
+        public string Comment;
         public int CycleTime;
         public List<Signal> Signals = new List<Signal>();
     }
@@ -51,6 +52,7 @@ namespace DbcParserLib
         public string[] Receiver;
         public string ValueTable;
         public string Comment;
+        public string Multiplexing;
     }
 
     public class DbcParser
