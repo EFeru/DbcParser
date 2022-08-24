@@ -4,6 +4,7 @@
     {
         private static readonly string[] SpaceArray = new[] { " " };
         public const string Space = " ";
+        public const string Comma = ",";
 
         public static string[] SplitBySpace(this string value)
         {

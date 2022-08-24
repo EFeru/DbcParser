@@ -15,6 +15,7 @@ namespace DbcParserLib.Tests
             parser.ReadFromFile(MainDbcFilePath);
 
             Assert.AreEqual(38, parser.Messages.Count);
+            Assert.AreEqual(485, parser.Messages.SelectMany(m => m.Signals).Count());
             Assert.AreEqual(15, parser.Nodes.Count);
         }
 
@@ -26,6 +27,7 @@ namespace DbcParserLib.Tests
             parser.ReadFromFile(MainDbcFilePath);
 
             Assert.AreEqual(38, parser.Messages.Count);
+            Assert.AreEqual(485, parser.Messages.SelectMany(m => m.Signals).Count());
             Assert.AreEqual(15, parser.Nodes.Count);
         }
 

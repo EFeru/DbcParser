@@ -14,6 +14,7 @@ namespace DbcParserLib.Tests
             var dbc = Parser.ParseFromPath(MainDbcFilePath);
 
             Assert.AreEqual(38, dbc.Messages.Count());
+            Assert.AreEqual(485, dbc.Messages.SelectMany(m => m.Signals).Count());
             Assert.AreEqual(15, dbc.Nodes.Count());
         }
 
@@ -24,6 +25,7 @@ namespace DbcParserLib.Tests
             var dbc = Parser.ParseFromPath(MainDbcFilePath);
             dbc = Parser.ParseFromPath(MainDbcFilePath);
             Assert.AreEqual(38, dbc.Messages.Count());
+            Assert.AreEqual(485, dbc.Messages.SelectMany(m => m.Signals).Count());
             Assert.AreEqual(15, dbc.Nodes.Count());
         }
 
@@ -119,24 +121,24 @@ namespace DbcParserLib.Tests
             // This example is taken from kia_ev6.dbc
             var dbcString = @"
 BO_ 961 BLINKER_STALKS: 8 XXX
- SG_ COUNTER_ALT : 15|4@0+ (1,0) [0|15] "" XXX
- SG_ CHECKSUM_MAYBE : 7|8@0+ (1,0) [0|255] "" XXX
- SG_ HIGHBEAM_FORWARD : 18|1@0+ (1,0) [0|1] "" XXX
- SG_ HIGHBEAM_BACKWARD : 26|1@0+ (1,0) [0|1] "" XXX
- SG_ RIGHT_BLINKER : 32|1@0+ (1,0) [0|1] "" XXX
- SG_ LEFT_BLINKER : 30|1@0+ (1,0) [0|1] "" XXX
- SG_ LIGHT_KNOB_POSITION : 21|2@0+ (1,0) [0|3] "" XXX
+ SG_ COUNTER_ALT : 15|4@0+ (1,0) [0|15] """" XXX
+ SG_ CHECKSUM_MAYBE : 7|8@0+ (1,0) [0|255] """" XXX
+ SG_ HIGHBEAM_FORWARD : 18|1@0+ (1,0) [0|1] """" XXX
+ SG_ HIGHBEAM_BACKWARD : 26|1@0+ (1,0) [0|1] """" XXX
+ SG_ RIGHT_BLINKER : 32|1@0+ (1,0) [0|1] """" XXX
+ SG_ LEFT_BLINKER : 30|1@0+ (1,0) [0|1] """" XXX
+ SG_ LIGHT_KNOB_POSITION : 21|2@0+ (1,0) [0|3] """" XXX
  
 BO_ 1041 DOORS_SEATBELTS: 8 XXX
- SG_ CHECKSUM_MAYBE : 7|8@0+ (1,0) [0|65535] "" XXX
- SG_ COUNTER_ALT : 15|4@0+ (1,0) [0|15] "" XXX
- SG_ DRIVER_SEATBELT_LATCHED : 42|1@0+ (1,0) [0|1] "" XXX
- SG_ DRIVER_DOOR_OPEN : 24|1@1+ (1,0) [0|1] "" XXX
+ SG_ CHECKSUM_MAYBE : 7|8@0+ (1,0) [0|65535] """" XXX
+ SG_ COUNTER_ALT : 15|4@0+ (1,0) [0|15] """" XXX
+ SG_ DRIVER_SEATBELT_LATCHED : 42|1@0+ (1,0) [0|1] """" XXX
+ SG_ DRIVER_DOOR_OPEN : 24|1@1+ (1,0) [0|1] """" XXX
  
 BO_ 1043 BLINKERS: 8 XXX
- SG_ COUNTER_ALT : 15|4@0+ (1,0) [0|15] "" XXX
- SG_ LEFT_LAMP : 20|1@0+ (1,0) [0|1] "" XXX
- SG_ RIGHT_LAMP : 22|1@0+ (1,0) [0|1] "" XXX
+ SG_ COUNTER_ALT : 15|4@0+ (1,0) [0|15] """" XXX
+ SG_ LEFT_LAMP : 20|1@0+ (1,0) [0|1] """" XXX
+ SG_ RIGHT_LAMP : 22|1@0+ (1,0) [0|1] """" XXX
  
 CM_ SG_ 961 COUNTER_ALT ""only increments on change"";
 CM_ SG_ 1041 COUNTER_ALT ""only increments on change"";
@@ -171,9 +173,9 @@ CM_ SG_ 1043 COUNTER_ALT ""only increments on change""; ";
 BU_: XXX
 
 BO_ 1043 BLINKERS: 8 XXX
- SG_ COUNTER_ALT : 15|4@0+ (1,0) [0|15] "" XXX
- SG_ LEFT_LAMP : 20|1@0+ (1,0) [0|1] "" XXX
- SG_ RIGHT_LAMP : 22|1@0+ (1,0) [0|1] "" XXX
+ SG_ COUNTER_ALT : 15|4@0+ (1,0) [0|15] """" XXX
+ SG_ LEFT_LAMP : 20|1@0+ (1,0) [0|1] """" XXX
+ SG_ RIGHT_LAMP : 22|1@0+ (1,0) [0|1] """" XXX
  
 CM_ BO_ 1043 ""Message comment"";
 CM_ BU_ XXX ""Node comment"";
@@ -200,7 +202,7 @@ CM_ SG_ 1043 COUNTER_ALT ""only increments on change""; ";
 VAL_TABLE_ DI_aebLockState 3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 ""AEB_LOCK_STATE_UNLOCKED"" 0 ""AEB_LOCK_STATE_LOCKED""       ;
 
 BO_ 1043 BLINKERS: 8 XXX
- SG_ withNamedTable : 22|1@0+ (1,0) [0|1] "" XXX
+ SG_ withNamedTable : 22|1@0+ (1,0) [0|1] """" XXX
  
 VAL_ 1043 withNamedTable DI_aebLockState ; ";
 
