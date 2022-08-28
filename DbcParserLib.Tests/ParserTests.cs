@@ -213,7 +213,27 @@ VAL_ 1043 withNamedTable DI_aebLockState ; ";
 
             var signal = dbc.Messages.Single().Signals.Single();
             Assert.IsNotNull(signal);
-            Assert.AreEqual(102, signal.ValueTable.Length);
+            Assert.AreEqual(107, signal.ValueTable.Length);
+        }
+
+        [Test]
+        public void ExplicitValTableIsAppliedTest()
+        {
+            // This example is taken from kia_ev6.dbc
+            var dbcString = @"
+BO_ 1043 BLINKERS: 8 XXX
+ SG_ withNamedTable : 22|1@0+ (1,0) [0|1] """" XXX
+ 
+VAL_ 1043 withNamedTable 3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 ""AEB_LOCK_STATE_UNLOCKED"" 0 ""AEB_LOCK_STATE_LOCKED""       ;";
+
+            var dbc = Parser.Parse(dbcString);
+
+            Assert.AreEqual(1, dbc.Messages.Count());
+            Assert.AreEqual(0, dbc.Nodes.Count());
+
+            var signal = dbc.Messages.Single().Signals.Single();
+            Assert.IsNotNull(signal);
+            Assert.AreEqual(107, signal.ValueTable.Length);
         }
     }
 }

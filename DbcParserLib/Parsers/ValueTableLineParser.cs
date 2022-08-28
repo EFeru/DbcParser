@@ -1,7 +1,3 @@
-using System;
-using System.Text;
-using System.Linq;
-
 namespace DbcParserLib.Parsers
 {
     public class ValueTableLineParser : ILineParser
@@ -15,37 +11,36 @@ namespace DbcParserLib.Parsers
 
             var records = line
                 .Trim(' ', ';')
-                .Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+                .SplitBySpace();
 
             if (records.Length == 1)
                 return false;
 
             if (line.TrimStart().StartsWith("VAL_TABLE_ "))
             {
-                builder.AddNamedValueTable(records[1], string.Join(" ", records.Skip(2)));
+                if (records.Length > 2 && (records.Length - 2) % 2 == 0)
+                    builder.AddNamedValueTable(records[1], Helpers.ConvertToMultiLine(records, 2));
+
                 return true;
             }
             
             var parsed = false;
-            if(uint.TryParse(records[1], out var messageId))
+            if(line.TrimStart().StartsWith("VAL_ "))
             {
-                if(records.Length == 4)
+                parsed = true;
+
+                if(uint.TryParse(records[1], out var messageId))
                 {
-                    // Last is a table name
-                    builder.LinkNamedTableToSignal(messageId, records[2], records[3]);
-                    parsed = true;
-                }
-                else if(records.Length > 4)
-                {
-                    var sb = new StringBuilder();
-                    for(var i = 3; i < records.Length - 1; i += 2)
+                    if (records.Length == 4)
                     {
-                        var withoutQuotes = records[i+1];
-                        sb.AppendLine($"{records[i]} {withoutQuotes}");
+                        // Last is a table name
+                        builder.LinkNamedTableToSignal(messageId, records[2], records[3]);
                     }
-                    builder.LinkTableValuesToSignal(messageId, records[2], sb.ToString());
-                    parsed = true;
-                }    
+                    else if (records.Length > 4 && (records.Length - 3) % 2 == 0)
+                    {
+                        builder.LinkTableValuesToSignal(messageId, records[2], Helpers.ConvertToMultiLine(records, 3));
+                    }
+                }         
             }
             
             return parsed;
