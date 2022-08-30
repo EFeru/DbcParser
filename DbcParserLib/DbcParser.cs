@@ -55,6 +55,7 @@ namespace DbcParserLib
         public string Multiplexing;
     }
 
+    [Obsolete("This class is obsolete and will be removed in the future. Use Parser class instead.", false)]
     public class DbcParser
     {
         /// <summary>
