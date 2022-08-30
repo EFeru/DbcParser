@@ -102,7 +102,7 @@ namespace Demo
             // Nodes
             foreach (var node in dbc.Nodes)
             {
-                textBoxNodes.Text += node + " ";
+                textBoxNodes.Text += node.Name + " ";
             }
 
             // Messages
