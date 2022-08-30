@@ -24,7 +24,6 @@ namespace Demo
 {
     public partial class Form1 : Form
     {
-        public DbcParser dbc;
         public DataTable dtMessages = new DataTable();
         public DataTable dtSignals = new DataTable();
 
@@ -74,10 +73,9 @@ namespace Demo
         {
             try
             {
-                dbc = new DbcParser();
-                dbc.ReadFromFile(filePath);
+                var dbc = Parser.ParseFromPath(filePath);
                 textBoxPath.Text = filePath;
-                PopulateView();
+                PopulateView(dbc);
             }
             catch (Exception ex)
             {
@@ -86,7 +84,7 @@ namespace Demo
             }
         }
 
-        public void PopulateView()
+        public void PopulateView(Dbc dbc)
         {
             // Clear controls
             textBoxNodes.Text = "";
@@ -135,7 +133,7 @@ namespace Demo
             dtSignals.Columns.Add("Comment");
             foreach (var node in dbc.Nodes)
             {
-                dtSignals.Columns.Add(node);
+                dtSignals.Columns.Add(node.Name);
             }
             foreach (var msg in dbc.Messages)
             {
