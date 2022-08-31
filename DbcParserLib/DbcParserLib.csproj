@@ -2,7 +2,7 @@
 
   <PropertyGroup>
 	<OutputType>Library</OutputType>
-    <TargetFrameworks>net461;net5.0</TargetFrameworks>
+    <TargetFrameworks>net461;net5.0;net6.0</TargetFrameworks>
     <Authors>Emanuel Feru</Authors>
     <Description>DbcParserLib is a .NET dbc file parser library for CAN network signals. This library can also be used to pack and unpack CAN signals.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

@@ -1,6 +1,7 @@
 
 # DbcParser
 
+[![Continuous Integration](https://github.com/EFeru/DbcParser/actions/workflows/ci.yml/badge.svg)](https://github.com/EFeru/DbcParser/actions/workflows/ci.yml)
 [![](https://img.shields.io/nuget/dt/dbcparserlib?color=004880&label=downloads&logo=NuGet)](https://www.nuget.org/packages/DbcParserLib/)
 [![](https://img.shields.io/nuget/vpre/dbcparserlib?color=%23004880&label=NuGet&logo=NuGet)](https://www.nuget.org/packages/DbcParserLib/)
 [![GitHub](https://img.shields.io/github/license/eferu/dbcparser?color=%231281c0)](LICENSE)
