@@ -5,12 +5,12 @@
 .vs
 
 # Build results
-DbcParserLib/obj
-DbcParserLib/bin/Debug
-Demo/obj
-Demo/bin/Debug
+DbcParserLib/obj/
+DbcParserLib/bin/
 DbcParserLib.Tests/obj/
 DbcParserLib.Tests/bin/
+Demo/obj/
+Demo/bin/
 
 # Misc
 *.ini
