@@ -1,0 +1,37 @@
+name: Deploy NuGet Packages
+
+on:
+  workflow_dispatch:  # manually trigger the workflow
+
+jobs:
+  deploy:
+    name: 🚀 Publish Packages
+    runs-on: windows-latest
+    steps:
+      - name: 🛒 Checkout
+        uses: actions/checkout@v3
+      - name: ✨ Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 6.0.x
+
+      - name: 🛠️ Setup NuGet
+        uses: nuget/setup-nuget@v2
+        with:
+          nuget-api-key: ${{ secrets.NUGET_API_KEY }}
+
+      - name: 🚀 Publish DbcParserLib
+        run: |
+          dotnet restore DbcParserLib/DbcParserLib.csproj
+          dotnet build DbcParserLib/DbcParserLib.csproj --configuration Release
+          dotnet pack DbcParserLib/DbcParserLib.csproj --configuration Release
+          nuget push "DbcParserLib\bin\Release\*.nupkg" -SkipDuplicate -Source https://api.nuget.org/v3/index.json
+
+       - name: 💾 Store Packages
+         uses: actions/upload-artifact@v3
+         with:
+           name: DbcParserLib-Packages
+           retention-days: 3
+           path: |
+             DbcParserLib/bin/Release/*.nupkg
+             DbcParserLib/bin/Release/*.snupkg
