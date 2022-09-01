@@ -1,7 +1,10 @@
 name: Deploy NuGet Packages
 
 on:
-  workflow_dispatch:  # manually trigger the workflow
+  # workflow_dispatch:  # manually trigger the workflow
+  label:  # run workflow when label/tag is created
+    types:
+      - created
 
 jobs:
   deploy:
