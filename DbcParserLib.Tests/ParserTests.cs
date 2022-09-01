@@ -6,7 +6,7 @@ namespace DbcParserLib.Tests
 {
     public class ParserTests
     {
-        private const string MainDbcFilePath = @"..\..\..\..\tesla_can.dbc";
+        private const string MainDbcFilePath = @"..\..\..\..\DbcFiles\tesla_can.dbc";
 
         [Test]
         public void SimpleParseFileTest()

@@ -36,7 +36,7 @@ namespace Demo
         {
             // Initial dbc file
             string pathInit = Path.GetDirectoryName(Application.ExecutablePath);
-            pathInit = Path.GetFullPath(Path.Combine(pathInit, @"..\..\..\..\"));   // go up 4 levels in folder
+            pathInit = Path.GetFullPath(Path.Combine(pathInit, @"..\..\..\..\DbcFiles\"));   // go up 4 levels in folder
             pathInit += "tesla_can.dbc";
             if (File.Exists(pathInit))
             {
