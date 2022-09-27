@@ -54,7 +54,7 @@ namespace DbcParserLib.Parsers
             }
 
             sig.Name        = records[1];
-            sig.StartBit    = byte.Parse(records[3 + muxOffset], CultureInfo.InvariantCulture);
+            sig.StartBit    = ushort.Parse(records[3 + muxOffset], CultureInfo.InvariantCulture);
             sig.Length      = byte.Parse(records[4 + muxOffset], CultureInfo.InvariantCulture);
             sig.ByteOrder   = byte.Parse(records[5 + muxOffset].Substring(0, 1), CultureInfo.InvariantCulture);   // 0 = MSB (Motorola), 1 = LSB (Intel)
             sig.IsSigned    = (byte)(records[5 + muxOffset][1] == '+' ? 0 : 1);
