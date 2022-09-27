@@ -1,8 +1,8 @@
-using NUnit.Framework;
-using DbcParserLib.Parsers;
-using DbcParserLib.Model;
-using Moq;
 using System.Linq;
+using DbcParserLib.Model;
+using DbcParserLib.Parsers;
+using Moq;
+using NUnit.Framework;
 
 namespace DbcParserLib.Tests
 {
@@ -256,6 +256,36 @@ namespace DbcParserLib.Tests
             Assert.AreEqual(message, dbc.Messages.First());
             Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
             Assert.AreEqual("fake values", dbc.Messages.First().Signals.First().ValueTable);
+        }
+        [Test]
+        public void TableValuesWithExtendedMessageIdAreAddedToSignal()
+        {
+            var builder = new DbcBuilder();
+            var message = new Message { ID = 2566896411 };
+            message.IsExtID = CheckExtID(ref message.ID);
+            builder.AddMessage(message);
+            var signal = new Signal { Name = "name1" };
+            builder.AddSignal(signal);
+
+            builder.LinkTableValuesToSignal(2566896411, "name1", "fake values");
+            var dbc = builder.Build();
+
+            Assert.IsEmpty(dbc.Nodes);
+            Assert.AreEqual(1, dbc.Messages.Count());
+            Assert.AreEqual(message, dbc.Messages.First());
+            Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.AreEqual("fake values", dbc.Messages.First().Signals.First().ValueTable);
+        }
+        private bool CheckExtID(ref uint id)
+        {
+            // For extended ID bit 31 is always 1
+            if (id >= 0x80000000)
+            {
+                id -= 0x80000000;
+                return true;
+            }
+            else
+                return false;
         }
 
         [Test]
