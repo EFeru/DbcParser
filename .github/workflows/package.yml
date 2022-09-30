@@ -1,7 +1,7 @@
 name: Deploy NuGet Packages
 
 on:
-  # workflow_dispatch:  # manually trigger the workflow
+  workflow_dispatch:  # manually trigger the workflow
   label:  # run workflow when label/tag is created
     types:
       - created
@@ -13,13 +13,14 @@ jobs:
     steps:
       - name: 🛒 Checkout
         uses: actions/checkout@v3
+
       - name: ✨ Setup .NET
         uses: actions/setup-dotnet@v2
         with:
           dotnet-version: 6.0.x
 
       - name: 🛠️ Setup NuGet
-        uses: nuget/setup-nuget@v2
+        uses: nuget/setup-nuget@v1
         with:
           nuget-api-key: ${{ secrets.NUGET_API_KEY }}
 
