@@ -58,7 +58,8 @@ namespace DbcParserLib.Parsers
             sig.Length      = byte.Parse(records[4 + muxOffset], CultureInfo.InvariantCulture);
             sig.ByteOrder   = byte.Parse(records[5 + muxOffset].Substring(0, 1), CultureInfo.InvariantCulture);   // 0 = MSB (Motorola), 1 = LSB (Intel)
             sig.IsSigned    = (byte)(records[5 + muxOffset][1] == '+' ? 0 : 1);
-
+            var factorStr = records[6 + muxOffset].Split(m_commaSeparator, StringSplitOptions.None)[0];
+            sig.IsInteger= Signal.IsIntegerCheck(factorStr);
             sig.Factor      = double.Parse(records[6 + muxOffset].Split(m_commaSeparator, StringSplitOptions.None)[0], CultureInfo.InvariantCulture);
             sig.Offset      = double.Parse(records[6 + muxOffset].Split(m_commaSeparator, StringSplitOptions.None)[1], CultureInfo.InvariantCulture);
             sig.Minimum     = double.Parse(records[7 + muxOffset], CultureInfo.InvariantCulture);
@@ -81,7 +82,7 @@ namespace DbcParserLib.Parsers
 
             if (match.Success == false)
                 return;
-
+            var factorStr = match.Groups[7].Value;
             var sig = new Signal
             {
                 Multiplexing = match.Groups[2].Value,
@@ -90,6 +91,7 @@ namespace DbcParserLib.Parsers
                 Length = byte.Parse(match.Groups[4].Value, CultureInfo.InvariantCulture),
                 ByteOrder = byte.Parse(match.Groups[5].Value, CultureInfo.InvariantCulture),   // 0 = MSB (Motorola), 1 = LSB (Intel)
                 IsSigned = (byte)(match.Groups[6].Value == SignedSymbol ? 1 : 0),
+                IsInteger= Signal.IsIntegerCheck(factorStr),
                 Factor = double.Parse(match.Groups[7].Value, CultureInfo.InvariantCulture),
                 Offset = double.Parse(match.Groups[8].Value, CultureInfo.InvariantCulture),
                 Minimum = double.Parse(match.Groups[9].Value, CultureInfo.InvariantCulture),
