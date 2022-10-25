@@ -45,6 +45,7 @@ namespace DbcParserLib
         public byte IsSigned;
         public double InitialValue;
         public double Factor = 1;
+        public bool IsInteger = false;
         public double Offset;
         public double Minimum;
         public double Maximum;
@@ -53,6 +54,15 @@ namespace DbcParserLib
         public string ValueTable;
         public string Comment;
         public string Multiplexing;
+        public static bool IsIntegerCheck(string str)
+        {
+            int r = 0;
+            if (int.TryParse(str, out r) == true)
+            {
+                return true;
+            }
+            return false;
+        }
     }
 
     [Obsolete("This class is obsolete and will be removed in the future. Use Parser class instead.", false)]
@@ -190,7 +200,8 @@ namespace DbcParserLib
                 sig.IsSigned = 0;
             else
                 sig.IsSigned = 1;
-
+            var factorStr = records[6 + mux].Split(new string[] { "," }, StringSplitOptions.None)[0];
+            sig.IsInteger = Signal.IsIntegerCheck(factorStr);
             sig.Factor      = double.Parse(records[6 + mux].Split(new string[] { "," }, StringSplitOptions.None)[0], CultureInfo.InvariantCulture);
             sig.Offset      = double.Parse(records[6 + mux].Split(new string[] { "," }, StringSplitOptions.None)[1], CultureInfo.InvariantCulture);
             sig.Minimum     = double.Parse(records[7 + mux], CultureInfo.InvariantCulture);
