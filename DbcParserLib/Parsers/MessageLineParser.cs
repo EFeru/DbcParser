@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
+using DbcParserLib.Model;
 
 namespace DbcParserLib.Parsers
 {
@@ -23,24 +24,12 @@ namespace DbcParserLib.Parsers
                     Transmitter = match.Groups[4].Value,
                 };
                 msg.ID = uint.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
-                msg.IsExtID = CheckExtID(ref msg.ID);
+                msg.IsExtID = DbcBuilder.IsExtID(ref msg.ID);
 
                 builder.AddMessage(msg);
             }
 
             return true;
-        }
-
-        private bool CheckExtID(ref uint id)
-        {
-            // For extended ID bit 31 is always 1
-            if (id >= 0x80000000)
-            {
-                id -= 0x80000000;
-                return true;
-            }
-            else
-                return false;
         }
     }
 }

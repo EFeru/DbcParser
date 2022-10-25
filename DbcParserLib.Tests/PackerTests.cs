@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.IO;
+using DbcParserLib.Model;
 
 namespace DbcParserLib.Tests
 {

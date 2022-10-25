@@ -7,6 +7,7 @@ using uint32_T = System.UInt32;
 using int64_T = System.Int64;
 using uint64_T = System.UInt64;
 using System;
+using DbcParserLib.Model;
 
 namespace DbcParserLib
 {

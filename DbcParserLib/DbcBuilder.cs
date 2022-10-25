@@ -66,13 +66,13 @@ namespace DbcParserLib
 
         public void LinkTableValuesToSignal(uint messageId, string signalName, string values)
         {
-            CheckExtID(ref messageId);
+            IsExtID(ref messageId);
             if (TryGetValueMessageSignal(messageId, signalName, out var signal))
             {
                 signal.ValueTable = values;
             }
         }
-        private bool CheckExtID(ref uint id)
+        public static bool IsExtID(ref uint id)
         {
             // For extended ID bit 31 is always 1
             if (id >= 0x80000000)
