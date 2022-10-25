@@ -35,9 +35,9 @@ The ``Dbc`` object contains two collections, `Messages` and `Nodes`, both are `I
 As an example, take all messages with id > 100 and more than 2 signals:
 ```cs
 var filteredSelection = dbc
-							.Messages
-							.Where(m => m.ID > 100 && m.Signals.Count > 2)
-							.ToArray();
+			.Messages
+			.Where(m => m.ID > 100 && m.Signals.Count > 2)
+			.ToArray();
 ```
 
 ## Packing/Unpacking signals
