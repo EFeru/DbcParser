@@ -13,7 +13,7 @@ namespace DbcParserLib.Model
         public uint ID;
         public bool IsExtID;
         public string Name;
-        public byte DLC;
+        public ushort DLC;
         public string Transmitter;
         public string Comment;
         public int CycleTime;
@@ -25,7 +25,7 @@ namespace DbcParserLib.Model
         public uint ID;
         public string Name;
         public ushort StartBit;
-        public byte Length;
+        public ushort Length;
         public byte ByteOrder = 1;
         public byte IsSigned;
         public double InitialValue;
