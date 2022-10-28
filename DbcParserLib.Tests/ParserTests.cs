@@ -213,7 +213,7 @@ CM_ SG_ 1043 COUNTER_ALT ""only increments on change""; ";
         {
             // This example is taken from kia_ev6.dbc
             var dbcString = @"
-VAL_TABLE_ DI_aebLockState 3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 ""AEB_LOCK_STATE_UNLOCKED"" 0 ""AEB_LOCK_STATE_LOCKED""       ;
+VAL_TABLE_ DI_aebLockState 3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 ""AEB_LOCK_STATE_UNLOCKED"" 0 ""AEB_LOCK_STATE_LOCKED"" ;
 
 BO_ 1043 BLINKERS: 8 XXX
  SG_ withNamedTable : 22|1@0+ (1,0) [0|1] """" XXX
@@ -238,7 +238,7 @@ VAL_ 1043 withNamedTable DI_aebLockState ; ";
 BO_ 1043 BLINKERS: 8 XXX
  SG_ withNamedTable : 22|1@0+ (1,0) [0|1] """" XXX
  
-VAL_ 1043 withNamedTable 3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 ""AEB_LOCK_STATE_UNLOCKED"" 0 ""AEB_LOCK_STATE_LOCKED""       ;";
+VAL_ 1043 withNamedTable 3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 ""AEB_LOCK_STATE_UNLOCKED"" 0 ""AEB_LOCK_STATE_LOCKED"" ;";
 
             var dbc = Parser.Parse(dbcString);
 

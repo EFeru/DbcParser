@@ -3,6 +3,7 @@ using DbcParserLib.Parsers;
 using DbcParserLib.Model;
 using Moq;
 using System.Collections.Generic;
+using NUnit.Framework.Internal;
 
 namespace DbcParserLib.Tests
 {
@@ -73,15 +74,6 @@ namespace DbcParserLib.Tests
         }
 
         [Test]
-        public void MalformedLineWithOddNumberOfValuesIsAccetpedButIgnored()
-        {
-            var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
-            var commentLineParser = CreateParser();
-
-            Assert.IsTrue(commentLineParser.TryParse(@"VAL_TABLE_ name 0 ""test"" 1     ", dbcBuilderMock.Object));
-        }
-
-        [Test]
         public void OnlyPrefixIsAcceptedWithNoInteractions()
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
@@ -118,15 +110,6 @@ namespace DbcParserLib.Tests
         }
 
         [Test]
-        public void MalformedLineWithOddNumberOfValuesForValuesExplicitIsAccetpedButIgnored()
-        {
-            var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
-            var commentLineParser = CreateParser();
-
-            Assert.IsTrue(commentLineParser.TryParse(@"VAL_ 345 name 0 ""test"" 1     ", dbcBuilderMock.Object));
-        }
-
-        [Test]
         public void ValueTableDefinitionIsParsedAndCallsBuilder()
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
@@ -145,6 +128,17 @@ namespace DbcParserLib.Tests
             var commentLineParser = CreateParser();
 
             Assert.IsTrue(commentLineParser.TryParse(@"VAL_ 470 channelName tableName;", dbcBuilderMock.Object));
+
+        }
+
+        [Test]
+        public void ValueTableWithoutSemicolonIsParsedAndLinkedToChannel()
+        {
+            var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
+            dbcBuilderMock.Setup(builder => builder.LinkNamedTableToSignal(470, "channelName", "tableName"));
+            var commentLineParser = CreateParser();
+
+            Assert.IsTrue(commentLineParser.TryParse(@"VAL_ 470 channelName tableName", dbcBuilderMock.Object));
 
         }
 
