@@ -66,9 +66,9 @@ double val = Packer.RxSignalUnpack(TxMsg, sig);
 Multiple signals can be packed before CAN transmission using:
 ```cs
 ulong TxMsg = 0;
-TxMsg |= dbc.TxSignalPack(value1, sig1);
-TxMsg |= dbc.TxSignalPack(value2, sig2);
-TxMsg |= dbc.TxSignalPack(value3, sig3);
+TxMsg |= Packer.TxSignalPack(value1, sig1);
+TxMsg |= Packer.TxSignalPack(value2, sig2);
+TxMsg |= Packer.TxSignalPack(value3, sig3);
 // ...
 // Send TxMsg on CAN
 ```
