@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using DbcParserLib.Model;
 
@@ -34,11 +35,20 @@ namespace DbcParserLib
             }
         }
 
-        public void AddSignalComment(uint messageID, string signalName, string comment)
+        public void AddSignalComment(uint messageId, string signalName, string comment)
         {
-            if (TryGetValueMessageSignal(messageID, signalName, out var signal))
+            if (TryGetValueMessageSignal(messageId, signalName, out var signal))
             {
                 signal.Comment = comment;
+            }
+        }
+
+        public void AddSignalInitialValue(uint messageId, string signalName, double initialValue)
+        {
+            IsExtID(ref messageId);
+            if (TryGetValueMessageSignal(messageId, signalName, out var signal))
+            {
+                signal.InitialValue = initialValue * signal.Factor + signal.Offset;
             }
         }
 
@@ -51,11 +61,20 @@ namespace DbcParserLib
             }
         }
 
-        public void AddMessageComment(uint messageID, string comment)
+        public void AddMessageComment(uint messageId, string comment)
         {
-            if (m_messages.TryGetValue(messageID, out var message))
+            if (m_messages.TryGetValue(messageId, out var message))
             {
                 message.Comment = comment;
+            }
+        }
+
+        public void AddMessageCycleTime(uint messageId, int cycleTime)
+        {
+            IsExtID(ref messageId);
+            if (m_messages.TryGetValue(messageId, out var message))
+            {
+                message.CycleTime = cycleTime;
             }
         }
 
