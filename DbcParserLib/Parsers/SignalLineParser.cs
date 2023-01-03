@@ -61,7 +61,7 @@ namespace DbcParserLib.Parsers
 
             sig.Name        = records[1];
             sig.StartBit    = ushort.Parse(records[3 + muxOffset], CultureInfo.InvariantCulture);
-            sig.Length      = byte.Parse(records[4 + muxOffset], CultureInfo.InvariantCulture);
+            sig.Length      = ushort.Parse(records[4 + muxOffset], CultureInfo.InvariantCulture);
             sig.ByteOrder   = byte.Parse(records[5 + muxOffset].Substring(0, 1), CultureInfo.InvariantCulture);   // 0 = MSB (Motorola), 1 = LSB (Intel)
             sig.IsSigned    = (byte)(records[5 + muxOffset][1] == '+' ? 0 : 1);
             var factorStr   = records[6 + muxOffset].Split(m_commaSeparator, StringSplitOptions.None)[0];
@@ -93,8 +93,8 @@ namespace DbcParserLib.Parsers
             {
                 Multiplexing = match.Groups[2].Value,
                 Name = match.Groups[1].Value,
-                StartBit = byte.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture),
-                Length = byte.Parse(match.Groups[4].Value, CultureInfo.InvariantCulture),
+                StartBit = ushort.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture),
+                Length = ushort.Parse(match.Groups[4].Value, CultureInfo.InvariantCulture),
                 ByteOrder = byte.Parse(match.Groups[5].Value, CultureInfo.InvariantCulture),   // 0 = MSB (Motorola), 1 = LSB (Intel)
                 IsSigned = (byte)(match.Groups[6].Value == SignedSymbol ? 1 : 0),
                 IsInteger = IsInteger(factorStr),
