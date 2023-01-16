@@ -103,6 +103,11 @@ if(message.IsMultiplexed())
 	// ...
 }
 ```
+# Useful references
+- [High level overview](https://docs.openvehicles.com/en/latest/components/vehicle_dbc/docs/dbc-primer.html)
+- [Very well done overview, many resources on that site](https://github.com/stefanhoelzl/CANpy/blob/master/docs/DBC_Specification.md)
+- [Good starting point for syntax](https://www.csselectronics.com/pages/can-dbc-file-database-intro)
+- [Syntax specification. Not full but quite complete](http://mcu.so/Microcontroller/Automotive/dbc-file-format-documentation_compress.pdf)
 
 # Contributions
 
