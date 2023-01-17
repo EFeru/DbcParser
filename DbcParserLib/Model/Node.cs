@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace DbcParserLib.Model
@@ -27,7 +28,9 @@ namespace DbcParserLib.Model
         public ushort StartBit;
         public ushort Length;
         public byte ByteOrder = 1;
+        [Obsolete("Please use ValueType instead. IsSigned will be removed in future releases")]
         public byte IsSigned;
+        public DbcValueType ValueType;
         public double InitialValue;
         public double Factor = 1;
         public bool IsInteger = false;
@@ -39,5 +42,10 @@ namespace DbcParserLib.Model
         public string ValueTable;
         public string Comment;
         public string Multiplexing;
+    }
+
+    public enum DbcValueType
+    {
+        Signed, Unsigned, IEEEFloat, IEEEDouble
     }
 }

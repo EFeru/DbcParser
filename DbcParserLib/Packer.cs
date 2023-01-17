@@ -28,13 +28,13 @@ namespace DbcParserLib
             iVal = (int64_T)Math.Round((value - signal.Offset) / signal.Factor);
     
             // Apply overflow protection
-            if (signal.IsSigned != 0)
+            if (signal.ValueType == DbcValueType.Signed)
                 iVal = CLAMP(iVal, -(int64_T)(bitMask >> 1) - 1, (int64_T)(bitMask >> 1));
             else
                 iVal = CLAMP(iVal, 0L, (int64_T)bitMask);
 
             // Manage sign bit (if signed)
-            if (signal.IsSigned != 0 && iVal < 0) {
+            if (signal.ValueType == DbcValueType.Signed && iVal < 0) {
               iVal += (int64_T)(1UL << signal.Length);
             }
 
@@ -83,7 +83,7 @@ namespace DbcParserLib
                 iVal = (int64_T)((MirrorMsg(RxMsg64) >> GetStartBitLE(signal)) & bitMask);
 
             // Manage sign bit (if signed)
-            if (signal.IsSigned != 0) {
+            if (signal.ValueType == DbcValueType.Signed) {
               iVal -= ((iVal >> (signal.Length - 1)) != 0) ? (1L << signal.Length) : 0L;
             }
 
