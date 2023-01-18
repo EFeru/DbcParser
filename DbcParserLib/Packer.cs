@@ -77,10 +77,22 @@ namespace DbcParserLib
             uint64_T bitMask = (1UL << signal.Length) - 1;
 
             // Unpack signal
-            if (signal.ByteOrder != 0)  // Little endian (Intel)
-                iVal = (int64_T)((RxMsg64 >> signal.StartBit) & bitMask);
-            else                        // Big endian (Motorola)
-                iVal = (int64_T)((MirrorMsg(RxMsg64) >> GetStartBitLE(signal)) & bitMask);
+            if (signal.ByteOrder != 0){  // Little endian (Intel)
+                if(bitMask != 0){
+                    iVal = (int64_T)((RxMsg64 >> signal.StartBit) & bitMask);
+                }
+                else{
+                    iVal = (int64_T)(RxMsg64 >> signal.StartBit);
+                }
+            }
+            else{                        // Big endian (Motorola)
+                if(bitMask != 0){
+                    iVal = (int64_T)((MirrorMsg(RxMsg64) >> GetStartBitLE(signal)) & bitMask);
+                }
+                else{
+                    iVal = (int64_T)(MirrorMsg(RxMsg64) >> GetStartBitLE(signal));
+                }
+            }
 
             // Manage sign bit (if signed)
             if (signal.IsSigned != 0) {
