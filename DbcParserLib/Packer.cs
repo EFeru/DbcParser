@@ -22,7 +22,7 @@ namespace DbcParserLib
         public static uint64_T TxSignalPack(double value, Signal signal)
         {
             int64_T iVal; 
-            uint64_T bitMask = (1UL << signal.Length) - 1;
+            uint64_T bitMask = (ulong.MaxValue >> (64 - signal.Length));
 
             // Apply scaling
             iVal = (int64_T)Math.Round((value - signal.Offset) / signal.Factor);
@@ -53,7 +53,7 @@ namespace DbcParserLib
         /// <returns>Returns a 64 bit unsigned data message</returns>
         public static uint64_T TxStatePack(uint64_T value, Signal signal)
         {
-            uint64_T bitMask = (1UL << signal.Length) - 1;
+            uint64_T bitMask = (ulong.MaxValue >> (64 - signal.Length));
     
             // Apply overflow protection
             value = CLAMP(value, 0UL, bitMask);
@@ -74,25 +74,13 @@ namespace DbcParserLib
         public static double RxSignalUnpack(uint64_T RxMsg64, Signal signal)
         {
             int64_T iVal; 
-            uint64_T bitMask = (1UL << signal.Length) - 1;
+            uint64_T bitMask = (ulong.MaxValue >> (64 - signal.Length));
 
             // Unpack signal
-            if (signal.ByteOrder != 0){  // Little endian (Intel)
-                if(bitMask != 0){
-                    iVal = (int64_T)((RxMsg64 >> signal.StartBit) & bitMask);
-                }
-                else{
-                    iVal = (int64_T)(RxMsg64 >> signal.StartBit);
-                }
-            }
-            else{                        // Big endian (Motorola)
-                if(bitMask != 0){
-                    iVal = (int64_T)((MirrorMsg(RxMsg64) >> GetStartBitLE(signal)) & bitMask);
-                }
-                else{
-                    iVal = (int64_T)(MirrorMsg(RxMsg64) >> GetStartBitLE(signal));
-                }
-            }
+            if (signal.ByteOrder != 0)  // Little endian (Intel)
+                iVal = (int64_T)((RxMsg64 >> signal.StartBit) & bitMask);
+            else                        // Big endian (Motorola)
+                iVal = (int64_T)((MirrorMsg(RxMsg64) >> GetStartBitLE(signal)) & bitMask);
 
             // Manage sign bit (if signed)
             if (signal.IsSigned != 0) {
@@ -112,7 +100,7 @@ namespace DbcParserLib
         public static uint64_T RxStateUnpack(uint64_T RxMsg64, Signal signal)
         {
             uint64_T iVal; 
-            uint64_T bitMask = (1UL << signal.Length) - 1;
+            uint64_T bitMask = (ulong.MaxValue >> (64 - signal.Length));
 
             // Unpack signal
             if (signal.ByteOrder != 0)  // Little endian (Intel)
