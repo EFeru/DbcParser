@@ -26,6 +26,11 @@ namespace DbcParserLib
         {
             return signal.Lsb();
         }
+        
+        internal static ulong BitMask(this Signal signal)
+        {
+            return (ulong.MaxValue >> (64 - signal.Length));
+        }
 
         public static IEnumerable<KeyValuePair<int, string>> ToPairs(this Signal signal)
         {
