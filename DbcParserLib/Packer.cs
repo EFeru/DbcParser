@@ -39,7 +39,7 @@ namespace DbcParserLib
             }
 
             // Pack signal
-            if (signal.ByteOrder != 0)  // Little endian (Intel)
+            if (signal.Intel())  // Little endian (Intel)
                 return (((uint64_T)iVal & bitMask) << signal.StartBit);
             else                        // Big endian (Motorola)
                 return MirrorMsg(((uint64_T)iVal & bitMask) << GetStartBitLE(signal));
@@ -59,7 +59,7 @@ namespace DbcParserLib
             value = CLAMP(value, 0UL, bitMask);
     
             // Pack signal
-            if (signal.ByteOrder != 0)  // Little endian (Intel)
+            if (signal.Intel())  // Little endian (Intel)
                 return ((value & bitMask) << signal.StartBit);
             else                        // Big endian (Motorola)
                 return MirrorMsg((value & bitMask) << GetStartBitLE(signal));
@@ -77,7 +77,7 @@ namespace DbcParserLib
             uint64_T bitMask = signal.BitMask();
 
             // Unpack signal
-            if (signal.ByteOrder != 0)  // Little endian (Intel)
+            if (signal.Intel())  // Little endian (Intel)
                 iVal = (int64_T)((RxMsg64 >> signal.StartBit) & bitMask);
             else                        // Big endian (Motorola)
                 iVal = (int64_T)((MirrorMsg(RxMsg64) >> GetStartBitLE(signal)) & bitMask);
@@ -103,7 +103,7 @@ namespace DbcParserLib
             uint64_T bitMask = signal.BitMask();
 
             // Unpack signal
-            if (signal.ByteOrder != 0)  // Little endian (Intel)
+            if (signal.Intel())  // Little endian (Intel)
                 iVal = (RxMsg64 >> signal.StartBit) & bitMask;
             else                        // Big endian (Motorola)
                 iVal = (MirrorMsg(RxMsg64) >> GetStartBitLE(signal)) & bitMask;
