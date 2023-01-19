@@ -22,7 +22,7 @@ namespace DbcParserLib
         public static uint64_T TxSignalPack(double value, Signal signal)
         {
             int64_T iVal; 
-            uint64_T bitMask = (ulong.MaxValue >> (64 - signal.Length));
+            uint64_T bitMask = signal.BitMask();
 
             // Apply scaling
             iVal = (int64_T)Math.Round((value - signal.Offset) / signal.Factor);
@@ -53,7 +53,7 @@ namespace DbcParserLib
         /// <returns>Returns a 64 bit unsigned data message</returns>
         public static uint64_T TxStatePack(uint64_T value, Signal signal)
         {
-            uint64_T bitMask = (ulong.MaxValue >> (64 - signal.Length));
+            uint64_T bitMask = signal.BitMask();
     
             // Apply overflow protection
             value = CLAMP(value, 0UL, bitMask);
@@ -74,7 +74,7 @@ namespace DbcParserLib
         public static double RxSignalUnpack(uint64_T RxMsg64, Signal signal)
         {
             int64_T iVal; 
-            uint64_T bitMask = (ulong.MaxValue >> (64 - signal.Length));
+            uint64_T bitMask = signal.BitMask();
 
             // Unpack signal
             if (signal.ByteOrder != 0)  // Little endian (Intel)
@@ -100,7 +100,7 @@ namespace DbcParserLib
         public static uint64_T RxStateUnpack(uint64_T RxMsg64, Signal signal)
         {
             uint64_T iVal; 
-            uint64_T bitMask = (ulong.MaxValue >> (64 - signal.Length));
+            uint64_T bitMask = signal.BitMask();
 
             // Unpack signal
             if (signal.ByteOrder != 0)  // Little endian (Intel)
