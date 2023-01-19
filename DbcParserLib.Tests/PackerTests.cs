@@ -13,7 +13,7 @@ namespace DbcParserLib.Tests
             {
                 Length = 14,
                 StartBit = 2,
-                IsSigned = 1,
+                ValueType = DbcValueType.Signed,
                 ByteOrder = 1, // 0 = Big Endian (Motorola), 1 = Little Endian (Intel)
                 Factor = 0.01,
                 Offset = 20
@@ -33,7 +33,7 @@ namespace DbcParserLib.Tests
             {
                 Length = 16,
                 StartBit = 24,
-                IsSigned = 1,
+                ValueType = DbcValueType.Signed,
                 ByteOrder = 1, // 0 = Big Endian (Motorola), 1 = Little Endian (Intel)
                 Factor = 0.125,
                 Offset = 0
@@ -48,7 +48,7 @@ namespace DbcParserLib.Tests
             val = Packer.RxSignalUnpack(9655716608953581040, sig);
             Assert.AreEqual(800, val);
         }
-        
+
         [Test]
         public void PackingTest64Bit()
         {
@@ -56,7 +56,7 @@ namespace DbcParserLib.Tests
             {
                 Length = 64,
                 StartBit = 0,
-                IsSigned = 1,
+                ValueType = DbcValueType.Signed,
                 ByteOrder = 1, // 0 = Big Endian (Motorola), 1 = Little Endian (Intel)
                 Factor = 1e-16,
                 Offset = 0
@@ -77,7 +77,7 @@ namespace DbcParserLib.Tests
             {
                 Length = 8,
                 StartBit = 56,
-                IsSigned = 0,
+                ValueType = DbcValueType.Unsigned,
                 ByteOrder = 1, // 0 = Big Endian (Motorola), 1 = Little Endian (Intel)
                 Factor = 1,
                 Offset = -125
@@ -101,7 +101,7 @@ namespace DbcParserLib.Tests
             {
                 Length = 1,
                 StartBit = 18,
-                IsSigned = 0,
+                ValueType = DbcValueType.Unsigned,
                 ByteOrder = 1, // 0 = Big Endian (Motorola), 1 = Little Endian (Intel)
                 Factor = 1,
                 Offset = 0
@@ -125,7 +125,7 @@ namespace DbcParserLib.Tests
             {
                 Length = 3,
                 StartBit = 6,
-                IsSigned = 0,
+                ValueType = DbcValueType.Unsigned,
                 ByteOrder = 1, // 0 = Big Endian (Motorola), 1 = Little Endian (Intel)
                 Factor = 1,
                 Offset = 0
