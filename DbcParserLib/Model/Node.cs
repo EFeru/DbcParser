@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace DbcParserLib.Model
@@ -22,12 +23,27 @@ namespace DbcParserLib.Model
 
     public class Signal
     {
+        private DbcValueType m_ValueType = DbcValueType.Signed;
+
         public uint ID;
         public string Name;
         public ushort StartBit;
         public ushort Length;
         public byte ByteOrder = 1;
-        public byte IsSigned;
+        [Obsolete("Please use ValueType instead. IsSigned will be removed in future releases")]
+        public byte IsSigned { get; private set; } = 1;
+        public DbcValueType ValueType
+        {
+            get
+            {
+                return m_ValueType;
+            }
+            set
+            {
+                m_ValueType = value;
+                IsSigned = (byte)(value == DbcValueType.Unsigned ? 0 : 1);
+            }
+        }
         public double InitialValue;
         public double Factor = 1;
         public bool IsInteger = false;
@@ -39,5 +55,10 @@ namespace DbcParserLib.Model
         public string ValueTable;
         public string Comment;
         public string Multiplexing;
+    }
+
+    public enum DbcValueType
+    {
+        Signed, Unsigned, IEEEFloat, IEEEDouble
     }
 }

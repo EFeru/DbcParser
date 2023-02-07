@@ -4,6 +4,7 @@ using Moq;
 
 namespace DbcParserLib.Tests
 {
+    [TestFixture]
     public class CommentLineParserTests
     {
         private MockRepository m_repository;

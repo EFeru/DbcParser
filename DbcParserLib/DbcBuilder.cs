@@ -52,6 +52,14 @@ namespace DbcParserLib
             }
         }
 
+        public void AddSignalValueType(uint messageId, string signalName, DbcValueType valueType)
+        {
+            if (TryGetValueMessageSignal(messageId, signalName, out var signal))
+            {
+                signal.ValueType = valueType;
+            }
+        }
+
         public void AddNodeComment(string nodeName, string comment)
         {
             var node = m_nodes.FirstOrDefault(n => n.Name.Equals(nodeName));
