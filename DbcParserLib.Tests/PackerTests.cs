@@ -19,11 +19,101 @@ namespace DbcParserLib.Tests
                 Offset = 20
             };
 
-            ulong TxMsg = Packer.TxSignalPack(-34.3, sig);
-            Assert.AreEqual(43816, TxMsg);
+            var txMsg = Packer.TxSignalPack(-34.3, sig);
+            Assert.AreEqual(43816, txMsg);
 
-            double val = Packer.RxSignalUnpack(TxMsg, sig);
+            var val = Packer.RxSignalUnpack(txMsg, sig);
             Assert.AreEqual(-34.3, val, 1e-2);
+        }
+
+        [TestCase((ushort)0, 3255382835ul)]
+        [TestCase((ushort)2, 13021531340ul)]
+        [TestCase((ushort)5, 104172250720ul)]
+        [TestCase((ushort)12, 13334048092160ul)]
+        public void FloatLittleEndianValuePackingTest(ushort start, ulong packet)
+        {
+            var sig = new Signal
+            {
+                Length = 32,
+                StartBit = start,
+                ValueType = DbcValueType.IEEEFloat,
+                ByteOrder = 1, // 0 = Big Endian (Motorola), 1 = Little Endian (Intel)
+                Factor = 1,
+                Offset = 0
+            };
+
+            var expected = -34.3f;
+            var txMsg = Packer.TxSignalPack(expected, sig);
+            Assert.AreEqual(packet, txMsg);
+
+            var val = Packer.RxSignalUnpack(txMsg, sig);
+            Assert.AreEqual(expected, val, 1e-2);
+        }
+
+        [TestCase((ushort)0, 439799153665ul)]
+        [TestCase((ushort)2, 655406731270ul)]
+        [TestCase((ushort)5, 828061286960ul)]
+        [TestCase((ushort)12, 105991844730880ul)]
+        public void FloatBigEndianValuePackingTest(ushort start, ulong packet)
+        {
+            var sig = new Signal
+            {
+                Length = 32,
+                StartBit = start,
+                ValueType = DbcValueType.IEEEFloat,
+                ByteOrder = 0, // 0 = Big Endian (Motorola), 1 = Little Endian (Intel)
+                Factor = 1,
+                Offset = 0
+            };
+
+            var value = -34.3f;
+            var txMsg = Packer.TxSignalPack(value, sig);
+            Assert.AreEqual(packet, txMsg);
+
+            var val = Packer.RxSignalUnpack(txMsg, sig);
+            Assert.AreEqual(value, val, 1e-2);
+        }
+
+        [Test]
+        public void DoubleLittleEndianValuePackingTest()
+        {
+            var sig = new Signal
+            {
+                Length = 64,
+                StartBit = 0,
+                ValueType = DbcValueType.IEEEDouble,
+                ByteOrder = 1, // 0 = Big Endian (Motorola), 1 = Little Endian (Intel)
+                Factor = 1,
+                Offset = 0
+            };
+
+            var expected = -34.3567;
+            var txMsg = Packer.TxSignalPack(expected, sig);
+            Assert.AreEqual(13853404129830452697, txMsg);
+
+            var val = Packer.RxSignalUnpack(txMsg, sig);
+            Assert.AreEqual(expected, val, 1e-2);
+        }
+
+        [Test]
+        public void DoubleBigEndianValuePackingTest()
+        {
+            var sig = new Signal
+            {
+                Length = 64,
+                StartBit = 7,
+                ValueType = DbcValueType.IEEEDouble,
+                ByteOrder = 0, // 0 = Big Endian (Motorola), 1 = Little Endian (Intel)
+                Factor = 1,
+                Offset = 0
+            };
+
+            var expected = -34.35564;
+            var txMsg = Packer.TxSignalPack(expected, sig);
+            Assert.AreEqual(2419432028705210816, txMsg);
+
+            var val = Packer.RxSignalUnpack(txMsg, sig);
+            Assert.AreEqual(expected, val, 1e-2);
         }
 
         [Test]
@@ -39,10 +129,10 @@ namespace DbcParserLib.Tests
                 Offset = 0
             };
 
-            ulong TxMsg = Packer.TxSignalPack(800, sig);
-            Assert.AreEqual(107374182400, TxMsg);
+            var txMsg = Packer.TxSignalPack(800, sig);
+            Assert.AreEqual(107374182400, txMsg);
 
-            double val = Packer.RxSignalUnpack(TxMsg, sig);
+            var val = Packer.RxSignalUnpack(txMsg, sig);
             Assert.AreEqual(800, val);
 
             val = Packer.RxSignalUnpack(9655716608953581040, sig);
@@ -62,10 +152,10 @@ namespace DbcParserLib.Tests
                 Offset = 0
             };
 
-            ulong TxMsg = Packer.TxSignalPack(396.31676720860366, sig);
-            Assert.AreEqual(3963167672086036480, TxMsg);
+            var txMsg = Packer.TxSignalPack(396.31676720860366, sig);
+            Assert.AreEqual(3963167672086036480, txMsg);
 
-            double val = Packer.RxSignalUnpack(TxMsg, sig);
+            var val = Packer.RxSignalUnpack(txMsg, sig);
             Assert.AreEqual(396.31676720860366, val);
         }
 
@@ -83,10 +173,10 @@ namespace DbcParserLib.Tests
                 Offset = -125
             };
 
-            ulong TxMsg = Packer.TxSignalPack(8, sig);
-            Assert.AreEqual(9583660007044415488, TxMsg);
+            var txMsg = Packer.TxSignalPack(8, sig);
+            Assert.AreEqual(9583660007044415488, txMsg);
 
-            double val = Packer.RxSignalUnpack(TxMsg, sig);
+            var val = Packer.RxSignalUnpack(txMsg, sig);
             Assert.AreEqual(8, val);
 
             val = Packer.RxSignalUnpack(9655716608953581040, sig);
@@ -107,10 +197,10 @@ namespace DbcParserLib.Tests
                 Offset = 0
             };
 
-            ulong TxMsg = Packer.TxSignalPack(1, sig);
-            Assert.AreEqual(262144, TxMsg);
+            var txMsg = Packer.TxSignalPack(1, sig);
+            Assert.AreEqual(262144, txMsg);
 
-            double val = Packer.RxSignalUnpack(TxMsg, sig);
+            var val = Packer.RxSignalUnpack(txMsg, sig);
             Assert.AreEqual(1, val);
 
             val = Packer.RxSignalUnpack(140737488617472, sig);
@@ -131,10 +221,10 @@ namespace DbcParserLib.Tests
                 Offset = 0
             };
 
-            ulong TxMsg = Packer.TxSignalPack(6, sig);
-            Assert.AreEqual(384, TxMsg);
+            var txMsg = Packer.TxSignalPack(6, sig);
+            Assert.AreEqual(384, txMsg);
 
-            double val = Packer.RxSignalUnpack(TxMsg, sig);
+            var val = Packer.RxSignalUnpack(txMsg, sig);
             Assert.AreEqual(6, val);
 
             val = Packer.RxSignalUnpack(498806260540323729, sig);
