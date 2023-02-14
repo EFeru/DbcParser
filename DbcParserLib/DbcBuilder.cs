@@ -5,11 +5,16 @@ using DbcParserLib.Model;
 
 namespace DbcParserLib
 {
+    internal class ValuesTable
+    {
+        public IReadOnlyDictionary<int, string> ValueTableMap { get; set; }
+        public string ValueTable { get; set; }
+    }
+
     public class DbcBuilder : IDbcBuilder
     {
         private readonly ISet<Node> m_nodes = new HashSet<Node>(new NodeEqualityComparer());
-        private readonly IDictionary<string, IReadOnlyDictionary<int, string>> m_namedTablesDict = new Dictionary<string, IReadOnlyDictionary<int, string>>();
-        private readonly IDictionary<string, string> m_namedTables = new Dictionary<string, string>();
+        private readonly IDictionary<string, ValuesTable> m_namedTablesMap = new Dictionary<string, ValuesTable>();
         private readonly IDictionary<uint, Message> m_messages = new Dictionary<uint, Message>();
         private readonly IDictionary<uint, IDictionary<string, Signal>> m_signals = new Dictionary<uint, IDictionary<string, Signal>>();
 
@@ -89,8 +94,11 @@ namespace DbcParserLib
 
         public void AddNamedValueTable(string name, IReadOnlyDictionary<int, string> dictValues, string stringValues)
         {
-            m_namedTables[name] = stringValues;
-            m_namedTablesDict[name] = dictValues;
+            m_namedTablesMap[name] = new ValuesTable()
+            {
+                ValueTableMap = dictValues,
+                ValueTable = stringValues
+            };
         }
 
         public void LinkTableValuesToSignal(uint messageId, string signalName, IReadOnlyDictionary<int, string> dictValues, string stringValues)
@@ -127,10 +135,9 @@ namespace DbcParserLib
 
         public void LinkNamedTableToSignal(uint messageId, string signalName, string tableName)
         {
-            if (m_namedTablesDict.TryGetValue(tableName, out var dictValues) &&
-                m_namedTables.TryGetValue(tableName, out var stringValues))
+            if (m_namedTablesMap.TryGetValue(tableName, out var valuesTable))
             {
-                LinkTableValuesToSignal(messageId, signalName, dictValues, stringValues);
+                LinkTableValuesToSignal(messageId, signalName, valuesTable.ValueTableMap, valuesTable.ValueTable);
             }
         }
 

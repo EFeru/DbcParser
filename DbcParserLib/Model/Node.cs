@@ -52,15 +52,15 @@ namespace DbcParserLib.Model
         public double Maximum;
         public string Unit;
         public string[] Receiver;
-        [Obsolete("Please use ValueTableDict instead. ValueTable will be removed in future releases")]
+        [Obsolete("Please use ValueTableMap instead. ValueTable will be removed in future releases")]
         public string ValueTable { get; private set; }
-        public IReadOnlyDictionary<int, string> ValueTableDict { get; private set; }
+        public IReadOnlyDictionary<int, string> ValueTableMap { get; private set; }
         public string Comment;
         public string Multiplexing;
 
-        public void SetValueTable(IReadOnlyDictionary<int, string> dictValues, string stringValues)
+        internal void SetValueTable(IReadOnlyDictionary<int, string> dictValues, string stringValues)
         {
-            ValueTableDict = dictValues;
+            ValueTableMap = dictValues;
             ValueTable = stringValues;
         }
     }

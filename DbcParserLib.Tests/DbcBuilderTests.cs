@@ -257,7 +257,7 @@ namespace DbcParserLib.Tests
             Assert.AreEqual(1, dbc.Messages.Count());
             Assert.AreEqual(message, dbc.Messages.First());
             Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
-            Assert.AreEqual(testValuesDict, dbc.Messages.First().Signals.First().ValueTableDict);
+            Assert.AreEqual(testValuesDict, dbc.Messages.First().Signals.First().ValueTableMap);
             Assert.AreEqual("1 fake", dbc.Messages.First().Signals.First().ValueTable);
         }
 
@@ -279,7 +279,7 @@ namespace DbcParserLib.Tests
             Assert.AreEqual(1, dbc.Messages.Count());
             Assert.AreEqual(message, dbc.Messages.First());
             Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
-            Assert.AreEqual(testValuesDict, dbc.Messages.First().Signals.First().ValueTableDict);
+            Assert.AreEqual(testValuesDict, dbc.Messages.First().Signals.First().ValueTableMap);
             Assert.AreEqual("1 fake", dbc.Messages.First().Signals.First().ValueTable);
         }
 
@@ -300,7 +300,7 @@ namespace DbcParserLib.Tests
             Assert.AreEqual(1, dbc.Messages.Count());
             Assert.AreEqual(message, dbc.Messages.First());
             Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
-            Assert.IsNull(dbc.Messages.First().Signals.First().ValueTableDict);
+            Assert.IsNull(dbc.Messages.First().Signals.First().ValueTableMap);
             Assert.IsNull(dbc.Messages.First().Signals.First().ValueTable);
         }
 
@@ -321,7 +321,7 @@ namespace DbcParserLib.Tests
             Assert.AreEqual(1, dbc.Messages.Count());
             Assert.AreEqual(message, dbc.Messages.First());
             Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
-            Assert.IsNull(dbc.Messages.First().Signals.First().ValueTableDict);
+            Assert.IsNull(dbc.Messages.First().Signals.First().ValueTableMap);
             Assert.IsNull(dbc.Messages.First().Signals.First().ValueTable);
         }
 
@@ -344,7 +344,7 @@ namespace DbcParserLib.Tests
             Assert.AreEqual(1, dbc.Messages.Count());
             Assert.AreEqual(message, dbc.Messages.First());
             Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
-            Assert.AreEqual(testValuesDict, dbc.Messages.First().Signals.First().ValueTableDict);
+            Assert.AreEqual(testValuesDict, dbc.Messages.First().Signals.First().ValueTableMap);
             Assert.AreEqual("1 fake", dbc.Messages.First().Signals.First().ValueTable);
         }
 
@@ -367,7 +367,7 @@ namespace DbcParserLib.Tests
             Assert.AreEqual(1, dbc.Messages.Count());
             Assert.AreEqual(message, dbc.Messages.First());
             Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
-            Assert.IsNull(dbc.Messages.First().Signals.First().ValueTableDict);
+            Assert.IsNull(dbc.Messages.First().Signals.First().ValueTableMap);
             Assert.IsNull(dbc.Messages.First().Signals.First().ValueTable);
         }
 
@@ -390,7 +390,7 @@ namespace DbcParserLib.Tests
             Assert.AreEqual(1, dbc.Messages.Count());
             Assert.AreEqual(message, dbc.Messages.First());
             Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
-            Assert.IsNull(dbc.Messages.First().Signals.First().ValueTableDict);
+            Assert.IsNull(dbc.Messages.First().Signals.First().ValueTableMap);
             Assert.IsNull(dbc.Messages.First().Signals.First().ValueTable);
         }
 
@@ -464,7 +464,7 @@ namespace DbcParserLib.Tests
             Assert.AreEqual(1, dbc.Messages.Count());
             Assert.AreEqual(message, dbc.Messages.First());
             Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
-            Assert.AreEqual(testValuesDict2, dbc.Messages.First().Signals.First().ValueTableDict);
+            Assert.AreEqual(testValuesDict2, dbc.Messages.First().Signals.First().ValueTableMap);
             Assert.AreEqual("2 fake2", dbc.Messages.First().Signals.First().ValueTable);
         }
     }
