@@ -110,7 +110,7 @@ namespace DbcParserLib.Tests
         }
 
         [Test]
-        public void ValueTableDefinitionDictIsParsedAndCallsBuilder()
+        public void ValueTableDefinitionIsParsedAndCallsBuilder()
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             dbcBuilderMock.Setup(builder => builder.AddNamedValueTable("DI_aebLockState",
@@ -144,7 +144,7 @@ namespace DbcParserLib.Tests
         }
 
         [Test]
-        public void ValueTableDictWithMapDefinitionIsParsedAndLinkedToChannel()
+        public void ValueTableWithMapDefinitionIsParsedAndLinkedToChannel()
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             dbcBuilderMock.Setup(builder => builder.LinkTableValuesToSignal(470, "channelName",
