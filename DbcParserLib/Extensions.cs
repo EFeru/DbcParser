@@ -2,6 +2,7 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using DbcParserLib.Model;
+using System;
 
 namespace DbcParserLib
 {
@@ -32,21 +33,11 @@ namespace DbcParserLib
             return (ulong.MaxValue >> (64 - signal.Length));
         }
 
+        [Obsolete("Please use ValueTableMap instead. ToPairs() and ValueTable will be removed in future releases")]
         public static IEnumerable<KeyValuePair<int, string>> ToPairs(this Signal signal)
         {
-            if (string.IsNullOrWhiteSpace(signal.ValueTable))
-                yield break;
-            
-            using(var reader = new StringReader(signal.ValueTable))
-            {
-                while(reader.Peek() > -1)
-                {
-                    var tokens = reader.ReadLine().Split(' ');
-                    yield return new KeyValuePair<int, string>(int.Parse(tokens[0]), tokens[1]);
-                }
-            }
+            return signal.ValueTableMap;
         }
-
 
         private const string MultiplexorLabel = "M";
         private const string MultiplexedLabel = "m";

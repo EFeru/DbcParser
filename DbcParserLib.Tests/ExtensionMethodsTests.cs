@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System.Linq;
 using DbcParserLib.Model;
+using System.Collections.Generic;
 
 namespace DbcParserLib.Tests
 {
@@ -32,31 +33,6 @@ namespace DbcParserLib.Tests
             Assert.IsFalse(sig.Msb());
             Assert.IsTrue(sig.Intel());
             Assert.IsTrue(sig.Lsb());
-        }
-
-        [Test]
-        public void EmptyValueTableTest()
-        {
-            var sig = new Signal();
-            Assert.IsEmpty(sig.ToPairs());
-        }
-
-        [Test]
-        public void FilledValueTableTest()
-        {
-            var sig = new Signal()
-            {
-                ValueTable = @"7 ""SOPT_TEST_SNA"" 
-4 ""SOPT_TEST_NOT_RUN"" 
-3 ""SOPT_TEST_PASSED"" 
-2 ""SOPT_TEST_FAILED"" 
-1 ""SOPT_TEST_IN_PROGRESS"" 
-0 ""SOPT_PRE_TEST"""
-            };
-
-            var pairs = sig.ToPairs();
-            Assert.IsNotEmpty(pairs);
-            Assert.AreEqual(6, pairs.Count());
         }
 
         [Test]

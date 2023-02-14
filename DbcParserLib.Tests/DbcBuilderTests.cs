@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using DbcParserLib.Model;
 using DbcParserLib.Parsers;
@@ -110,7 +111,7 @@ namespace DbcParserLib.Tests
         public void CommentIsAddedToMessage()
         {
             var builder = new DbcBuilder();
-            var message = new Message { ID = 234};
+            var message = new Message { ID = 234 };
             builder.AddMessage(message);
             builder.AddMessageComment(234, "comment");
             var dbc = builder.Build();
@@ -125,7 +126,7 @@ namespace DbcParserLib.Tests
         public void CommentIsNotAddedToMissingMessage()
         {
             var builder = new DbcBuilder();
-            var message = new Message { ID = 234};
+            var message = new Message { ID = 234 };
             builder.AddMessage(message);
             builder.AddMessageComment(235, "comment");
             var dbc = builder.Build();
@@ -247,16 +248,19 @@ namespace DbcParserLib.Tests
             builder.AddMessage(message);
             var signal = new Signal { Name = "name1" };
             builder.AddSignal(signal);
+            var testValuesDict = new Dictionary<int, string>() { { 1, "fake" } };
 
-            builder.LinkTableValuesToSignal(234, "name1", "fake values");
+            builder.LinkTableValuesToSignal(234, "name1", testValuesDict, "1 fake");
             var dbc = builder.Build();
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
             Assert.AreEqual(message, dbc.Messages.First());
             Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
-            Assert.AreEqual("fake values", dbc.Messages.First().Signals.First().ValueTable);
+            Assert.AreEqual(testValuesDict, dbc.Messages.First().Signals.First().ValueTableMap);
+            Assert.AreEqual("1 fake", dbc.Messages.First().Signals.First().ValueTable);
         }
+
         [Test]
         public void TableValuesWithExtendedMessageIdAreAddedToSignal()
         {
@@ -266,15 +270,17 @@ namespace DbcParserLib.Tests
             builder.AddMessage(message);
             var signal = new Signal { Name = "name1" };
             builder.AddSignal(signal);
+            var testValuesDict = new Dictionary<int, string>() { { 1, "fake" } };
 
-            builder.LinkTableValuesToSignal(2566896411, "name1", "fake values");
+            builder.LinkTableValuesToSignal(2566896411, "name1", testValuesDict, "1 fake");
             var dbc = builder.Build();
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
             Assert.AreEqual(message, dbc.Messages.First());
             Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
-            Assert.AreEqual("fake values", dbc.Messages.First().Signals.First().ValueTable);
+            Assert.AreEqual(testValuesDict, dbc.Messages.First().Signals.First().ValueTableMap);
+            Assert.AreEqual("1 fake", dbc.Messages.First().Signals.First().ValueTable);
         }
 
         [Test]
@@ -285,14 +291,16 @@ namespace DbcParserLib.Tests
             builder.AddMessage(message);
             var signal = new Signal { Name = "name1" };
             builder.AddSignal(signal);
+            var testValuesDict = new Dictionary<int, string>() { { 1, "fake" } };
 
-            builder.LinkTableValuesToSignal(235, "name1", "fake values");
+            builder.LinkTableValuesToSignal(235, "name1", testValuesDict, "1 fake");
             var dbc = builder.Build();
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
             Assert.AreEqual(message, dbc.Messages.First());
             Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.IsNull(dbc.Messages.First().Signals.First().ValueTableMap);
             Assert.IsNull(dbc.Messages.First().Signals.First().ValueTable);
         }
 
@@ -304,14 +312,16 @@ namespace DbcParserLib.Tests
             builder.AddMessage(message);
             var signal = new Signal { Name = "name1" };
             builder.AddSignal(signal);
+            var testValuesDict = new Dictionary<int, string>() { { 1, "fake" } };
 
-            builder.LinkTableValuesToSignal(234, "name2", "fake values");
+            builder.LinkTableValuesToSignal(234, "name2", testValuesDict, "1 fake");
             var dbc = builder.Build();
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
             Assert.AreEqual(message, dbc.Messages.First());
             Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.IsNull(dbc.Messages.First().Signals.First().ValueTableMap);
             Assert.IsNull(dbc.Messages.First().Signals.First().ValueTable);
         }
 
@@ -323,8 +333,9 @@ namespace DbcParserLib.Tests
             builder.AddMessage(message);
             var signal = new Signal { Name = "name1" };
             builder.AddSignal(signal);
+            var testValuesDict = new Dictionary<int, string>() { { 1, "fake" } };
 
-            builder.AddNamedValueTable("aTableName", "fake values");
+            builder.AddNamedValueTable("aTableName", testValuesDict, "1 fake");
 
             builder.LinkNamedTableToSignal(234, "name1", "aTableName");
             var dbc = builder.Build();
@@ -333,7 +344,8 @@ namespace DbcParserLib.Tests
             Assert.AreEqual(1, dbc.Messages.Count());
             Assert.AreEqual(message, dbc.Messages.First());
             Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
-            Assert.AreEqual("fake values", dbc.Messages.First().Signals.First().ValueTable);
+            Assert.AreEqual(testValuesDict, dbc.Messages.First().Signals.First().ValueTableMap);
+            Assert.AreEqual("1 fake", dbc.Messages.First().Signals.First().ValueTable);
         }
 
         [Test]
@@ -344,8 +356,9 @@ namespace DbcParserLib.Tests
             builder.AddMessage(message);
             var signal = new Signal { Name = "name1" };
             builder.AddSignal(signal);
+            var testValuesDict = new Dictionary<int, string>() { { 1, "fake" } };
 
-            builder.AddNamedValueTable("aTableName", "fake values");
+            builder.AddNamedValueTable("aTableName", testValuesDict, "1 fake");
 
             builder.LinkNamedTableToSignal(235, "name1", "aTableName");
             var dbc = builder.Build();
@@ -354,6 +367,7 @@ namespace DbcParserLib.Tests
             Assert.AreEqual(1, dbc.Messages.Count());
             Assert.AreEqual(message, dbc.Messages.First());
             Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.IsNull(dbc.Messages.First().Signals.First().ValueTableMap);
             Assert.IsNull(dbc.Messages.First().Signals.First().ValueTable);
         }
 
@@ -365,8 +379,9 @@ namespace DbcParserLib.Tests
             builder.AddMessage(message);
             var signal = new Signal { Name = "name1" };
             builder.AddSignal(signal);
+            var testValuesDict = new Dictionary<int, string>() { { 1, "fake" } };
 
-            builder.AddNamedValueTable("aTableName", "fake values");
+            builder.AddNamedValueTable("aTableName", testValuesDict, "1 fake");
 
             builder.LinkNamedTableToSignal(234, "name2", "aTableName");
             var dbc = builder.Build();
@@ -375,6 +390,7 @@ namespace DbcParserLib.Tests
             Assert.AreEqual(1, dbc.Messages.Count());
             Assert.AreEqual(message, dbc.Messages.First());
             Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.IsNull(dbc.Messages.First().Signals.First().ValueTableMap);
             Assert.IsNull(dbc.Messages.First().Signals.First().ValueTable);
         }
 
@@ -400,10 +416,12 @@ namespace DbcParserLib.Tests
         [Test]
         public void NamedTableValueThatAreNotUsedDoNotHarmOnBuild()
         {
+            var testValuesDict = new Dictionary<int, string>() { { 1, "fake" } };
             var builder = new DbcBuilder();
-            builder.AddNamedValueTable("aTableName", "fake values");
-            builder.AddNamedValueTable("aTableName2", "fake values");
-            builder.AddNamedValueTable("aTableName3", "fake values");
+
+            builder.AddNamedValueTable("aTableName", testValuesDict, "1 fake");
+            builder.AddNamedValueTable("aTableName2", testValuesDict, "1 fake");
+            builder.AddNamedValueTable("aTableName3", testValuesDict, "1 fake");
             var dbc = builder.Build();
 
             Assert.IsEmpty(dbc.Nodes);
@@ -413,10 +431,12 @@ namespace DbcParserLib.Tests
         [Test]
         public void NamedTablesWithSameNameAreManaged()
         {
+            var testValuesDict = new Dictionary<int, string>() { { 1, "fake" } };
             var builder = new DbcBuilder();
-            builder.AddNamedValueTable("aTableName", "fake values");
-            builder.AddNamedValueTable("aTableName", "fake values");
-            builder.AddNamedValueTable("aTableName", "fake values");
+
+            builder.AddNamedValueTable("aTableName", testValuesDict, "1 fake");
+            builder.AddNamedValueTable("aTableName", testValuesDict, "1 fake");
+            builder.AddNamedValueTable("aTableName", testValuesDict, "1 fake");
             var dbc = builder.Build();
 
             Assert.IsEmpty(dbc.Nodes);
@@ -431,9 +451,11 @@ namespace DbcParserLib.Tests
             builder.AddMessage(message);
             var signal = new Signal { Name = "name1" };
             builder.AddSignal(signal);
+            var testValuesDict = new Dictionary<int, string>() { { 1, "fake1" } };
+            var testValuesDict2 = new Dictionary<int, string>() { { 2, "fake2" } };
 
-            builder.AddNamedValueTable("aTableName", "fake values");
-            builder.AddNamedValueTable("aTableName", "fake values 2");
+            builder.AddNamedValueTable("aTableName", testValuesDict, "1 fake1");
+            builder.AddNamedValueTable("aTableName", testValuesDict2, "2 fake2");
 
             builder.LinkNamedTableToSignal(234, "name1", "aTableName");
             var dbc = builder.Build();
@@ -442,7 +464,8 @@ namespace DbcParserLib.Tests
             Assert.AreEqual(1, dbc.Messages.Count());
             Assert.AreEqual(message, dbc.Messages.First());
             Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
-            Assert.AreEqual("fake values 2", dbc.Messages.First().Signals.First().ValueTable);
+            Assert.AreEqual(testValuesDict2, dbc.Messages.First().Signals.First().ValueTableMap);
+            Assert.AreEqual("2 fake2", dbc.Messages.First().Signals.First().ValueTable);
         }
     }
 }

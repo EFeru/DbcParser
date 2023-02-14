@@ -52,9 +52,17 @@ namespace DbcParserLib.Model
         public double Maximum;
         public string Unit;
         public string[] Receiver;
-        public string ValueTable;
+        [Obsolete("Please use ValueTableMap instead. ValueTable will be removed in future releases")]
+        public string ValueTable { get; private set; }
+        public IReadOnlyDictionary<int, string> ValueTableMap { get; private set; }
         public string Comment;
         public string Multiplexing;
+
+        internal void SetValueTable(IReadOnlyDictionary<int, string> dictValues, string stringValues)
+        {
+            ValueTableMap = dictValues;
+            ValueTable = stringValues;
+        }
     }
 
     public enum DbcValueType

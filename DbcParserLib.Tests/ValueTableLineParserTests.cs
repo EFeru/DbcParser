@@ -65,7 +65,7 @@ namespace DbcParserLib.Tests
         }
 
         [Test]
-        public void MalformedLineWithOnlyNameIsAccetpedButIgnored()
+        public void MalformedLineWithOnlyNameIsAcceptedButIgnored()
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             var commentLineParser = CreateParser();
@@ -92,7 +92,7 @@ namespace DbcParserLib.Tests
         }
 
         [Test]
-        public void MalformedLineWithOnlyMessageIdIsAccetpedButIgnored()
+        public void MalformedLineWithOnlyMessageIdIsAcceptedButIgnored()
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             var commentLineParser = CreateParser();
@@ -101,7 +101,7 @@ namespace DbcParserLib.Tests
         }
 
         [Test]
-        public void MalformedLineWithInvalidMessageIdIsAccetpedButIgnored()
+        public void MalformedLineWithInvalidMessageIdIsAcceptedButIgnored()
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             var commentLineParser = CreateParser();
@@ -113,11 +113,12 @@ namespace DbcParserLib.Tests
         public void ValueTableDefinitionIsParsedAndCallsBuilder()
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
-            dbcBuilderMock.Setup(builder => builder.AddNamedValueTable("DI_aebLockState", Helpers.ConvertToMultiLine(@"3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 ""AEB_LOCK_STATE_UNLOCKED"" 0 ""AEB_LOCK_STATE_LOCKED""".SplitBySpace(), 0)));
+            dbcBuilderMock.Setup(builder => builder.AddNamedValueTable("DI_aebLockState",
+                new Dictionary<int, string>() { { 3, @"""AEB_LOCK_STATE_SNA""" }, { 2, @"""AEB_LOCK_STATE_UNUSED""" }, { 1, @"""AEB_LOCK_STATE_UNLOCKED""" }, { 0, @"""AEB_LOCK_STATE_LOCKED""" } },
+                Helpers.ConvertToMultiLine(@"3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 ""AEB_LOCK_STATE_UNLOCKED"" 0 ""AEB_LOCK_STATE_LOCKED""".SplitBySpace(), 0)));
             var commentLineParser = CreateParser();
 
             Assert.IsTrue(commentLineParser.TryParse(@"VAL_TABLE_ DI_aebLockState 3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 ""AEB_LOCK_STATE_UNLOCKED"" 0 ""AEB_LOCK_STATE_LOCKED"" ;", dbcBuilderMock.Object));
-            
         }
 
         [Test]
@@ -146,7 +147,9 @@ namespace DbcParserLib.Tests
         public void ValueTableWithMapDefinitionIsParsedAndLinkedToChannel()
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
-            dbcBuilderMock.Setup(builder => builder.LinkTableValuesToSignal(470, "channelName", Helpers.ConvertToMultiLine(@"3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 ""AEB_LOCK_STATE_UNLOCKED"" 0 ""AEB_LOCK_STATE_LOCKED""".SplitBySpace(), 0)));
+            dbcBuilderMock.Setup(builder => builder.LinkTableValuesToSignal(470, "channelName",
+                new Dictionary<int, string>() { { 3, @"""AEB_LOCK_STATE_SNA""" }, { 2, @"""AEB_LOCK_STATE_UNUSED""" }, { 1, @"""AEB_LOCK_STATE_UNLOCKED""" }, { 0, @"""AEB_LOCK_STATE_LOCKED""" } },
+                Helpers.ConvertToMultiLine(@"3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 ""AEB_LOCK_STATE_UNLOCKED"" 0 ""AEB_LOCK_STATE_LOCKED""".SplitBySpace(), 0)));
             var commentLineParser = CreateParser();
 
             Assert.IsTrue(commentLineParser.TryParse(@"VAL_ 470 channelName 3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 ""AEB_LOCK_STATE_UNLOCKED"" 0 ""AEB_LOCK_STATE_LOCKED"" ;", dbcBuilderMock.Object));
