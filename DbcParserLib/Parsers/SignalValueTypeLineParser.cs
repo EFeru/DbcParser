@@ -7,7 +7,7 @@ namespace DbcParserLib.Parsers
     {
         private const string SignalValueTypeStarter = "SIG_VALTYPE_ "; 
 
-        public bool TryParse(string line, IDbcBuilder builder)
+        public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
             var cleanLine = line.Trim(' ', ';');
 

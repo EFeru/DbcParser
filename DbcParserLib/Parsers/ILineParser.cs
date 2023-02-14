@@ -2,6 +2,6 @@ namespace DbcParserLib.Parsers
 {
     public interface ILineParser
     {
-        bool TryParse(string line, IDbcBuilder builder);
+        bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider);
     }
 }

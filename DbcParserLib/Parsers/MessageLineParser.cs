@@ -9,7 +9,7 @@ namespace DbcParserLib.Parsers
         private const string MessageLineStarter = "BO_ ";
         private const string MessageRegex = @"BO_ (\d+)\s+(\w+)\s*:\s*(\d+)\s+(\w+)";
 
-        public bool TryParse(string line, IDbcBuilder builder)
+        public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
             if(line.Trim().StartsWith(MessageLineStarter) == false)
                 return false;

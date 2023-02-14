@@ -7,7 +7,7 @@ namespace DbcParserLib.Parsers
     {
         private const string NodeLineStarter = "BU_:";
 
-        public bool TryParse(string line, IDbcBuilder builder)
+        public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
             if(line.TrimStart().StartsWith(NodeLineStarter) == false)
                 return false;

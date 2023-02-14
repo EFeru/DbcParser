@@ -2,6 +2,7 @@ using DbcParserLib.Model;
 using DbcParserLib.Parsers;
 using Moq;
 using NUnit.Framework;
+using System.IO;
 
 namespace DbcParserLib.Tests
 {
@@ -32,8 +33,9 @@ namespace DbcParserLib.Tests
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             var commentLineParser = CreateParser();
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
 
-            Assert.IsFalse(commentLineParser.TryParse(string.Empty, dbcBuilderMock.Object));
+            Assert.IsFalse(commentLineParser.TryParse(string.Empty, dbcBuilderMock.Object, nextLineProvider));
         }
 
         [Test]
@@ -41,8 +43,9 @@ namespace DbcParserLib.Tests
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             var commentLineParser = CreateParser();
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
 
-            Assert.IsFalse(commentLineParser.TryParse("xfsgt_", dbcBuilderMock.Object));
+            Assert.IsFalse(commentLineParser.TryParse("xfsgt_", dbcBuilderMock.Object, nextLineProvider));
         }
 
         [Test]
@@ -50,8 +53,9 @@ namespace DbcParserLib.Tests
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             var commentLineParser = CreateParser();
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
 
-            Assert.IsFalse(commentLineParser.TryParse("SIG_VALTYPE_ ", dbcBuilderMock.Object));
+            Assert.IsFalse(commentLineParser.TryParse("SIG_VALTYPE_ ", dbcBuilderMock.Object, nextLineProvider));
         }
 
         [Test]
@@ -59,8 +63,9 @@ namespace DbcParserLib.Tests
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             var commentLineParser = CreateParser();
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
 
-            Assert.IsFalse(commentLineParser.TryParse("SIG_VALTYPE_ 32 ", dbcBuilderMock.Object));
+            Assert.IsFalse(commentLineParser.TryParse("SIG_VALTYPE_ 32 ", dbcBuilderMock.Object, nextLineProvider));
         }
 
         [Test]
@@ -68,8 +73,9 @@ namespace DbcParserLib.Tests
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             var commentLineParser = CreateParser();
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
 
-            Assert.IsFalse(commentLineParser.TryParse("SIG_VALTYPE_ 32 signal", dbcBuilderMock.Object));
+            Assert.IsFalse(commentLineParser.TryParse("SIG_VALTYPE_ 32 signal", dbcBuilderMock.Object, nextLineProvider));
         }
 
         [Test]
@@ -77,8 +83,9 @@ namespace DbcParserLib.Tests
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             var commentLineParser = CreateParser();
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
 
-            Assert.IsTrue(commentLineParser.TryParse("SIG_VALTYPE_ 32 signal 0", dbcBuilderMock.Object));
+            Assert.IsTrue(commentLineParser.TryParse("SIG_VALTYPE_ 32 signal 0", dbcBuilderMock.Object, nextLineProvider));
         }
 
         [Test]
@@ -86,8 +93,9 @@ namespace DbcParserLib.Tests
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             var commentLineParser = CreateParser();
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
 
-            Assert.IsFalse(commentLineParser.TryParse("SIG_VALTYPE_ xxx signal 0", dbcBuilderMock.Object));
+            Assert.IsFalse(commentLineParser.TryParse("SIG_VALTYPE_ xxx signal 0", dbcBuilderMock.Object, nextLineProvider));
         }
 
         [Test]
@@ -95,8 +103,9 @@ namespace DbcParserLib.Tests
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             var commentLineParser = CreateParser();
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
 
-            Assert.IsFalse(commentLineParser.TryParse("SIG_VALTYPE_ 45 signal xx", dbcBuilderMock.Object));
+            Assert.IsFalse(commentLineParser.TryParse("SIG_VALTYPE_ 45 signal xx", dbcBuilderMock.Object, nextLineProvider));
         }
 
         [Test]
@@ -104,10 +113,11 @@ namespace DbcParserLib.Tests
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             var commentLineParser = CreateParser();
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
 
             dbcBuilderMock.Setup(x => x.AddSignalValueType(45, "signal", DbcValueType.IEEEFloat));
 
-            Assert.IsTrue(commentLineParser.TryParse("SIG_VALTYPE_ 45 signal 1", dbcBuilderMock.Object));
+            Assert.IsTrue(commentLineParser.TryParse("SIG_VALTYPE_ 45 signal 1", dbcBuilderMock.Object, nextLineProvider));
         }
 
         [Test]
@@ -115,10 +125,11 @@ namespace DbcParserLib.Tests
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             var commentLineParser = CreateParser();
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
 
             dbcBuilderMock.Setup(x => x.AddSignalValueType(45, "signal", DbcValueType.IEEEDouble));
 
-            Assert.IsTrue(commentLineParser.TryParse("SIG_VALTYPE_ 45 signal 2", dbcBuilderMock.Object));
+            Assert.IsTrue(commentLineParser.TryParse("SIG_VALTYPE_ 45 signal 2", dbcBuilderMock.Object, nextLineProvider));
         }
     }
 }

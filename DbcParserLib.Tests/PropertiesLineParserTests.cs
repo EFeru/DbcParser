@@ -3,6 +3,7 @@ using DbcParserLib.Parsers;
 using DbcParserLib.Model;
 using Moq;
 using System.Linq;
+using System.IO;
 
 namespace DbcParserLib.Tests
 {
@@ -22,7 +23,8 @@ namespace DbcParserLib.Tests
             builder.AddMessage(message);
 
             var msgCycleTimeLineParser = CreateParser();
-            Assert.IsTrue(msgCycleTimeLineParser.TryParse(@"BA_ ""GenMsgCycleTime"" BO_ 2394947585 100;", builder));
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            Assert.IsTrue(msgCycleTimeLineParser.TryParse(@"BA_ ""GenMsgCycleTime"" BO_ 2394947585 100;", builder, nextLineProvider));
 
             var dbc = builder.Build();
             Assert.AreEqual(100, dbc.Messages.First().CycleTime);
@@ -39,7 +41,8 @@ namespace DbcParserLib.Tests
             builder.AddSignal(signal);
 
             var sigInitialValueLineParser = CreateParser();
-            Assert.IsTrue(sigInitialValueLineParser.TryParse(@"BA_ ""GenSigStartValue"" SG_ 2394947585 sig_name 40;", builder));
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            Assert.IsTrue(sigInitialValueLineParser.TryParse(@"BA_ ""GenSigStartValue"" SG_ 2394947585 sig_name 40;", builder, nextLineProvider));
 
             var dbc = builder.Build();
             Assert.AreEqual(40, dbc.Messages.First().Signals.First().InitialValue);

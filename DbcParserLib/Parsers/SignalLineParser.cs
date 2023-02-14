@@ -28,7 +28,7 @@ namespace DbcParserLib.Parsers
             m_parsingStrategy = withRegex ? (ParsingStrategy)AddSignalRegex : AddSignal;
         }
 
-        public bool TryParse(string line, IDbcBuilder builder)
+        public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
             if (line.TrimStart().StartsWith(SignalLineStarter) == false)
                 return false;

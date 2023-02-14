@@ -2,7 +2,7 @@ namespace DbcParserLib.Parsers
 {
     public class IgnoreLineParser : ILineParser
     {
-        public bool TryParse(string line, IDbcBuilder builder)
+        public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
             return line.TrimStart().StartsWith("BS_ ") ||
                     line.TrimStart().StartsWith("NS_ ") ||
