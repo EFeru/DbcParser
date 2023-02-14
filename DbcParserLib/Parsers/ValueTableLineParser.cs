@@ -1,5 +1,8 @@
 using DbcParserLib.Model;
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Xml.Schema;
 
 namespace DbcParserLib.Parsers
@@ -10,7 +13,7 @@ namespace DbcParserLib.Parsers
 
         public bool TryParse(string line, IDbcBuilder builder)
         {
-            if(line.TrimStart().StartsWith(ValueTableLineStarter) == false)
+            if (line.TrimStart().StartsWith(ValueTableLineStarter) == false)
                 return false;
 
             line = line.Trim(';');
@@ -28,22 +31,22 @@ namespace DbcParserLib.Parsers
                     int idxFrom = line.IndexOf(records[1]) + records[1].Length + 1;
                     int length = line.Length - idxFrom;
 
-                    string valueTable;
-                    valueTable = line.Substring(idxFrom, length);
+                    var valueTable = line.Substring(idxFrom, length);
                     valueTable = valueTable.Replace("\" ", "\"" + Environment.NewLine);
 
-                    builder.AddNamedValueTable(records[1], valueTable);
+                    var valueTableDictionary = ToDict(valueTable);
+                    builder.AddNamedValueTable(records[1], valueTableDictionary, valueTable);
                 }
 
                 return true;
             }
-            
+
             var parsed = false;
-            if(line.TrimStart().StartsWith("VAL_ "))
+            if (line.TrimStart().StartsWith("VAL_ "))
             {
                 parsed = true;
 
-                if(uint.TryParse(records[1], out var messageId))
+                if (uint.TryParse(records[1], out var messageId))
                 {
                     if (records.Length == 4)
                     {
@@ -55,16 +58,36 @@ namespace DbcParserLib.Parsers
                         int idxFrom = line.IndexOf(records[2]) + records[2].Length + 1;
                         int length = line.Length - idxFrom;
 
-                        string valueTable;
-                        valueTable = line.Substring(idxFrom, length);
+                        var valueTable = line.Substring(idxFrom, length);
                         valueTable = valueTable.Replace("\" ", "\"" + Environment.NewLine);
 
-                        builder.LinkTableValuesToSignal(messageId, records[2], valueTable);
+                        var valueTableDictionary = ToDict(valueTable);
+                        builder.LinkTableValuesToSignal(messageId, records[2], valueTableDictionary, valueTable);
                     }
                 }
             }
-            
+
             return parsed;
+        }
+
+        //ToDictionary
+        private IReadOnlyDictionary<int, string> ToDict(string records)
+        {
+            var dict = new Dictionary<int, string>();
+
+            if (string.IsNullOrWhiteSpace(records))
+                return dict;
+
+            using (var reader = new StringReader(records))
+            {
+                while (reader.Peek() > -1)
+                {
+                    // Add duplicated key control and act (eg. strict -> break, warning -> keep going and log, silent-> keep going)
+                    var tokens = reader.ReadLine().Split(' ');
+                    dict[int.Parse(tokens[0])] = tokens[1];
+                }
+            }
+            return dict;
         }
     }
 }

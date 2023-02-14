@@ -47,7 +47,6 @@ namespace DbcParserLib
             }
         }
 
-
         private const string MultiplexorLabel = "M";
         private const string MultiplexedLabel = "m";
 

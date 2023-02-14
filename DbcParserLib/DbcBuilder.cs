@@ -8,6 +8,7 @@ namespace DbcParserLib
     public class DbcBuilder : IDbcBuilder
     {
         private readonly ISet<Node> m_nodes = new HashSet<Node>(new NodeEqualityComparer());
+        private readonly IDictionary<string, IReadOnlyDictionary<int, string>> m_namedTablesDict = new Dictionary<string, IReadOnlyDictionary<int, string>>();
         private readonly IDictionary<string, string> m_namedTables = new Dictionary<string, string>();
         private readonly IDictionary<uint, Message> m_messages = new Dictionary<uint, Message>();
         private readonly IDictionary<uint, IDictionary<string, Signal>> m_signals = new Dictionary<uint, IDictionary<string, Signal>>();
@@ -86,19 +87,21 @@ namespace DbcParserLib
             }
         }
 
-        public void AddNamedValueTable(string name, string values)
+        public void AddNamedValueTable(string name, IReadOnlyDictionary<int, string> dictValues, string stringValues)
         {
-            m_namedTables[name] = values;
+            m_namedTables[name] = stringValues;
+            m_namedTablesDict[name] = dictValues;
         }
 
-        public void LinkTableValuesToSignal(uint messageId, string signalName, string values)
+        public void LinkTableValuesToSignal(uint messageId, string signalName, IReadOnlyDictionary<int, string> dictValues, string stringValues)
         {
             IsExtID(ref messageId);
             if (TryGetValueMessageSignal(messageId, signalName, out var signal))
             {
-                signal.ValueTable = values;
+                signal.SetValueTable(dictValues, stringValues);
             }
         }
+
         public static bool IsExtID(ref uint id)
         {
             // For extended ID bit 31 is always 1
@@ -124,9 +127,10 @@ namespace DbcParserLib
 
         public void LinkNamedTableToSignal(uint messageId, string signalName, string tableName)
         {
-            if (m_namedTables.TryGetValue(tableName, out var values))
+            if (m_namedTablesDict.TryGetValue(tableName, out var dictValues) &&
+                m_namedTables.TryGetValue(tableName, out var stringValues))
             {
-                LinkTableValuesToSignal(messageId, signalName, values);
+                LinkTableValuesToSignal(messageId, signalName, dictValues, stringValues);
             }
         }
 
@@ -150,7 +154,7 @@ namespace DbcParserLib
                 return true;
             else if (b1 == null || b2 == null)
                 return false;
-            else if(b1.Name == b2.Name)
+            else if (b1.Name == b2.Name)
                 return true;
             else
                 return false;

@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System.Linq;
 using DbcParserLib.Model;
+using System.Collections.Generic;
 
 namespace DbcParserLib.Tests
 {
@@ -44,19 +45,30 @@ namespace DbcParserLib.Tests
         [Test]
         public void FilledValueTableTest()
         {
-            var sig = new Signal()
+            Dictionary<int, string> valueTableDict = new Dictionary<int, string>()
             {
-                ValueTable = @"7 ""SOPT_TEST_SNA"" 
+                { 7, @"""SOPT_TEST_SNA""" },
+                { 4, @"""SOPT_TEST_NOT_RUN""" },
+                { 3, @"""SOPT_TEST_PASSED""" },
+                { 2, @"""SOPT_TEST_FAILED""" },
+                { 1, @"""SOPT_TEST_IN_PROGRESS""" },
+                { 0, @"""SOPT_PRE_TEST""" }
+            };
+
+            var valueTableString = @"7 ""SOPT_TEST_SNA"" 
 4 ""SOPT_TEST_NOT_RUN"" 
 3 ""SOPT_TEST_PASSED"" 
 2 ""SOPT_TEST_FAILED"" 
 1 ""SOPT_TEST_IN_PROGRESS"" 
-0 ""SOPT_PRE_TEST"""
-            };
+0 ""SOPT_PRE_TEST""";
+
+            Signal sig = new Signal();
+            sig.SetValueTable(valueTableDict, valueTableString);
 
             var pairs = sig.ToPairs();
             Assert.IsNotEmpty(pairs);
             Assert.AreEqual(6, pairs.Count());
+            Assert.AreEqual(6, sig.ValueTableDict.Count);
         }
 
         [Test]
