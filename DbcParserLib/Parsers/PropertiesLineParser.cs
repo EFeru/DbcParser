@@ -9,7 +9,7 @@ namespace DbcParserLib.Parsers
     {
         private const string PropertiesLineStarter = "BA_ ";
 
-        public bool TryParse(string line, IDbcBuilder builder)
+        public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
             var cleanLine = line.Trim(' ', ';');
 

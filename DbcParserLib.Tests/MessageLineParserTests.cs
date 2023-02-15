@@ -2,6 +2,7 @@ using NUnit.Framework;
 using DbcParserLib.Parsers;
 using DbcParserLib.Model;
 using Moq;
+using System.IO;
 
 namespace DbcParserLib.Tests
 {
@@ -31,8 +32,9 @@ namespace DbcParserLib.Tests
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             var commentLineParser = CreateParser();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsFalse(commentLineParser.TryParse(string.Empty, dbcBuilderMock.Object));
+            Assert.IsFalse(commentLineParser.TryParse(string.Empty, dbcBuilderMock.Object, nextLineProviderMock.Object));
         }
 
         [Test]
@@ -40,8 +42,9 @@ namespace DbcParserLib.Tests
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             var commentLineParser = CreateParser();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsFalse(commentLineParser.TryParse("CF_", dbcBuilderMock.Object));
+            Assert.IsFalse(commentLineParser.TryParse("CF_", dbcBuilderMock.Object, nextLineProviderMock.Object));
         }
 
         [Test]
@@ -49,8 +52,9 @@ namespace DbcParserLib.Tests
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             var commentLineParser = CreateParser();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsFalse(commentLineParser.TryParse("BO_ ", dbcBuilderMock.Object));
+            Assert.IsFalse(commentLineParser.TryParse("BO_ ", dbcBuilderMock.Object, nextLineProviderMock.Object));
         }
 
         [Test]
@@ -58,8 +62,9 @@ namespace DbcParserLib.Tests
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             var commentLineParser = CreateParser();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>(); 
 
-            Assert.IsTrue(commentLineParser.TryParse("BO_ 234 xxx", dbcBuilderMock.Object));
+            Assert.IsTrue(commentLineParser.TryParse("BO_ 234 xxx", dbcBuilderMock.Object, nextLineProviderMock.Object));
         }
 
         [Test]
@@ -77,8 +82,9 @@ namespace DbcParserLib.Tests
                 });
 
             var commentLineParser = CreateParser();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(commentLineParser.TryParse(@"BO_ 1041 DOORS_SEATBELTS: 8 TRX", dbcBuilderMock.Object));
+            Assert.IsTrue(commentLineParser.TryParse(@"BO_ 1041 DOORS_SEATBELTS: 8 TRX", dbcBuilderMock.Object, nextLineProviderMock.Object));
         }
 
         [Test]
@@ -96,8 +102,9 @@ namespace DbcParserLib.Tests
                 });
 
             var commentLineParser = CreateParser();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(commentLineParser.TryParse(@"BO_ 1041    DOORS_SEATBELTS  :    8  TRX   ", dbcBuilderMock.Object));
+            Assert.IsTrue(commentLineParser.TryParse(@"BO_ 1041    DOORS_SEATBELTS  :    8  TRX   ", dbcBuilderMock.Object, nextLineProviderMock.Object));
         }
     }
 }

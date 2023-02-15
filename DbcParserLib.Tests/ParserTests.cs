@@ -209,6 +209,39 @@ CM_ SG_ 1043 COUNTER_ALT ""only increments on change""; ";
         }
 
         [Test]
+        public void ManagingOtherKindOfCommentsMultilineTest()
+        {
+            // This example is taken from kia_ev6.dbc
+            var dbcString = @"
+BU_: XXX
+
+BO_ 1043 BLINKERS: 8 XXX
+ SG_ COUNTER_ALT : 15|4@0+ (1,0) [0|15] """" XXX
+ SG_ LEFT_LAMP : 20|1@0+ (1,0) [0|1] """" XXX
+ SG_ RIGHT_LAMP : 22|1@0+ (1,0) [0|1] """" XXX
+ 
+CM_ BO_ 1043 ""Message comment first line
+second line
+third line"";
+CM_ BU_ XXX ""Node comment"";
+CM_ SG_ 1043 COUNTER_ALT ""only increments on change""; ";
+
+            var dbc = Parser.Parse(dbcString);
+
+            Assert.AreEqual(1, dbc.Messages.Count());
+            Assert.AreEqual(1, dbc.Nodes.Count());
+
+            Assert.AreEqual(@"Message comment first line
+second line
+third line", dbc.Messages.First().Comment);
+            Assert.AreEqual("Node comment", dbc.Nodes.First().Comment);
+
+            var signal = dbc.Messages.Single().Signals.FirstOrDefault(x => x.Name.Equals("COUNTER_ALT"));
+            Assert.IsNotNull(signal);
+            Assert.AreEqual("only increments on change", signal.Comment);
+        }
+
+        [Test]
         public void NamedValTableIsAppliedTest()
         {
             // This example is taken from kia_ev6.dbc

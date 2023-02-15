@@ -11,7 +11,7 @@ namespace DbcParserLib.Parsers
     {
         private const string ValueTableLineStarter = "VAL_";
 
-        public bool TryParse(string line, IDbcBuilder builder)
+        public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
             if (line.TrimStart().StartsWith(ValueTableLineStarter) == false)
                 return false;
