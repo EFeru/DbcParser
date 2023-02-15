@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using DbcParserLib.Parsers;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace DbcParserLib
 {
@@ -22,6 +24,17 @@ namespace DbcParserLib
             }
 
             return sb.ToString();
+        }
+
+        public static string ConcatenateTextComment(string[] strings, int startingIndex)
+        {
+            var sb = new StringBuilder();
+            foreach(var s in strings )
+            {
+                sb.AppendLine(Regex.Replace(s, @"""|;", ""));
+            }
+            var commentText = sb.ToString().Substring(startingIndex);
+            return commentText.Substring(0, commentText.Length - 2);
         }
     }
 

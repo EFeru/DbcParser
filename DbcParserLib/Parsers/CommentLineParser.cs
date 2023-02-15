@@ -1,27 +1,27 @@
 using System;
 using System.ComponentModel;
 using System.Linq;
-using static DbcParserLib.Parser;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace DbcParserLib.Parsers
 {
     public class CommentLineParser : ILineParser
     {
         private const string CommentLineStarter = "CM_ ";
-        private static bool isMultiline = false;
+        private const string NodeParsingRegex = @"CM_ BU_\s+([a-zA-Z_][\w]*)\s+""*([^""]*)""*\s*;";
+        private const string MessageParsingRegex = @"CM_ BO_\s+(\d+)\s+""*([^""]*)""*\s*;";
+        private const string SignalParsingRegex = @"CM_ SG_\s+(\d+)\s+([a-zA-Z_][\w]*)\s+""*([^""]*)""*\s*;";
 
         public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
-            isMultiline = false;
-            var cleanLine = line.Trim(' ');
+            var cleanLine = line.Trim();
 
             if (cleanLine.StartsWith(CommentLineStarter) == false)
                 return false;
 
             if (!cleanLine.EndsWith(";"))
-                isMultiline = true;
-            else
-                cleanLine = cleanLine.Trim(';');
+                cleanLine = GetNextLines(cleanLine, nextLineProvider);
 
             if (cleanLine.StartsWith("CM_ SG_"))
             {
@@ -46,50 +46,46 @@ namespace DbcParserLib.Parsers
 
         private static void SetSignalComment(string sigCommentStr, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
-            string[] records = sigCommentStr.SplitBySpace();
-            if (records.Length > 4 && uint.TryParse(records[2], out var messageId))
+            var match = Regex.Match(sigCommentStr, SignalParsingRegex);
+
+            if (match.Success)
             {
-                var comment = string.Join(Helpers.Space, records.Skip(4)).Trim(' ', '"', ';');
-                if (isMultiline)
-                    comment = GetNextLines(comment, nextLineProvider);
-                builder.AddSignalComment(messageId, records[3], comment);
+                builder.AddSignalComment(uint.Parse(match.Groups[1].Value), match.Groups[2].Value, match.Groups[3].Value);
             }
         }
 
         private static void SetNodeComment(string sigCommentStr, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
-            string[] records = sigCommentStr.SplitBySpace();
-            if (records.Length > 3)
+            var match = Regex.Match(sigCommentStr, NodeParsingRegex);
+
+            if (match.Success)
             {
-                var comment = string.Join(Helpers.Space, records.Skip(3)).Trim(' ', '"', ';');
-                if (isMultiline)
-                    comment = GetNextLines(comment, nextLineProvider);
-                builder.AddNodeComment(records[2].Trim(), comment);
+                builder.AddNodeComment(match.Groups[1].Value, match.Groups[2].Value);
             }
         }
 
         private static void SetMessageComment(string sigCommentStr, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
-            string[] records = sigCommentStr.SplitBySpace();
-            if (records.Length > 3 && uint.TryParse(records[2], out var messageId))
+            var match = Regex.Match(sigCommentStr, MessageParsingRegex);
+
+            if (match.Success)
             {
-                var comment = string.Join(Helpers.Space, records.Skip(3)).Trim(' ', '"', ';');
-                if (isMultiline)
-                    comment = GetNextLines(comment, nextLineProvider);
-                builder.AddMessageComment(messageId, comment);
+                builder.AddMessageComment(uint.Parse(match.Groups[1].Value), match.Groups[2].Value);
             }
         }
 
         private static string GetNextLines(string currentLine, INextLineProvider nextLineProvider)
         {
-            string nextLine;
-            while (nextLineProvider.TryGetLine(out nextLine))
+            var stringBuilder = new StringBuilder();
+            stringBuilder.AppendLine(currentLine);
+
+            while (nextLineProvider.TryGetLine(out var nextLine))
             {
-                currentLine = string.Join(Environment.NewLine, currentLine, nextLine.Trim(' ', '"'));
+                stringBuilder.AppendLine(nextLine);
                 if (nextLine.EndsWith(";"))
                     break;
             }
-            return currentLine.Trim(' ', '"', ';');
+            return stringBuilder.ToString();
         }
 
     }

@@ -34,9 +34,9 @@ namespace DbcParserLib.Tests
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             var commentLineParser = CreateParser();
-            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsFalse(commentLineParser.TryParse(string.Empty, dbcBuilderMock.Object, nextLineProvider));
+            Assert.IsFalse(commentLineParser.TryParse(string.Empty, dbcBuilderMock.Object, nextLineProviderMock.Object));
         }
 
         [Test]
@@ -44,9 +44,9 @@ namespace DbcParserLib.Tests
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             var commentLineParser = CreateParser();
-            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsFalse(commentLineParser.TryParse("CF_", dbcBuilderMock.Object, nextLineProvider));
+            Assert.IsFalse(commentLineParser.TryParse("CF_", dbcBuilderMock.Object, nextLineProviderMock.Object));
         }
 
         [Test]
@@ -54,9 +54,9 @@ namespace DbcParserLib.Tests
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             var commentLineParser = CreateParser();
-            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(commentLineParser.TryParse("SG_", dbcBuilderMock.Object, nextLineProvider));
+            Assert.IsTrue(commentLineParser.TryParse("SG_", dbcBuilderMock.Object, nextLineProviderMock.Object));
         }
 
         [Test]
@@ -64,9 +64,9 @@ namespace DbcParserLib.Tests
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             var commentLineParser = CreateParser();
-            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(commentLineParser.TryParse("SG_        ", dbcBuilderMock.Object, nextLineProvider));
+            Assert.IsTrue(commentLineParser.TryParse("SG_        ", dbcBuilderMock.Object, nextLineProviderMock.Object));
         }
 
         [Test]
@@ -93,9 +93,9 @@ namespace DbcParserLib.Tests
                 });
 
             var commentLineParser = CreateParser();
-            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(commentLineParser.TryParse(@" SG_ MCU_longitude : 28|29@1- (1E-006,0) [-10|35.6] ""deg""  NEO", dbcBuilderMock.Object, nextLineProvider));
+            Assert.IsTrue(commentLineParser.TryParse(@" SG_ MCU_longitude : 28|29@1- (1E-006,0) [-10|35.6] ""deg""  NEO", dbcBuilderMock.Object, nextLineProviderMock.Object));
         }
 
         [Test]
@@ -122,9 +122,9 @@ namespace DbcParserLib.Tests
                 });
 
             var commentLineParser = CreateParser();
-            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(commentLineParser.TryParse(@" SG_ MCU_longitude m7 : 28|29@1- (1E-006,0) [-10|35.6] ""deg""  NEO", dbcBuilderMock.Object, nextLineProvider));
+            Assert.IsTrue(commentLineParser.TryParse(@" SG_ MCU_longitude m7 : 28|29@1- (1E-006,0) [-10|35.6] ""deg""  NEO", dbcBuilderMock.Object, nextLineProviderMock.Object));
         }
 
         [Test]
@@ -152,9 +152,9 @@ namespace DbcParserLib.Tests
                 });
 
             var commentLineParser = CreateParser();
-            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(commentLineParser.TryParse(@" SG_ MCU_longitude m7 : 28|29@1- (1E-006,0) [-10|35.6] ""deg""  NEO,WHEEL,TOP", dbcBuilderMock.Object, nextLineProvider));
+            Assert.IsTrue(commentLineParser.TryParse(@" SG_ MCU_longitude m7 : 28|29@1- (1E-006,0) [-10|35.6] ""deg""  NEO,WHEEL,TOP", dbcBuilderMock.Object, nextLineProviderMock.Object));
         }
 
         [Test]
@@ -182,9 +182,9 @@ namespace DbcParserLib.Tests
                 });
 
             var commentLineParser = CreateParser();
-            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(commentLineParser.TryParse(@" SG_ MCU_longitude m7 : 28|29@1- (1E-006,0) [-10|35.6] ""deg""  NEO, WHEEL, TOP", dbcBuilderMock.Object, nextLineProvider));
+            Assert.IsTrue(commentLineParser.TryParse(@" SG_ MCU_longitude m7 : 28|29@1- (1E-006,0) [-10|35.6] ""deg""  NEO, WHEEL, TOP", dbcBuilderMock.Object, nextLineProviderMock.Object));
         }
     }
 }
