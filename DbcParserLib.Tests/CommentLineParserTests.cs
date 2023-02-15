@@ -89,17 +89,21 @@ namespace DbcParserLib.Tests
         }
 
         [Test]
-        public void MultipleLineIsParsed()
+        public void FullMultilineIsParsed()
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
-            dbcBuilderMock.Setup(mock => mock.AddSignalComment(75, "channelName", "This is the first line this is the second line this is the third line"));
+            dbcBuilderMock.Setup(mock => mock.AddSignalComment(75, "channelName", @"This is the first line
+this is the second line
+this is the third line"));
             var commentLineParser = CreateParser();
 
-            string multiLineComment = @"this is the second line
+            string multiLineComment = @"CM_ SG_ 75 channelName ""This is the first line
+this is the second line
 this is the third line"";";
+            var reader = new StringReader(multiLineComment);
 
-            var nextLineProvider = new NextLineProvider(new StringReader(multiLineComment));
-            Assert.IsTrue(commentLineParser.TryParse(@"CM_ SG_ 75 channelName ""This is the first line", dbcBuilderMock.Object, nextLineProvider));
+            var nextLineProvider = new NextLineProvider(reader);
+            Assert.IsTrue(commentLineParser.TryParse(reader.ReadLine(), dbcBuilderMock.Object, nextLineProvider));
         }
 
         [Test]
@@ -114,6 +118,24 @@ this is the third line"";";
         }
 
         [Test]
+        public void FullMultilineIsParsedAndRobustToWhiteSpace()
+        {
+            var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
+            dbcBuilderMock.Setup(mock => mock.AddSignalComment(75, "channelName", @"This is the first line
+this is the second line
+this is the third line"));
+            var commentLineParser = CreateParser();
+
+            string multiLineComment = @"CM_ SG_ 75 channelName      ""This is the first line
+        this is the second line
+        this is the third line""        ;";
+            var reader = new StringReader(multiLineComment);
+
+            var nextLineProvider = new NextLineProvider(reader);
+            Assert.IsTrue(commentLineParser.TryParse(reader.ReadLine(), dbcBuilderMock.Object, nextLineProvider));
+        }
+
+        [Test]
         public void FullLineIsParsedForMessageAndRobustToWhiteSpace()
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
@@ -122,6 +144,24 @@ this is the third line"";";
             var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
 
             Assert.IsTrue(commentLineParser.TryParse(@"CM_ BO_ 75 ""This is a description""  ;", dbcBuilderMock.Object, nextLineProvider));
+        }
+
+        [Test]
+        public void FullMultilineIsParsedForMessageAndRobustToWhiteSpace()
+        {
+            var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
+            dbcBuilderMock.Setup(mock => mock.AddMessageComment(75, @"This is the first line
+this is the second line
+this is the third line"));
+            var commentLineParser = CreateParser();
+
+            string multiLineComment = @"CM_ BO_ 75      ""This is the first line
+        this is the second line
+        this is the third line""        ;";
+            var reader = new StringReader(multiLineComment);
+
+            var nextLineProvider = new NextLineProvider(reader);
+            Assert.IsTrue(commentLineParser.TryParse(reader.ReadLine(), dbcBuilderMock.Object, nextLineProvider));
         }
 
         [Test]
@@ -153,6 +193,24 @@ this is the third line"";";
             var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
 
             Assert.IsTrue(commentLineParser.TryParse(@"CM_ BU_ node_name ""This is a description""  ;", dbcBuilderMock.Object, nextLineProvider));
+        }
+
+        [Test]
+        public void FullMultilineIsParsedForNodeAndRobustToWhiteSpace()
+        {
+            var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
+            dbcBuilderMock.Setup(mock => mock.AddNodeComment("node_name", @"This is the first line
+this is the second line
+this is the third line"));
+            var commentLineParser = CreateParser();
+
+            string multiLineComment = @"CM_ BU_ node_name       ""This is the first line
+        this is the second line
+        this is the third line""        ;";
+            var reader = new StringReader(multiLineComment);
+
+            var nextLineProvider = new NextLineProvider(reader);
+            Assert.IsTrue(commentLineParser.TryParse(reader.ReadLine(), dbcBuilderMock.Object, nextLineProvider));
         }
 
         [Test]

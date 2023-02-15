@@ -12,6 +12,7 @@ namespace DbcParserLib.Parsers
 
         public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
+            isMultiline = false;
             var cleanLine = line.Trim(' ');
 
             if (cleanLine.StartsWith(CommentLineStarter) == false)
@@ -40,7 +41,6 @@ namespace DbcParserLib.Parsers
                 return true;
             }
 
-            isMultiline= false;
             return false;
         }
 
@@ -51,7 +51,7 @@ namespace DbcParserLib.Parsers
             {
                 var comment = string.Join(Helpers.Space, records.Skip(4)).Trim(' ', '"', ';');
                 if (isMultiline)
-                    comment = GetNextLine(comment, nextLineProvider);
+                    comment = GetNextLines(comment, nextLineProvider);
                 builder.AddSignalComment(messageId, records[3], comment);
             }
         }
@@ -63,7 +63,7 @@ namespace DbcParserLib.Parsers
             {
                 var comment = string.Join(Helpers.Space, records.Skip(3)).Trim(' ', '"', ';');
                 if (isMultiline)
-                    comment = GetNextLine(comment, nextLineProvider);
+                    comment = GetNextLines(comment, nextLineProvider);
                 builder.AddNodeComment(records[2].Trim(), comment);
             }
         }
@@ -75,21 +75,21 @@ namespace DbcParserLib.Parsers
             {
                 var comment = string.Join(Helpers.Space, records.Skip(3)).Trim(' ', '"', ';');
                 if (isMultiline)
-                    comment = GetNextLine(comment, nextLineProvider);
+                    comment = GetNextLines(comment, nextLineProvider);
                 builder.AddMessageComment(messageId, comment);
             }
         }
 
-        private static string GetNextLine(string currentLine, INextLineProvider nextLineProvider)
+        private static string GetNextLines(string currentLine, INextLineProvider nextLineProvider)
         {
             string nextLine;
             while (nextLineProvider.TryGetLine(out nextLine))
             {
-                currentLine = string.Join(Helpers.Space, currentLine, nextLine.Trim(' ', '"'));
+                currentLine = string.Join(Environment.NewLine, currentLine, nextLine.Trim(' ', '"'));
                 if (nextLine.EndsWith(";"))
                     break;
             }
-            return currentLine.Trim('"', ';');
+            return currentLine.Trim(' ', '"', ';');
         }
 
     }

@@ -11,6 +11,27 @@ namespace DbcParserLib
         bool TryGetLine(out string line);
     }
 
+    public class NextLineProvider : INextLineProvider
+    {
+        private TextReader m_reader;
+
+        public NextLineProvider(TextReader reader)
+        {
+            m_reader = reader;
+        }
+
+        public bool TryGetLine(out string line)
+        {
+            line = null;
+            if (m_reader.Peek() >= 0)
+            {
+                line = m_reader.ReadLine();
+                return true;
+            }
+            return false;
+        }
+    }
+
     public static class Parser
     {
         private static IEnumerable<ILineParser> LineParsers = new List<ILineParser>()
@@ -72,27 +93,6 @@ namespace DbcParserLib
                 if(parser.TryParse(line, builder, nextLineProvider))
                     break;
             }
-        }
-    }
-
-    public class NextLineProvider : INextLineProvider
-    {
-        private TextReader m_reader;
-
-        public NextLineProvider(TextReader reader)
-        {
-            m_reader = reader;
-        }
-
-        public bool TryGetLine(out string line)
-        {
-            line = null;
-            if (m_reader.Peek() >= 0)
-            {
-                line = m_reader.ReadLine();
-                return true;
-            }
-            return false;
         }
     }
 }
