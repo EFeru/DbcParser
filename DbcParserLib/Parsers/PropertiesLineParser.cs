@@ -8,6 +8,11 @@ namespace DbcParserLib.Parsers
     public class PropertiesLineParser : ILineParser
     {
         private const string PropertiesLineStarter = "BA_ ";
+        private const string PropertiesDefinitionLineStarter = "BA_DEF_ ";
+        private const string PropertiesDefinitionDefaultLineStarter = "BA_DEF_DEF_ ";
+        private const string PropertyParsingRegex = @"BA_\s+([a-zA-Z_][\w]*)\s+(?:(-?\d+|[0-9.]+)|((BU_|EV_)\s+([a-zA-Z_][\w]*)\s+(?:(-?\d+|[0-9.]+)|""([^""]*)""))|((BO_)\s+(\d+)\s+(?:(-?\d+|[0-9.]+)|""([^""]*)""))|((SG_)\s+(\d+)\s+([a-zA-Z_][\w]*)\s+(?:(-?\d+|[0-9.]+)|""([^""]*)"")))\s*;";
+        private const string PropertyDefinitionParsingRegex = @"BA_DEF_\s+(?:(BU_|BO_|SG_)\s+)([a-zA-Z_][\w]*)\s+(?:(?:(INT|HEX)\s+(-?\d+)\s+(-?\d+))|(?:(FLOAT)\s+([0-9].+)\s+([0-9.]+))|(STRING)|(?:(ENUM)\s+""([^""]*)""))\s*;";
+        private const string PropertyDefinitionDefaultParsingRegex = @"BA_DEF_DEF_\s+([a-zA-Z_][\w]*)\s+(?:(-?\d+|[0-9.]+)|""([^""]*)"")\s*;";
 
         public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
