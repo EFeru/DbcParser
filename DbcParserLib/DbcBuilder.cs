@@ -19,7 +19,11 @@ namespace DbcParserLib
         private readonly IDictionary<string, ValuesTable> m_namedTablesMap = new Dictionary<string, ValuesTable>();
         private readonly IDictionary<uint, Message> m_messages = new Dictionary<uint, Message>();
         private readonly IDictionary<uint, IDictionary<string, Signal>> m_signals = new Dictionary<uint, IDictionary<string, Signal>>();
-        private readonly IDictionary<DbcObjectType, IDictionary<string, CustomProperty>> m_customProperties = new Dictionary<DbcObjectType, IDictionary<string, CustomProperty>>();
+        private readonly IDictionary<DbcObjectType, IDictionary<string, CustomProperty>> m_customProperties = new Dictionary<DbcObjectType, IDictionary<string, CustomProperty>>() {
+            {DbcObjectType.Node, new Dictionary<string, CustomProperty>()},
+            {DbcObjectType.Message, new Dictionary<string, CustomProperty>()},
+            {DbcObjectType.Signal, new Dictionary<string, CustomProperty>()},
+        };
 
         private Message m_currentMessage;
 
@@ -77,19 +81,20 @@ namespace DbcParserLib
         {
             if (m_customProperties[DbcObjectType.Message].TryGetValue(propertyName, out var customProperty))
             {
+                IsExtID(ref messageId);
                 if (m_messages.TryGetValue(messageId, out var message))
                 {
                     SetCustomPropertyValue(customProperty, value);
                     message.CustomProperties[propertyName] = customProperty;
                 }
-                
             }
         }
 
         public void AddSignalCustomProperty(string propertyName, uint messageId, string signalName, string value)
         {
-            if (m_customProperties[DbcObjectType.Message].TryGetValue(propertyName, out var customProperty))
+            if (m_customProperties[DbcObjectType.Signal].TryGetValue(propertyName, out var customProperty))
             {
+                IsExtID(ref messageId);
                 if (TryGetValueMessageSignal(messageId, signalName, out var signal))
                 {
                     SetCustomPropertyValue(customProperty, value);
