@@ -4,14 +4,28 @@ using DbcParserLib.Model;
 using Moq;
 using System.Linq;
 using System.IO;
+using System.Collections.Generic;
 
 namespace DbcParserLib.Tests
 {
     public class PropertiesLineParserTests
     {
-        private static ILineParser CreateParser()
+        private static List<ILineParser> CreateParser()
         {
-            return new PropertiesLineParser();
+            return new List<ILineParser>() {
+                new PropertiesLineParser(),
+                new PropertiesDefinitionLineParser()
+            };
+        }
+
+        private static bool ParseLine(string line, List<ILineParser> lineParser, IDbcBuilder builder, INextLineProvider nextLineProvider)
+        {
+            foreach (var parser in lineParser)
+            {
+                if (parser.TryParse(line, builder, nextLineProvider))
+                    return true;
+            }
+            return false;
         }
 
         [Test]
@@ -24,7 +38,7 @@ namespace DbcParserLib.Tests
 
             var msgCycleTimeLineParser = CreateParser();
             var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
-            Assert.IsTrue(msgCycleTimeLineParser.TryParse(@"BA_ ""GenMsgCycleTime"" BO_ 2394947585 100;", builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_ ""GenMsgCycleTime"" BO_ 2394947585 100;", msgCycleTimeLineParser, builder, nextLineProvider));
 
             var dbc = builder.Build();
             Assert.AreEqual(100, dbc.Messages.First().CycleTime);
@@ -42,7 +56,7 @@ namespace DbcParserLib.Tests
 
             var sigInitialValueLineParser = CreateParser();
             var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
-            Assert.IsTrue(sigInitialValueLineParser.TryParse(@"BA_ ""GenSigStartValue"" SG_ 2394947585 sig_name 40;", builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_ ""GenSigStartValue"" SG_ 2394947585 sig_name 40;", sigInitialValueLineParser, builder, nextLineProvider));
 
             var dbc = builder.Build();
             Assert.AreEqual(40, dbc.Messages.First().Signals.First().InitialValue);
@@ -58,9 +72,9 @@ namespace DbcParserLib.Tests
 
             var msgCycleTimeLineParser = CreateParser();
             var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
-            Assert.IsTrue(msgCycleTimeLineParser.TryParse(@"BA_DEF_ BO_ ""GenMsgCycleTime"" INT 0 200;", builder, nextLineProvider));
-            Assert.IsTrue(msgCycleTimeLineParser.TryParse(@"BA_DEF_DEF_ ""GenMsgCycleTime"" 150;", builder, nextLineProvider));
-            Assert.IsTrue(msgCycleTimeLineParser.TryParse(@"BA_ ""GenMsgCycleTime"" BO_ 2394947585 100;", builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_ BO_ ""GenMsgCycleTime"" INT 0 200;", msgCycleTimeLineParser, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""GenMsgCycleTime"" 150;", msgCycleTimeLineParser, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_ ""GenMsgCycleTime"" BO_ 2394947585 100;", msgCycleTimeLineParser, builder, nextLineProvider));
 
             var dbc = builder.Build();
             Assert.AreEqual(100, dbc.Messages.First().CycleTime);
@@ -78,9 +92,9 @@ namespace DbcParserLib.Tests
 
             var sigInitialValueLineParser = CreateParser();
             var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
-            Assert.IsTrue(sigInitialValueLineParser.TryParse(@"BA_DEF_ SG_ ""GenSigStartValue"" INT 0 200;", builder, nextLineProvider));
-            Assert.IsTrue(sigInitialValueLineParser.TryParse(@"BA_DEF_DEF_ ""GenSigStartValue"" 150;", builder, nextLineProvider));
-            Assert.IsTrue(sigInitialValueLineParser.TryParse(@"BA_ ""GenSigStartValue"" SG_ 2394947585 sig_name 40;", builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_ SG_ ""GenSigStartValue"" INT 0 200;", sigInitialValueLineParser, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""GenSigStartValue"" 150;", sigInitialValueLineParser, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_ ""GenSigStartValue"" SG_ 2394947585 sig_name 40;", sigInitialValueLineParser, builder, nextLineProvider));
 
             var dbc = builder.Build();
             Assert.AreEqual(40, dbc.Messages.First().Signals.First().InitialValue);
@@ -95,9 +109,20 @@ namespace DbcParserLib.Tests
 
             var sigInitialValueLineParser = CreateParser();
             var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
-            Assert.IsTrue(sigInitialValueLineParser.TryParse(@"BA_DEF_ BU_ ""AttributeName"" HEX 0 200;", builder, nextLineProvider));
-            Assert.IsTrue(sigInitialValueLineParser.TryParse(@"BA_DEF_DEF_ ""AttributeName"" 150;", builder, nextLineProvider));
-            Assert.IsTrue(sigInitialValueLineParser.TryParse(@"BA_ ""AttributeName"" BU_ Node1 40;", builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" HEX 0 200;", sigInitialValueLineParser, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 150;", sigInitialValueLineParser, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_ ""AttributeName"" BU_ Node1 40;", sigInitialValueLineParser, builder, nextLineProvider));
+        }
+
+        [Test]
+        public void EnumDefinitionCustomPropertyIsParsed()
+        {
+            var builder = new DbcBuilder();
+  
+            var sigInitialValueLineParser = CreateParser();
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" ENUM ""Ciao"",""Mamma"",""Guarda"";", sigInitialValueLineParser, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" ""Guarda"";", sigInitialValueLineParser, builder, nextLineProvider));
         }
     }
 }

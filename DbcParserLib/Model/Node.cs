@@ -68,62 +68,6 @@ namespace DbcParserLib.Model
         }
     }
 
-    public class CustomProperty
-    {
-        public string Name { get; set; }
-        public DbcDataType DataType { get; set; }
-        public IntegerCustomProperty IntegerCustomProperty { get; set; }
-        public HexCustomProperty HexCustomProperty { get; set; }
-        public FloatCustomProperty FloatCustomProperty { get; set; }
-        public StringCustomProperty StringCustomProperty { get; set; }
-        public EnumCustomProperty EnumCustomProperty { get; set; }
-    }
-
-    public class IntegerCustomProperty
-    {
-        public int Maximum { get; set; }
-        public int Minimum { get; set; }
-        public int Default { get; set; }
-        public  int Value { get; set; }
-    }
-
-    public class HexCustomProperty
-    {
-        public int Maximum { get; set; }
-        public int Minimum { get; set; }
-        public int Default { get; set; }
-        public int Value { get; set; }
-    }
-
-    public class FloatCustomProperty
-    {
-        public double Maximum { get; set; }
-        public double Minimum { get; set; }
-        public double Default { get; set; }
-        public double Value { get; set; }
-    }
-    public class StringCustomProperty
-    {
-        public string Default { get; set; }
-        public string Value { get; set; }
-    }
-
-    public class EnumCustomProperty
-    {
-        public string[] Default { get; set; }
-        public string[] Value { get; set; }
-    }
-
-    public enum DbcObjectType 
-    {
-        Node, Message, Signal, Environment
-    }
-
-    public enum DbcDataType
-    {
-        Integer, Hex, Float, String, Enum
-    }
-
     public enum DbcValueType
     {
         Signed, Unsigned, IEEEFloat, IEEEDouble

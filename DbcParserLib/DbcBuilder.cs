@@ -19,10 +19,10 @@ namespace DbcParserLib
         private readonly IDictionary<string, ValuesTable> m_namedTablesMap = new Dictionary<string, ValuesTable>();
         private readonly IDictionary<uint, Message> m_messages = new Dictionary<uint, Message>();
         private readonly IDictionary<uint, IDictionary<string, Signal>> m_signals = new Dictionary<uint, IDictionary<string, Signal>>();
-        private readonly IDictionary<DbcObjectType, IDictionary<string, CustomProperty>> m_customProperties = new Dictionary<DbcObjectType, IDictionary<string, CustomProperty>>() {
-            {DbcObjectType.Node, new Dictionary<string, CustomProperty>()},
-            {DbcObjectType.Message, new Dictionary<string, CustomProperty>()},
-            {DbcObjectType.Signal, new Dictionary<string, CustomProperty>()},
+        private readonly IDictionary<DbcObjectType, IDictionary<string, CustomPropertyDefinition>> m_customProperties = new Dictionary<DbcObjectType, IDictionary<string, CustomPropertyDefinition>>() {
+            {DbcObjectType.Node, new Dictionary<string, CustomPropertyDefinition>()},
+            {DbcObjectType.Message, new Dictionary<string, CustomPropertyDefinition>()},
+            {DbcObjectType.Signal, new Dictionary<string, CustomPropertyDefinition>()},
         };
 
         private Message m_currentMessage;
@@ -48,7 +48,7 @@ namespace DbcParserLib
             }
         }
 
-        public void AddCustomProperty(DbcObjectType objectType, CustomProperty customProperty)
+        public void AddCustomProperty(DbcObjectType objectType, CustomPropertyDefinition customProperty)
         {
             m_customProperties[objectType][customProperty.Name] = customProperty;
         }
@@ -59,7 +59,7 @@ namespace DbcParserLib
             {
                 if (m_customProperties[objectType].TryGetValue(propertyName, out var customProperty))
                 {
-                    SetCustomPropertyDefaultValue(customProperty, value);
+                    customProperty.SetCustomPropertyDefaultValue(value);
                 }
             }
         }
@@ -71,8 +71,9 @@ namespace DbcParserLib
                 var node = m_nodes.FirstOrDefault(n => n.Name.Equals(nodeName));
                 if (node != null)
                 {
-                    SetCustomPropertyValue(customProperty, value);
-                    node.CustomProperties[propertyName] = customProperty;
+                    var property = new CustomProperty(customProperty);
+                    property.SetCustomPropertyValue(value);
+                    node.CustomProperties[propertyName] = property;
                 }
             }
         }
@@ -84,8 +85,9 @@ namespace DbcParserLib
                 IsExtID(ref messageId);
                 if (m_messages.TryGetValue(messageId, out var message))
                 {
-                    SetCustomPropertyValue(customProperty, value);
-                    message.CustomProperties[propertyName] = customProperty;
+                    var property = new CustomProperty(customProperty);
+                    property.SetCustomPropertyValue(value);
+                    message.CustomProperties[propertyName] = property;
                 }
             }
         }
@@ -97,8 +99,9 @@ namespace DbcParserLib
                 IsExtID(ref messageId);
                 if (TryGetValueMessageSignal(messageId, signalName, out var signal))
                 {
-                    SetCustomPropertyValue(customProperty, value);
-                    signal.CustomProperties[propertyName] = customProperty;
+                    var property = new CustomProperty(customProperty);
+                    property.SetCustomPropertyValue(value);
+                    signal.CustomProperties[propertyName] = property;
                 }
             }
         }
@@ -203,72 +206,6 @@ namespace DbcParserLib
             return false;
         }
 
-        private void SetCustomPropertyValue(CustomProperty customProperty, string value)
-        {
-            switch (customProperty.DataType)
-            {
-                case DbcDataType.Integer:
-                    customProperty.IntegerCustomProperty.Value = int.Parse(value, CultureInfo.InvariantCulture);
-                    break;
-                case DbcDataType.Hex:
-                    customProperty.HexCustomProperty.Value = int.Parse(value, CultureInfo.InvariantCulture);
-                    break;
-                case DbcDataType.Float:
-                    customProperty.FloatCustomProperty.Value = float.Parse(value, CultureInfo.InvariantCulture);
-                    break;
-                case DbcDataType.String:
-                    customProperty.StringCustomProperty.Value = value;
-                    break;
-                case DbcDataType.Enum:
-                    customProperty.EnumCustomProperty.Value = value.Split(',');
-                    break;
-            }
-        }
-
-        private void SetCustomPropertyDefaultValue(CustomProperty customProperty, string value)
-        {
-            switch (customProperty.DataType)
-            {
-                case DbcDataType.Integer:
-                    customProperty.IntegerCustomProperty.Default = int.Parse(value, CultureInfo.InvariantCulture);
-                    break;
-                case DbcDataType.Hex:
-                    customProperty.HexCustomProperty.Default = int.Parse(value, CultureInfo.InvariantCulture);
-                    break;
-                case DbcDataType.Float:
-                    customProperty.FloatCustomProperty.Default = float.Parse(value, CultureInfo.InvariantCulture);
-                    break;
-                case DbcDataType.String:
-                    customProperty.StringCustomProperty.Default = value;
-                    break;
-                case DbcDataType.Enum:
-                    customProperty.EnumCustomProperty.Default = value.Split(',');
-                    break;
-            }
-        }
-
-        private void SetCustomPropertyValueFromDefault(CustomProperty customProperty)
-        {
-            switch (customProperty.DataType)
-            {
-                case DbcDataType.Integer:
-                    customProperty.IntegerCustomProperty.Value = customProperty.IntegerCustomProperty.Default;
-                    break;
-                case DbcDataType.Hex:
-                    customProperty.HexCustomProperty.Value = customProperty.HexCustomProperty.Default;
-                    break;
-                case DbcDataType.Float:
-                    customProperty.FloatCustomProperty.Value = customProperty.FloatCustomProperty.Default;
-                    break;
-                case DbcDataType.String:
-                    customProperty.StringCustomProperty.Value = customProperty.StringCustomProperty.Default;
-                    break;
-                case DbcDataType.Enum:
-                    customProperty.EnumCustomProperty.Value = customProperty.EnumCustomProperty.Default;
-                    break;
-            }
-        }
-
         private void FillNodesNotSetCustomPropertyWithDefault()
         {
             var nodeCustomProperties = m_customProperties[DbcObjectType.Node];
@@ -278,8 +215,8 @@ namespace DbcParserLib
                 {
                     if (!node.CustomProperties.TryGetValue(customProperty.Key, out var property))
                     {
-                        SetCustomPropertyValueFromDefault(property);
-                        node.CustomProperties[property.Name] = property;
+                        node.CustomProperties[customProperty.Key] = new CustomProperty(customProperty.Value);
+                        node.CustomProperties[customProperty.Key].SetCustomPropertyValueFromDefault();
                     }
                 }
             }
@@ -295,8 +232,8 @@ namespace DbcParserLib
                     FillSignalsNotSetCustomPropertyWithDefault(message.ID);
                     if (!message.CustomProperties.TryGetValue(customProperty.Key, out var property))
                     {
-                        SetCustomPropertyValueFromDefault(property);
-                        message.CustomProperties[property.Name] = property;
+                        message.CustomProperties[customProperty.Key] = new CustomProperty(customProperty.Value);
+                        message.CustomProperties[customProperty.Key].SetCustomPropertyValueFromDefault();
                     }
                 }
             }
@@ -311,8 +248,8 @@ namespace DbcParserLib
                 {
                     if (!signal.CustomProperties.TryGetValue(customProperty.Key, out var property))
                     {
-                        SetCustomPropertyValueFromDefault(property);
-                        signal.CustomProperties[property.Name] = property;
+                        signal.CustomProperties[customProperty.Key] = new CustomProperty(customProperty.Value);
+                        signal.CustomProperties[customProperty.Key].SetCustomPropertyValueFromDefault();
                     }
                 }
             }
