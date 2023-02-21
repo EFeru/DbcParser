@@ -42,11 +42,10 @@ namespace DbcParserLib.Model
                     };
                     break;
                 case DbcDataType.Enum:
-                    if(m_customPropertyDefinition.EnumCustomProperty.Definition.Contains(value))
-                        StringCustomProperty = new StringCustomProperty()
-                        {
-                            Value = value
-                        };
+                    StringCustomProperty = new StringCustomProperty()
+                    {
+                        Value = value
+                    };
                     break;
             }
         }

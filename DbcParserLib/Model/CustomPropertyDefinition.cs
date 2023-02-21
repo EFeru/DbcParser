@@ -29,8 +29,7 @@ namespace DbcParserLib.Model
                     StringCustomProperty.Default = value;
                     break;
                 case DbcDataType.Enum:
-                    if (EnumCustomProperty.Definition.Contains(value))
-                        EnumCustomProperty.Default = value;
+                    EnumCustomProperty.Default = value;
                     break;
             }
         }

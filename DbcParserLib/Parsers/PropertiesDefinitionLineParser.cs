@@ -71,7 +71,10 @@ namespace DbcParserLib.Parsers
                         };
                     }
                     else if (match.Groups[9].Value == "STRING")
+                    {
                         dataType = DbcDataType.String;
+                        customProperty.StringCustomProperty = new StringCustomPropertyDefinition();
+                    }
                     else if (match.Groups[10].Value.StartsWith("ENUM "))
                     {
                         dataType = DbcDataType.Enum;

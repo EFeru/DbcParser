@@ -282,5 +282,53 @@ VAL_ 1043 withNamedTable 3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 
             Assert.IsNotNull(signal);
             Assert.AreEqual(107, signal.ValueTable.Length);
         }
+
+        [Test]
+        public void UserDefinedAttributesTest()
+        {
+            // This example is taken from kia_ev6.dbc
+            var dbcString = @"
+BU_: XXX
+
+BO_ 1043 BLINKERS: 8 XXX
+ SG_ COUNTER_ALT : 15|4@0+ (1,0) [0|15] """" XXX
+ SG_ LEFT_LAMP : 20|1@0+ (1,0) [0|1] """" XXX
+ SG_ RIGHT_LAMP : 22|1@0+ (1,0) [0|1] """" XXX
+ 
+BA_DEF_ BU_ ""HexAttribute"" HEX 0 100;
+BA_DEF_ BO_ ""IntegerAttribute"" INT 0 10;
+BA_DEF_ BO_ ""FloatAttribute"" FLOAT 0 1;
+BA_DEF_ SG_ ""StringAttribute"" STRING;
+BA_DEF_ SG_ ""EnumAttributeName"" ENUM ""FirstVal"",""SecondVal"",""ThirdVal"";
+
+BA_DEF_DEF_ ""HexAttribute"" 50;
+BA_DEF_DEF_ ""IntegerAttribute"" 5;
+BA_DEF_DEF_ ""FloatAttribute"" 0.5;
+BA_DEF_DEF_ ""StringAttribute"" ""DefaultString"";
+BA_DEF_DEF_ ""EnumAttributeName"" ""FirstVal"";
+
+BA_ ""HexAttribute"" BU_ XXX 70;
+BA_ ""IntegerAttribute"" BO_ 1043 7;
+BA_ ""EnumAttributeName"" SG_ 1043 COUNTER_ALT ""ThirdVal""; ";
+
+            var dbc = Parser.Parse(dbcString);
+            Assert.AreEqual(1, dbc.Messages.Count());
+            Assert.AreEqual(1, dbc.Nodes.Count());
+
+            var node = dbc.Nodes.First();
+            Assert.AreEqual(1, node.CustomProperties.Count());
+            Assert.AreEqual(70, node.CustomProperties["HexAttribute"].IntegerCustomProperty.Value);
+
+            var message = dbc.Messages.First();
+            Assert.AreEqual(2, message.CustomProperties.Count());
+            Assert.AreEqual(7, message.CustomProperties["IntegerAttribute"].IntegerCustomProperty.Value);
+            Assert.AreEqual(0.5, message.CustomProperties["FloatAttribute"].FloatCustomProperty.Value);
+
+            var signal = dbc.Messages.Single().Signals.FirstOrDefault(x => x.Name.Equals("COUNTER_ALT"));
+            Assert.IsNotNull(signal);
+            Assert.AreEqual(2, signal.CustomProperties.Count());
+            Assert.AreEqual("ThirdVal", signal.CustomProperties["EnumAttributeName"].StringCustomProperty.Value);
+            Assert.AreEqual("DefaultString", signal.CustomProperties["StringAttribute"].StringCustomProperty.Value);
+        }
     }
 }
