@@ -10,8 +10,8 @@ namespace DbcParserLib.Model
     {
         public string Name { get; set; }
         public DbcDataType DataType { get; set; }
-        public IntegerCustomPropertyDefinition IntegerCustomProperty { get; set; }
-        public FloatCustomPropertyDefinition FloatCustomProperty { get; set; }
+        public NumericCustomPropertyDefinition<int> IntegerCustomProperty { get; set; }
+        public NumericCustomPropertyDefinition<double> FloatCustomProperty { get; set; }
         public StringCustomPropertyDefinition StringCustomProperty { get; set; }
         public EnumCustomPropertyDefinition EnumCustomProperty { get; set; }
 
@@ -35,19 +35,13 @@ namespace DbcParserLib.Model
         }
     }
 
-    public class IntegerCustomPropertyDefinition
+    public class NumericCustomPropertyDefinition<T>
     {
-        public int Maximum { get; set; }
-        public int Minimum { get; set; }
-        public int Default { get; set; }
+        public T Maximum { get; set; }
+        public T Minimum { get; set; }
+        public T Default { get; set; }
     }
 
-    public class FloatCustomPropertyDefinition
-    {
-        public double Maximum { get; set; }
-        public double Minimum { get; set; }
-        public double Default { get; set; }
-    }
     public class StringCustomPropertyDefinition
     {
         public string Default { get; set; }

@@ -55,7 +55,7 @@ namespace DbcParserLib.Parsers
                     DbcDataType dataType = DbcDataType.Integer;
                     if (match.Groups[3].Value == "INT" || match.Groups[3].Value == "HEX")
                     {
-                        customProperty.IntegerCustomProperty = new IntegerCustomPropertyDefinition
+                        customProperty.IntegerCustomProperty = new NumericCustomPropertyDefinition<int>
                         {
                             Minimum = int.Parse(match.Groups[4].Value, CultureInfo.InvariantCulture),
                             Maximum = int.Parse(match.Groups[5].Value, CultureInfo.InvariantCulture),
@@ -64,7 +64,7 @@ namespace DbcParserLib.Parsers
                     else if (match.Groups[6].Value == "FLOAT")
                     {
                         dataType = DbcDataType.Float;
-                        customProperty.FloatCustomProperty = new FloatCustomPropertyDefinition
+                        customProperty.FloatCustomProperty = new NumericCustomPropertyDefinition<double>
                         {
                             Minimum = double.Parse(match.Groups[7].Value, CultureInfo.InvariantCulture),
                             Maximum = double.Parse(match.Groups[8].Value, CultureInfo.InvariantCulture),

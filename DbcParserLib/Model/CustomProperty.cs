@@ -8,41 +8,41 @@ namespace DbcParserLib.Model
 {
     public class CustomProperty
     {
-        private CustomPropertyDefinition m_customPropertyDefinition;
+        private readonly CustomPropertyDefinition m_customPropertyDefinition;
 
         public CustomProperty(CustomPropertyDefinition customPropertyDefinition)
         {
             m_customPropertyDefinition = customPropertyDefinition;
         }
 
-        public IntegerCustomProperty IntegerCustomProperty { get; set; }
-        public FloatCustomProperty FloatCustomProperty { get; set; }
-        public StringCustomProperty StringCustomProperty { get; set; }
+        public CustomPropertyValue<int> IntegerCustomProperty { get; set; }
+        public CustomPropertyValue<double> FloatCustomProperty { get; set; }
+        public CustomPropertyValue<string> StringCustomProperty { get; set; }
 
         public void SetCustomPropertyValue(string value)
         {
             switch (m_customPropertyDefinition.DataType)
             {
                 case DbcDataType.Integer:
-                    IntegerCustomProperty = new IntegerCustomProperty()
+                    IntegerCustomProperty = new CustomPropertyValue<int>()
                     {
                         Value = int.Parse(value, CultureInfo.InvariantCulture)
                     };
                     break;
                 case DbcDataType.Float:
-                    FloatCustomProperty = new FloatCustomProperty()
+                    FloatCustomProperty = new CustomPropertyValue<double>()
                     {
                         Value = float.Parse(value, CultureInfo.InvariantCulture)
                     };
                     break;
                 case DbcDataType.String:
-                    StringCustomProperty = new StringCustomProperty()
+                    StringCustomProperty = new CustomPropertyValue<string>()
                     {
                         Value = value
                     };
                     break;
                 case DbcDataType.Enum:
-                    StringCustomProperty = new StringCustomProperty()
+                    StringCustomProperty = new CustomPropertyValue<string>()
                     {
                         Value = value
                     };
@@ -55,25 +55,25 @@ namespace DbcParserLib.Model
             switch (m_customPropertyDefinition.DataType)
             {
                 case DbcDataType.Integer:
-                    IntegerCustomProperty = new IntegerCustomProperty()
+                    IntegerCustomProperty = new CustomPropertyValue<int>()
                     {
                         Value = m_customPropertyDefinition.IntegerCustomProperty.Default
                     };
                     break;
                 case DbcDataType.Float:
-                    FloatCustomProperty = new FloatCustomProperty()
+                    FloatCustomProperty = new CustomPropertyValue<double>()
                     {
                         Value = m_customPropertyDefinition.FloatCustomProperty.Default
                     };
                     break;
                 case DbcDataType.String:
-                    StringCustomProperty = new StringCustomProperty()
+                    StringCustomProperty = new CustomPropertyValue<string>()
                     {
                         Value = m_customPropertyDefinition.StringCustomProperty.Default
                     };
                     break;
                 case DbcDataType.Enum:
-                    StringCustomProperty = new StringCustomProperty()
+                    StringCustomProperty = new CustomPropertyValue<string>()
                     {
                         Value = m_customPropertyDefinition.EnumCustomProperty.Default
                     };
@@ -82,17 +82,8 @@ namespace DbcParserLib.Model
         }
     }
 
-    public class IntegerCustomProperty
+    public class CustomPropertyValue<T>
     {
-        public int Value { get; set; }
-    }
-
-    public class FloatCustomProperty
-    {
-        public double Value { get; set; }
-    }
-    public class StringCustomProperty
-    {
-        public string Value { get; set; }
+        public T Value { get; set; }
     }
 }
