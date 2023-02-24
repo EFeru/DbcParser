@@ -15,31 +15,31 @@ namespace DbcParserLib
 
     public class DbcBuilder : IDbcBuilder
     {
-        private readonly ISet<Node> m_nodes = new HashSet<Node>(new NodeEqualityComparer());
+        private readonly ISet<EditableNode> m_nodes = new HashSet<EditableNode>(new NodeEqualityComparer());
         private readonly IDictionary<string, ValuesTable> m_namedTablesMap = new Dictionary<string, ValuesTable>();
-        private readonly IDictionary<uint, Message> m_messages = new Dictionary<uint, Message>();
-        private readonly IDictionary<uint, IDictionary<string, Signal>> m_signals = new Dictionary<uint, IDictionary<string, Signal>>();
+        private readonly IDictionary<uint, EditableMessage> m_messages = new Dictionary<uint, EditableMessage>();
+        private readonly IDictionary<uint, IDictionary<string, EditableSignal>> m_signals = new Dictionary<uint, IDictionary<string, EditableSignal>>();
         private readonly IDictionary<DbcObjectType, IDictionary<string, CustomPropertyDefinition>> m_customProperties = new Dictionary<DbcObjectType, IDictionary<string, CustomPropertyDefinition>>() {
             {DbcObjectType.Node, new Dictionary<string, CustomPropertyDefinition>()},
             {DbcObjectType.Message, new Dictionary<string, CustomPropertyDefinition>()},
             {DbcObjectType.Signal, new Dictionary<string, CustomPropertyDefinition>()},
         };
 
-        private Message m_currentMessage;
+        private EditableMessage m_currentMessage;
 
-        public void AddNode(Node node)
+        public void AddNode(EditableNode node)
         {
             m_nodes.Add(node);
         }
 
-        public void AddMessage(Message message)
+        public void AddMessage(EditableMessage message)
         {
             m_messages[message.ID] = message;
             m_currentMessage = message;
-            m_signals[message.ID] = new Dictionary<string, Signal>();
+            m_signals[message.ID] = new Dictionary<string, EditableSignal>();
         }
 
-        public void AddSignal(Signal signal)
+        public void AddSignal(EditableSignal signal)
         {
             if (m_currentMessage != null)
             {
@@ -195,7 +195,7 @@ namespace DbcParserLib
             }
         }
 
-        private bool TryGetValueMessageSignal(uint messageId, string signalName, out Signal signal)
+        private bool TryGetValueMessageSignal(uint messageId, string signalName, out EditableSignal signal)
         {
             if (m_signals.TryGetValue(messageId, out var signals) && signals.TryGetValue(signalName, out signal))
             {
@@ -266,13 +266,25 @@ namespace DbcParserLib
                 message.Value.Signals.AddRange(m_signals[message.Key].Values);
             }
 
-            return new Dbc(m_nodes.ToArray(), m_messages.Values.ToArray());
+            var nodes = new List<Node>();
+            foreach (var node in m_nodes)
+            {
+                nodes.Add(node.CreateNode());
+            }
+
+            var messages = new List<Message>();
+            foreach (var message in m_messages.Values)
+            {
+                messages.Add(message.CreateMessage());
+            }
+
+            return new Dbc(nodes, messages);
         }
     }
 
-    internal class NodeEqualityComparer : IEqualityComparer<Node>
+internal class NodeEqualityComparer : IEqualityComparer<EditableNode>
     {
-        public bool Equals(Node b1, Node b2)
+        public bool Equals(EditableNode b1, EditableNode b2)
         {
             if (b2 == null && b1 == null)
                 return true;
@@ -284,7 +296,7 @@ namespace DbcParserLib
                 return false;
         }
 
-        public int GetHashCode(Node bx)
+        public int GetHashCode(EditableNode bx)
         {
             return bx.Name.GetHashCode();
         }

@@ -14,7 +14,7 @@ namespace DbcParserLib.Parsers
 
             foreach(var nodeName in line.SplitBySpace().Skip(1))
             {
-                var node = new Node()
+                var node = new EditableNode()
                 {
                     Name = nodeName
                 };

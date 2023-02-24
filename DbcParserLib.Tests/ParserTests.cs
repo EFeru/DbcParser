@@ -327,7 +327,7 @@ BA_ ""EnumAttributeName"" SG_ 1043 COUNTER_ALT ""ThirdVal""; ";
             var signal = dbc.Messages.Single().Signals.FirstOrDefault(x => x.Name.Equals("COUNTER_ALT"));
             Assert.IsNotNull(signal);
             Assert.AreEqual(2, signal.CustomProperties.Count());
-            Assert.AreEqual("ThirdVal", signal.CustomProperties["EnumAttributeName"].StringCustomProperty.Value);
+            Assert.AreEqual("ThirdVal", signal.CustomProperties["EnumAttributeName"].EnumCustomProperty.Value);
             Assert.AreEqual("DefaultString", signal.CustomProperties["StringAttribute"].StringCustomProperty.Value);
         }
     }

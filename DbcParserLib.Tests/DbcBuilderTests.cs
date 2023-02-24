@@ -37,22 +37,22 @@ namespace DbcParserLib.Tests
         public void SingleNodeIsAdded()
         {
             var builder = new DbcBuilder();
-            var node = new Node { Name = "nodeName" };
+            var node = new EditableNode { Name = "nodeName" };
             builder.AddNode(node);
 
             var dbc = builder.Build();
 
             Assert.AreEqual(1, dbc.Nodes.Count());
-            Assert.AreEqual(node, dbc.Nodes.First());
+            Assert.AreEqual("nodeName", dbc.Nodes.First().Name);
         }
 
         [Test]
         public void DuplicatedNodesAreSkipped()
         {
             var builder = new DbcBuilder();
-            var node = new Node { Name = "nodeName" };
-            var node2 = new Node { Name = "nodeName2" };
-            var node3 = new Node { Name = "nodeName" };
+            var node = new EditableNode { Name = "nodeName" };
+            var node2 = new EditableNode { Name = "nodeName2" };
+            var node3 = new EditableNode { Name = "nodeName" };
             builder.AddNode(node);
             builder.AddNode(node2);
             builder.AddNode(node3);
@@ -60,22 +60,22 @@ namespace DbcParserLib.Tests
             var dbc = builder.Build();
 
             Assert.AreEqual(2, dbc.Nodes.Count());
-            Assert.AreEqual(node, dbc.Nodes.First());
-            Assert.AreEqual(node2, dbc.Nodes.Skip(1).First());
+            Assert.AreEqual("nodeName", dbc.Nodes.First().Name);
+            Assert.AreEqual("nodeName2", dbc.Nodes.Skip(1).First().Name);
         }
 
         [Test]
         public void NodeCommentIsAddedToNode()
         {
             var builder = new DbcBuilder();
-            var node = new Node { Name = "nodeName" };
+            var node = new EditableNode { Name = "nodeName" };
             builder.AddNode(node);
             builder.AddNodeComment("nodeName", "this is a comment");
 
             var dbc = builder.Build();
 
             Assert.AreEqual(1, dbc.Nodes.Count());
-            Assert.AreEqual(node, dbc.Nodes.First());
+            Assert.AreEqual("nodeName", dbc.Nodes.First().Name);
             Assert.AreEqual("this is a comment", dbc.Nodes.First().Comment);
         }
 
@@ -83,14 +83,14 @@ namespace DbcParserLib.Tests
         public void NodeCommentIsSkippedIfNodeIsNotFound()
         {
             var builder = new DbcBuilder();
-            var node = new Node { Name = "nodeName" };
+            var node = new EditableNode { Name = "nodeName" };
             builder.AddNode(node);
             builder.AddNodeComment("anotherNodeName", "this is a comment");
 
             var dbc = builder.Build();
 
             Assert.AreEqual(1, dbc.Nodes.Count());
-            Assert.AreEqual(node, dbc.Nodes.First());
+            Assert.AreEqual("nodeName", dbc.Nodes.First().Name);
             Assert.IsNull(dbc.Nodes.First().Comment);
         }
 
@@ -98,27 +98,26 @@ namespace DbcParserLib.Tests
         public void MessageIsAdded()
         {
             var builder = new DbcBuilder();
-            var message = new Message { };
+            var message = new EditableMessage { };
             builder.AddMessage(message);
             var dbc = builder.Build();
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
         }
 
         [Test]
         public void CommentIsAddedToMessage()
         {
             var builder = new DbcBuilder();
-            var message = new Message { ID = 234 };
+            var message = new EditableMessage { ID = 234 };
             builder.AddMessage(message);
             builder.AddMessageComment(234, "comment");
             var dbc = builder.Build();
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
+            Assert.AreEqual(234, dbc.Messages.First().ID);
             Assert.AreEqual("comment", dbc.Messages.First().Comment);
         }
 
@@ -126,14 +125,14 @@ namespace DbcParserLib.Tests
         public void CommentIsNotAddedToMissingMessage()
         {
             var builder = new DbcBuilder();
-            var message = new Message { ID = 234 };
+            var message = new EditableMessage { ID = 234 };
             builder.AddMessage(message);
             builder.AddMessageComment(235, "comment");
             var dbc = builder.Build();
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
+            Assert.AreEqual(234, dbc.Messages.First().ID);
             Assert.IsNull(dbc.Messages.First().Comment);
         }
 
@@ -141,19 +140,19 @@ namespace DbcParserLib.Tests
         public void SignalIsAddedToCurrentMessage()
         {
             var builder = new DbcBuilder();
-            var message1 = new Message { ID = 234 };
+            var message1 = new EditableMessage { ID = 234 };
             builder.AddMessage(message1);
 
-            var signal1 = new Signal { Name = "name1" };
+            var signal1 = new EditableSignal { Name = "name1" };
             builder.AddSignal(signal1);
 
-            var message2 = new Message { ID = 235 };
+            var message2 = new EditableMessage { ID = 235 };
             builder.AddMessage(message2);
 
-            var signal2 = new Signal { Name = "name2" };
+            var signal2 = new EditableSignal { Name = "name2" };
             builder.AddSignal(signal2);
 
-            var signal3 = new Signal { Name = "name3" };
+            var signal3 = new EditableSignal { Name = "name3" };
             builder.AddSignal(signal3);
 
             var dbc = builder.Build();
@@ -162,21 +161,21 @@ namespace DbcParserLib.Tests
             Assert.AreEqual(2, dbc.Messages.Count());
 
             var messagesToArray = dbc.Messages.ToArray();
-            Assert.AreEqual(message1, messagesToArray[0]);
+            Assert.AreEqual(234, messagesToArray[0].ID);
             Assert.AreEqual(1, messagesToArray[0].Signals.Count());
-            Assert.AreEqual(signal1, messagesToArray[0].Signals.First());
+            Assert.AreEqual("name1", messagesToArray[0].Signals.First().Name);
 
-            Assert.AreEqual(message2, messagesToArray[1]);
+            Assert.AreEqual(235, messagesToArray[1].ID);
             Assert.AreEqual(2, messagesToArray[1].Signals.Count());
-            Assert.AreEqual(signal2, messagesToArray[1].Signals.First());
-            Assert.AreEqual(signal3, messagesToArray[1].Signals.Skip(1).First());
+            Assert.AreEqual("name2", messagesToArray[1].Signals.First().Name);
+            Assert.AreEqual("name3", messagesToArray[1].Signals.Skip(1).First().Name);
         }
 
         [Test]
         public void SignalIsNotAddedIfNoMessageHasBeenProvidedFirst()
         {
             var builder = new DbcBuilder();
-            builder.AddSignal(new Signal { });
+            builder.AddSignal(new EditableSignal { });
             var dbc = builder.Build();
 
             Assert.IsEmpty(dbc.Nodes);
@@ -187,9 +186,9 @@ namespace DbcParserLib.Tests
         public void CommentIsAddedToSignal()
         {
             var builder = new DbcBuilder();
-            var message = new Message { ID = 234 };
+            var message = new EditableMessage { ID = 234 };
             builder.AddMessage(message);
-            var signal = new Signal { Name = "name1" };
+            var signal = new EditableSignal { Name = "name1" };
             builder.AddSignal(signal);
 
             builder.AddSignalComment(234, "name1", "comment");
@@ -197,8 +196,8 @@ namespace DbcParserLib.Tests
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
-            Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.AreEqual(234, dbc.Messages.First().ID);
+            Assert.AreEqual("name1", dbc.Messages.First().Signals.First().Name);
             Assert.AreEqual("comment", dbc.Messages.First().Signals.First().Comment);
         }
 
@@ -206,9 +205,9 @@ namespace DbcParserLib.Tests
         public void CommentIsNotAddedToMissingSignalMessageId()
         {
             var builder = new DbcBuilder();
-            var message = new Message { ID = 234 };
+            var message = new EditableMessage { ID = 234 };
             builder.AddMessage(message);
-            var signal = new Signal { Name = "name1" };
+            var signal = new EditableSignal { Name = "name1" };
             builder.AddSignal(signal);
 
             builder.AddSignalComment(235, "name1", "comment");
@@ -216,8 +215,8 @@ namespace DbcParserLib.Tests
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
-            Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.AreEqual(234, dbc.Messages.First().ID);
+            Assert.AreEqual("name1", dbc.Messages.First().Signals.First().Name);
             Assert.IsNull(dbc.Messages.First().Signals.First().Comment);
         }
 
@@ -225,9 +224,9 @@ namespace DbcParserLib.Tests
         public void CommentIsNotAddedToMissingSignalName()
         {
             var builder = new DbcBuilder();
-            var message = new Message { ID = 234 };
+            var message = new EditableMessage { ID = 234 };
             builder.AddMessage(message);
-            var signal = new Signal { Name = "name1" };
+            var signal = new EditableSignal { Name = "name1" };
             builder.AddSignal(signal);
 
             builder.AddSignalComment(234, "name2", "comment");
@@ -235,8 +234,8 @@ namespace DbcParserLib.Tests
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
-            Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.AreEqual(234, dbc.Messages.First().ID);
+            Assert.AreEqual("name1", dbc.Messages.First().Signals.First().Name);
             Assert.IsNull(dbc.Messages.First().Signals.First().Comment);
         }
 
@@ -244,9 +243,9 @@ namespace DbcParserLib.Tests
         public void TableValuesAreAddedToSignal()
         {
             var builder = new DbcBuilder();
-            var message = new Message { ID = 234 };
+            var message = new EditableMessage { ID = 234 };
             builder.AddMessage(message);
-            var signal = new Signal { Name = "name1" };
+            var signal = new EditableSignal { Name = "name1" };
             builder.AddSignal(signal);
             var testValuesDict = new Dictionary<int, string>() { { 1, "fake" } };
 
@@ -255,8 +254,8 @@ namespace DbcParserLib.Tests
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
-            Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.AreEqual(234, dbc.Messages.First().ID);
+            Assert.AreEqual("name1", dbc.Messages.First().Signals.First().Name);
             Assert.AreEqual(testValuesDict, dbc.Messages.First().Signals.First().ValueTableMap);
             Assert.AreEqual("1 fake", dbc.Messages.First().Signals.First().ValueTable);
         }
@@ -265,10 +264,10 @@ namespace DbcParserLib.Tests
         public void TableValuesWithExtendedMessageIdAreAddedToSignal()
         {
             var builder = new DbcBuilder();
-            var message = new Message { ID = 2566896411 };
+            var message = new EditableMessage { ID = 2566896411 };
             message.IsExtID = DbcBuilder.IsExtID(ref message.ID);
             builder.AddMessage(message);
-            var signal = new Signal { Name = "name1" };
+            var signal = new EditableSignal { Name = "name1" };
             builder.AddSignal(signal);
             var testValuesDict = new Dictionary<int, string>() { { 1, "fake" } };
 
@@ -277,8 +276,8 @@ namespace DbcParserLib.Tests
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
-            Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.AreEqual(message.ID, dbc.Messages.First().ID);
+            Assert.AreEqual("name1", dbc.Messages.First().Signals.First().Name);
             Assert.AreEqual(testValuesDict, dbc.Messages.First().Signals.First().ValueTableMap);
             Assert.AreEqual("1 fake", dbc.Messages.First().Signals.First().ValueTable);
         }
@@ -287,9 +286,9 @@ namespace DbcParserLib.Tests
         public void TableValueIsNotAddedToMissingSignalMessageId()
         {
             var builder = new DbcBuilder();
-            var message = new Message { ID = 234 };
+            var message = new EditableMessage { ID = 234 };
             builder.AddMessage(message);
-            var signal = new Signal { Name = "name1" };
+            var signal = new EditableSignal { Name = "name1" };
             builder.AddSignal(signal);
             var testValuesDict = new Dictionary<int, string>() { { 1, "fake" } };
 
@@ -298,8 +297,8 @@ namespace DbcParserLib.Tests
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
-            Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.AreEqual(234, dbc.Messages.First().ID);
+            Assert.AreEqual("name1", dbc.Messages.First().Signals.First().Name);
             Assert.IsNull(dbc.Messages.First().Signals.First().ValueTableMap);
             Assert.IsNull(dbc.Messages.First().Signals.First().ValueTable);
         }
@@ -308,9 +307,9 @@ namespace DbcParserLib.Tests
         public void TableValueIsNotAddedToMissingSignalName()
         {
             var builder = new DbcBuilder();
-            var message = new Message { ID = 234 };
+            var message = new EditableMessage { ID = 234 };
             builder.AddMessage(message);
-            var signal = new Signal { Name = "name1" };
+            var signal = new EditableSignal { Name = "name1" };
             builder.AddSignal(signal);
             var testValuesDict = new Dictionary<int, string>() { { 1, "fake" } };
 
@@ -319,8 +318,8 @@ namespace DbcParserLib.Tests
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
-            Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.AreEqual(234, dbc.Messages.First().ID);
+            Assert.AreEqual("name1", dbc.Messages.First().Signals.First().Name);
             Assert.IsNull(dbc.Messages.First().Signals.First().ValueTableMap);
             Assert.IsNull(dbc.Messages.First().Signals.First().ValueTable);
         }
@@ -329,9 +328,9 @@ namespace DbcParserLib.Tests
         public void NamedTableValuesAreAddedToSignal()
         {
             var builder = new DbcBuilder();
-            var message = new Message { ID = 234 };
+            var message = new EditableMessage { ID = 234 };
             builder.AddMessage(message);
-            var signal = new Signal { Name = "name1" };
+            var signal = new EditableSignal { Name = "name1" };
             builder.AddSignal(signal);
             var testValuesDict = new Dictionary<int, string>() { { 1, "fake" } };
 
@@ -342,8 +341,8 @@ namespace DbcParserLib.Tests
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
-            Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.AreEqual(234, dbc.Messages.First().ID);
+            Assert.AreEqual("name1", dbc.Messages.First().Signals.First().Name);
             Assert.AreEqual(testValuesDict, dbc.Messages.First().Signals.First().ValueTableMap);
             Assert.AreEqual("1 fake", dbc.Messages.First().Signals.First().ValueTable);
         }
@@ -352,9 +351,9 @@ namespace DbcParserLib.Tests
         public void NamedTableValueIsNotAddedToMissingSignalMessageId()
         {
             var builder = new DbcBuilder();
-            var message = new Message { ID = 234 };
+            var message = new EditableMessage { ID = 234 };
             builder.AddMessage(message);
-            var signal = new Signal { Name = "name1" };
+            var signal = new EditableSignal { Name = "name1" };
             builder.AddSignal(signal);
             var testValuesDict = new Dictionary<int, string>() { { 1, "fake" } };
 
@@ -365,8 +364,8 @@ namespace DbcParserLib.Tests
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
-            Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.AreEqual(234, dbc.Messages.First().ID);
+            Assert.AreEqual("name1", dbc.Messages.First().Signals.First().Name);
             Assert.IsNull(dbc.Messages.First().Signals.First().ValueTableMap);
             Assert.IsNull(dbc.Messages.First().Signals.First().ValueTable);
         }
@@ -375,9 +374,9 @@ namespace DbcParserLib.Tests
         public void NamedTableValueIsNotAddedToMissingSignalName()
         {
             var builder = new DbcBuilder();
-            var message = new Message { ID = 234 };
+            var message = new EditableMessage { ID = 234 };
             builder.AddMessage(message);
-            var signal = new Signal { Name = "name1" };
+            var signal = new EditableSignal { Name = "name1" };
             builder.AddSignal(signal);
             var testValuesDict = new Dictionary<int, string>() { { 1, "fake" } };
 
@@ -388,8 +387,8 @@ namespace DbcParserLib.Tests
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
-            Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.AreEqual(234, dbc.Messages.First().ID);
+            Assert.AreEqual("name1", dbc.Messages.First().Signals.First().Name);
             Assert.IsNull(dbc.Messages.First().Signals.First().ValueTableMap);
             Assert.IsNull(dbc.Messages.First().Signals.First().ValueTable);
         }
@@ -398,9 +397,9 @@ namespace DbcParserLib.Tests
         public void NamedTableValueIsNotAddedIfTableNameDoesNotExist()
         {
             var builder = new DbcBuilder();
-            var message = new Message { ID = 234 };
+            var message = new EditableMessage { ID = 234 };
             builder.AddMessage(message);
-            var signal = new Signal { Name = "name1" };
+            var signal = new EditableSignal { Name = "name1" };
             builder.AddSignal(signal);
 
             builder.LinkNamedTableToSignal(234, "name1", "aTableName");
@@ -408,8 +407,8 @@ namespace DbcParserLib.Tests
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
-            Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.AreEqual(234, dbc.Messages.First().ID);
+            Assert.AreEqual("name1", dbc.Messages.First().Signals.First().Name);
             Assert.IsNull(dbc.Messages.First().Signals.First().ValueTable);
         }
 
@@ -447,9 +446,9 @@ namespace DbcParserLib.Tests
         public void NamedTablesWithSameNameOverridesPrevious()
         {
             var builder = new DbcBuilder();
-            var message = new Message { ID = 234 };
+            var message = new EditableMessage { ID = 234 };
             builder.AddMessage(message);
-            var signal = new Signal { Name = "name1" };
+            var signal = new EditableSignal { Name = "name1" };
             builder.AddSignal(signal);
             var testValuesDict = new Dictionary<int, string>() { { 1, "fake1" } };
             var testValuesDict2 = new Dictionary<int, string>() { { 2, "fake2" } };
@@ -462,8 +461,8 @@ namespace DbcParserLib.Tests
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
-            Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.AreEqual(234, dbc.Messages.First().ID);
+            Assert.AreEqual("name1", dbc.Messages.First().Signals.First().Name);
             Assert.AreEqual(testValuesDict2, dbc.Messages.First().Signals.First().ValueTableMap);
             Assert.AreEqual("2 fake2", dbc.Messages.First().Signals.First().ValueTable);
         }

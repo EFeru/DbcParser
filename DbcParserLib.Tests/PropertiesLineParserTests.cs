@@ -10,6 +10,20 @@ namespace DbcParserLib.Tests
 {
     public class PropertiesLineParserTests
     {
+        private MockRepository m_repository;
+
+        [SetUp]
+        public void Setup()
+        {
+            m_repository = new MockRepository(MockBehavior.Strict);
+        }
+
+        [TearDown]
+        public void Teardown()
+        {
+            m_repository.VerifyAll();
+        }
+
         private static List<ILineParser> CreateParser()
         {
             return new List<ILineParser>() {
@@ -51,6 +65,25 @@ namespace DbcParserLib.Tests
         }
 
         [Test]
+        public void ScientificNotationDefinitionCustomPropertyIsParsedTest()
+        {
+            var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+ 
+            dbcBuilderMock.Setup(mock => mock.AddCustomProperty(It.IsAny<DbcObjectType>(), It.IsAny<CustomPropertyDefinition>()))
+                .Callback<DbcObjectType, CustomPropertyDefinition>((objectType, customProperty) =>
+                {
+                    Assert.AreEqual("AttributeName", customProperty.Name);
+                    Assert.AreEqual(DbcDataType.Float, customProperty.DataType);
+                    Assert.AreEqual(0, customProperty.FloatCustomProperty.Minimum);
+                    Assert.AreEqual(0.1, customProperty.FloatCustomProperty.Maximum);
+                });
+
+            var sigInitialValueLineParser = CreateParser();
+            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" FLOAT 0 1e-1;", sigInitialValueLineParser, dbcBuilderMock.Object, nextLineProviderMock.Object));
+        }
+
+        [Test]
         public void StringDefinitionCustomPropertyIsParsedTest()
         {
             var builder = new DbcBuilder();
@@ -76,7 +109,7 @@ namespace DbcParserLib.Tests
         public void MsgCustomPropertyIsParsedTest()
         {
             var builder = new DbcBuilder();
-            var message = new Message { ID = 2394947585 };
+            var message = new EditableMessage { ID = 2394947585 };
             message.IsExtID = DbcBuilder.IsExtID(ref message.ID);
             builder.AddMessage(message);
 
@@ -94,10 +127,10 @@ namespace DbcParserLib.Tests
         public void SigCustomPropertyIsParsedTest()
         {
             var builder = new DbcBuilder();
-            var message = new Message { ID = 2394947585 };
+            var message = new EditableMessage { ID = 2394947585 };
             message.IsExtID = DbcBuilder.IsExtID(ref message.ID);
             builder.AddMessage(message);
-            var signal = new Signal { Name = "sig_name" };
+            var signal = new EditableSignal { Name = "sig_name" };
             builder.AddSignal(signal);
 
             var sigInitialValueLineParser = CreateParser();
@@ -114,7 +147,7 @@ namespace DbcParserLib.Tests
         public void NodeCustomPropertyIsParsedTest()
         {
             var builder = new DbcBuilder();
-            var node = new Node { Name = "Node1" };
+            var node = new EditableNode { Name = "Node1" };
             builder.AddNode(node);
 
             var sigInitialValueLineParser = CreateParser();
@@ -125,10 +158,26 @@ namespace DbcParserLib.Tests
         }
 
         [Test]
+        public void NodeScientificNotationCustomPropertyIsParsedTest()
+        {
+            var builder = new DbcBuilder();
+            var node = new EditableNode { Name = "Node1" };
+            builder.AddNode(node);
+
+            var dbc = builder.Build();
+            var sigInitialValueLineParser = CreateParser();
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" FLOAT 0 10;", sigInitialValueLineParser, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 5;", sigInitialValueLineParser, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_ ""AttributeName"" BU_ Node1 0.7e1;", sigInitialValueLineParser, builder, nextLineProvider));
+            Assert.AreEqual(dbc.Nodes.First().CustomProperties.First().Value.FloatCustomProperty.Value, 7);
+        }
+
+        [Test]
         public void NodeMultipleCustomPropertyAreParsedTest()
         {
             var builder = new DbcBuilder();
-            var node = new Node { Name = "Node1" };
+            var node = new EditableNode { Name = "Node1" };
             builder.AddNode(node);
 
             var sigInitialValueLineParser = CreateParser();
@@ -150,8 +199,8 @@ namespace DbcParserLib.Tests
         public void CustomPropertyIsAssignedToDifferentNodesTest()
         {
             var builder = new DbcBuilder();
-            var node1 = new Node { Name = "Node1" };
-            var node2 = new Node { Name = "Node2" };
+            var node1 = new EditableNode { Name = "Node1" };
+            var node2 = new EditableNode { Name = "Node2" };
             builder.AddNode(node1);
             builder.AddNode(node2);
 

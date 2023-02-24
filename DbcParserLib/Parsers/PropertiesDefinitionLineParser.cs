@@ -1,5 +1,6 @@
 ﻿using DbcParserLib.Model;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -10,8 +11,8 @@ namespace DbcParserLib.Parsers
     {
         private const string PropertiesDefinitionLineStarter = "BA_DEF_ ";
         private const string PropertiesDefinitionDefaultLineStarter = "BA_DEF_DEF_ ";
-        private const string PropertyDefinitionParsingRegex = @"BA_DEF_\s+(?:(BU_|BO_|SG_|EV_)\s+)?""([a-zA-Z_][\w]*)""\s+(?:(?:(INT|HEX)\s+(-?\d+)\s+(-?\d+))|(?:(FLOAT)\s+([0-9.]+)\s+([0-9.]+))|(STRING)|(ENUM\s+(?:""[^""]*"",*){1,100}))\s*;";
-        private const string PropertyDefinitionDefaultParsingRegex = @"BA_DEF_DEF_\s+""([a-zA-Z_][\w]*)""\s+(-?\d+|[0-9.]+|""[^""]*"")\s*;";
+        private const string PropertyDefinitionParsingRegex = @"BA_DEF_\s+(?:(BU_|BO_|SG_|EV_)\s+)?""([a-zA-Z_][\w]*)""\s+(?:(?:(INT|HEX)\s+(-?\d+)\s+(-?\d+))|(?:(FLOAT)\s+([\d\+\-eE.]+)\s+([\d\+\-eE.]+))|(STRING)|(ENUM\s+(?:""[^""]*"",*){1,100}))\s*;";
+        private const string PropertyDefinitionDefaultParsingRegex = @"BA_DEF_DEF_\s+""([a-zA-Z_][\w]*)""\s+(-?\d+|[\d\+\-eE.]+|""[^""]*"")\s*;";
 
         public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
@@ -81,7 +82,7 @@ namespace DbcParserLib.Parsers
                         var enumDefinition = match.Groups[10].Value.Replace("\"", "").Split(' ')[1];
                         customProperty.EnumCustomProperty = new EnumCustomPropertyDefinition
                         {
-                            Definition = enumDefinition.Split(','),
+                            Values = enumDefinition.Split(','),
                         };
                     }
                     customProperty.DataType = dataType;

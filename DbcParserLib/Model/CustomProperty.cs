@@ -8,7 +8,7 @@ namespace DbcParserLib.Model
 {
     public class CustomProperty
     {
-        private readonly CustomPropertyDefinition m_customPropertyDefinition;
+        public readonly CustomPropertyDefinition m_customPropertyDefinition;
 
         public CustomProperty(CustomPropertyDefinition customPropertyDefinition)
         {
@@ -16,8 +16,10 @@ namespace DbcParserLib.Model
         }
 
         public CustomPropertyValue<int> IntegerCustomProperty { get; set; }
+        public CustomPropertyValue<int> HexCustomProperty { get; set; }
         public CustomPropertyValue<double> FloatCustomProperty { get; set; }
         public CustomPropertyValue<string> StringCustomProperty { get; set; }
+        public CustomPropertyValue<string> EnumCustomProperty { get; set; }
 
         public void SetCustomPropertyValue(string value)
         {
@@ -25,6 +27,12 @@ namespace DbcParserLib.Model
             {
                 case DbcDataType.Integer:
                     IntegerCustomProperty = new CustomPropertyValue<int>()
+                    {
+                        Value = int.Parse(value, CultureInfo.InvariantCulture)
+                    };
+                    break;
+                case DbcDataType.Hex:
+                    HexCustomProperty = new CustomPropertyValue<int>()
                     {
                         Value = int.Parse(value, CultureInfo.InvariantCulture)
                     };
@@ -42,7 +50,7 @@ namespace DbcParserLib.Model
                     };
                     break;
                 case DbcDataType.Enum:
-                    StringCustomProperty = new CustomPropertyValue<string>()
+                    EnumCustomProperty = new CustomPropertyValue<string>()
                     {
                         Value = value
                     };
@@ -60,6 +68,12 @@ namespace DbcParserLib.Model
                         Value = m_customPropertyDefinition.IntegerCustomProperty.Default
                     };
                     break;
+                case DbcDataType.Hex:
+                    HexCustomProperty = new CustomPropertyValue<int>()
+                    {
+                        Value = m_customPropertyDefinition.HexCustomProperty.Default
+                    };
+                    break;
                 case DbcDataType.Float:
                     FloatCustomProperty = new CustomPropertyValue<double>()
                     {
@@ -73,7 +87,7 @@ namespace DbcParserLib.Model
                     };
                     break;
                 case DbcDataType.Enum:
-                    StringCustomProperty = new CustomPropertyValue<string>()
+                    EnumCustomProperty = new CustomPropertyValue<string>()
                     {
                         Value = m_customPropertyDefinition.EnumCustomProperty.Default
                     };

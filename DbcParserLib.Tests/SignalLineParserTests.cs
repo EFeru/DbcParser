@@ -75,8 +75,8 @@ namespace DbcParserLib.Tests
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
 
             var results = new List<string>();
-            dbcBuilderMock.Setup(mock => mock.AddSignal(It.IsAny<Signal>()))
-                .Callback<Signal>(signal => 
+            dbcBuilderMock.Setup(mock => mock.AddSignal(It.IsAny<EditableSignal>()))
+                .Callback<EditableSignal>(signal => 
                 {
                     Assert.AreEqual("MCU_longitude", signal.Name);
                     Assert.AreEqual(28, signal.StartBit);
@@ -104,8 +104,8 @@ namespace DbcParserLib.Tests
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
 
             var results = new List<string>();
-            dbcBuilderMock.Setup(mock => mock.AddSignal(It.IsAny<Signal>()))
-                .Callback<Signal>(signal =>
+            dbcBuilderMock.Setup(mock => mock.AddSignal(It.IsAny<EditableSignal>()))
+                .Callback<EditableSignal>(signal =>
                 {
                     Assert.AreEqual("MCU_longitude", signal.Name);
                     Assert.AreEqual(28, signal.StartBit);
@@ -133,8 +133,8 @@ namespace DbcParserLib.Tests
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
 
             var results = new List<string>();
-            dbcBuilderMock.Setup(mock => mock.AddSignal(It.IsAny<Signal>()))
-                .Callback<Signal>(signal =>
+            dbcBuilderMock.Setup(mock => mock.AddSignal(It.IsAny<EditableSignal>()))
+                .Callback<EditableSignal>(signal =>
                 {
                     Assert.AreEqual("MCU_longitude", signal.Name);
                     Assert.AreEqual(28, signal.StartBit);
@@ -163,8 +163,8 @@ namespace DbcParserLib.Tests
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
 
             var results = new List<string>();
-            dbcBuilderMock.Setup(mock => mock.AddSignal(It.IsAny<Signal>()))
-                .Callback<Signal>(signal =>
+            dbcBuilderMock.Setup(mock => mock.AddSignal(It.IsAny<EditableSignal>()))
+                .Callback<EditableSignal>(signal =>
                 {
                     Assert.AreEqual("MCU_longitude", signal.Name);
                     Assert.AreEqual(28, signal.StartBit);

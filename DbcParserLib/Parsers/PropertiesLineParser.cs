@@ -9,7 +9,7 @@ namespace DbcParserLib.Parsers
     public class PropertiesLineParser : ILineParser
     {
         private const string PropertiesLineStarter = "BA_ ";
-        private const string PropertyParsingRegex = @"BA_\s+""([a-zA-Z_][\w]*)""(?:\s+(?:(BU_|EV_)\s+([a-zA-Z_][\w]*))|\s+(?:(BO_)\s+(\d+))|\s+(?:(SG_)\s+(\d+)\s+([a-zA-Z_][\w]*)))?\s+(-?\d+|[0-9.]+|""[^""]*"");";
+        private const string PropertyParsingRegex = @"BA_\s+""([a-zA-Z_][\w]*)""(?:\s+(?:(BU_|EV_)\s+([a-zA-Z_][\w]*))|\s+(?:(BO_)\s+(\d+))|\s+(?:(SG_)\s+(\d+)\s+([a-zA-Z_][\w]*)))?\s+(-?\d+|[\d\+\-eE.]+|""[^""]*"");";
 
         public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {

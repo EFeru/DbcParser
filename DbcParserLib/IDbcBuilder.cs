@@ -5,13 +5,13 @@ namespace DbcParserLib
 {
     public interface IDbcBuilder
     {
-        void AddMessage(Message message);
+        void AddMessage(EditableMessage message);
         void AddMessageComment(uint messageId, string comment);
         void AddMessageCycleTime(uint messageId, int cycleTime);
         void AddNamedValueTable(string name, IReadOnlyDictionary<int, string> dictValues, string stringValues);
-        void AddNode(Node node);
+        void AddNode(EditableNode node);
         void AddNodeComment(string nodeName, string comment);
-        void AddSignal(Signal signal);
+        void AddSignal(EditableSignal signal);
         void AddSignalComment(uint messageId, string signalName, string comment);
         void AddSignalInitialValue(uint messageId, string signalName, double initialValue);
         void AddSignalValueType(uint messageId, string signalName, DbcValueType valueType);

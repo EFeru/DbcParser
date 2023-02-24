@@ -11,6 +11,7 @@ namespace DbcParserLib.Model
         public string Name { get; set; }
         public DbcDataType DataType { get; set; }
         public NumericCustomPropertyDefinition<int> IntegerCustomProperty { get; set; }
+        public NumericCustomPropertyDefinition<int> HexCustomProperty { get; set; }
         public NumericCustomPropertyDefinition<double> FloatCustomProperty { get; set; }
         public StringCustomPropertyDefinition StringCustomProperty { get; set; }
         public EnumCustomPropertyDefinition EnumCustomProperty { get; set; }
@@ -21,6 +22,9 @@ namespace DbcParserLib.Model
             {
                 case DbcDataType.Integer:
                     IntegerCustomProperty.Default = int.Parse(value, CultureInfo.InvariantCulture);
+                    break;
+                case DbcDataType.Hex:
+                    HexCustomProperty.Default = int.Parse(value, CultureInfo.InvariantCulture);
                     break;
                 case DbcDataType.Float:
                     FloatCustomProperty.Default = float.Parse(value, CultureInfo.InvariantCulture);
@@ -50,7 +54,7 @@ namespace DbcParserLib.Model
     public class EnumCustomPropertyDefinition
     {
         public string Default { get; set; }
-        public string[] Definition { get; set; }
+        public string[] Values { get; set; }
     }
 
     public enum DbcObjectType
@@ -60,6 +64,6 @@ namespace DbcParserLib.Model
 
     public enum DbcDataType
     {
-        Integer, Float, String, Enum
+        Integer, Hex, Float, String, Enum
     }
 }

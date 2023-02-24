@@ -71,8 +71,8 @@ namespace DbcParserLib.Tests
         public void FullLineIsParsed()
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
-            dbcBuilderMock.Setup(mock => mock.AddMessage(It.IsAny<Message>()))
-                .Callback<Message>(message => 
+            dbcBuilderMock.Setup(mock => mock.AddMessage(It.IsAny<EditableMessage>()))
+                .Callback<EditableMessage>(message => 
                 {
                     Assert.AreEqual(1041, message.ID);
                     Assert.AreEqual("DOORS_SEATBELTS", message.Name);
@@ -91,8 +91,8 @@ namespace DbcParserLib.Tests
         public void FullLineWithSomeRamdomSpacesIsParsed()
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
-            dbcBuilderMock.Setup(mock => mock.AddMessage(It.IsAny<Message>()))
-                .Callback<Message>(message =>
+            dbcBuilderMock.Setup(mock => mock.AddMessage(It.IsAny<EditableMessage>()))
+                .Callback<EditableMessage>(message =>
                 {
                     Assert.AreEqual(1041, message.ID);
                     Assert.AreEqual("DOORS_SEATBELTS", message.Name);

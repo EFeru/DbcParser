@@ -52,7 +52,7 @@ namespace DbcParserLib.Parsers
             if (records.Length < 10)
                 return;
 
-            var sig = new Signal();
+            var sig = new EditableSignal();
             if (records[2] != ":")    // signal is multiplexed
             {
                 muxOffset = 1;
@@ -89,7 +89,7 @@ namespace DbcParserLib.Parsers
             if (match.Success == false)
                 return;
             var factorStr = match.Groups[7].Value;
-            var sig = new Signal
+            var sig = new EditableSignal
             {
                 Multiplexing = match.Groups[2].Value,
                 Name = match.Groups[1].Value,
