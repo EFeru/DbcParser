@@ -7,7 +7,7 @@ using System.Xml.Schema;
 
 namespace DbcParserLib.Parsers
 {
-    public class ValueTableLineParser : ILineParser
+    internal class ValueTableLineParser : ILineParser
     {
         private const string ValueTableLineStarter = "VAL_";
 

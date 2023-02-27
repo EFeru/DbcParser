@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Text;
 
 namespace DbcParserLib.Model
@@ -31,7 +30,7 @@ namespace DbcParserLib.Model
         }
     }
 
-    public class EditableMessage
+    internal class EditableMessage
     {
         public uint ID;
         public bool IsExtID;

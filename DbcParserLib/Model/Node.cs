@@ -18,7 +18,7 @@ namespace DbcParserLib.Model
         }
     }
 
-    public class EditableNode
+    internal class EditableNode
     {
         public string Name;
         public string Comment;

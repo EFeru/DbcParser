@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DbcParserLib
 {
-    public interface IDbcBuilder
+    internal interface IDbcBuilder
     {
         void AddMessage(EditableMessage message);
         void AddMessageComment(uint messageId, string comment);

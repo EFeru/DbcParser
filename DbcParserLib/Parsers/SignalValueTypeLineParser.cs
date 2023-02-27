@@ -3,7 +3,7 @@ using DbcParserLib.Model;
 
 namespace DbcParserLib.Parsers
 {
-    public class SignalValueTypeLineParser : ILineParser
+    internal class SignalValueTypeLineParser : ILineParser
     {
         private const string SignalValueTypeStarter = "SIG_VALTYPE_ "; 
 

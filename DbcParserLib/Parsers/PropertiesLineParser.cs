@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace DbcParserLib.Parsers
 {
-    public class PropertiesLineParser : ILineParser
+    internal class PropertiesLineParser : ILineParser
     {
         private const string PropertiesLineStarter = "BA_ ";
         private const string PropertyParsingRegex = @"BA_\s+""([a-zA-Z_][\w]*)""(?:\s+(?:(BU_|EV_)\s+([a-zA-Z_][\w]*))|\s+(?:(BO_)\s+(\d+))|\s+(?:(SG_)\s+(\d+)\s+([a-zA-Z_][\w]*)))?\s+(-?\d+|[\d\+\-eE.]+|""[^""]*"");";

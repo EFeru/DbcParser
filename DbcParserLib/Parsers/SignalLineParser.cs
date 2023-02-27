@@ -6,7 +6,7 @@ using DbcParserLib.Model;
 
 namespace DbcParserLib.Parsers
 {
-    public class SignalLineParser : ILineParser
+    internal class SignalLineParser : ILineParser
     {
         private delegate void ParsingStrategy(string line, IDbcBuilder builder);
 

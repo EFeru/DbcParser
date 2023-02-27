@@ -55,7 +55,7 @@ namespace DbcParserLib.Model
         }
     }
 
-    public class EditableSignal
+    internal class EditableSignal
     {
         private DbcValueType m_ValueType = DbcValueType.Signed;
 

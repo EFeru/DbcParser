@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace DbcParserLib.Parsers
 {
-    public class PropertiesDefinitionLineParser : ILineParser
+    internal class PropertiesDefinitionLineParser : ILineParser
     {
         private const string PropertiesDefinitionLineStarter = "BA_DEF_ ";
         private const string PropertiesDefinitionDefaultLineStarter = "BA_DEF_DEF_ ";

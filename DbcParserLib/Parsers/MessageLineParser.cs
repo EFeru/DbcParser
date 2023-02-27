@@ -4,7 +4,7 @@ using DbcParserLib.Model;
 
 namespace DbcParserLib.Parsers
 {
-    public class MessageLineParser : ILineParser
+    internal class MessageLineParser : ILineParser
     {
         private const string MessageLineStarter = "BO_ ";
         private const string MessageRegex = @"BO_ (\d+)\s+(\w+)\s*:\s*(\d+)\s+(\w+)";

@@ -13,7 +13,7 @@ namespace DbcParserLib
         public string ValueTable { get; set; }
     }
 
-    public class DbcBuilder : IDbcBuilder
+    internal class DbcBuilder : IDbcBuilder
     {
         private readonly ISet<EditableNode> m_nodes = new HashSet<EditableNode>(new NodeEqualityComparer());
         private readonly IDictionary<string, ValuesTable> m_namedTablesMap = new Dictionary<string, ValuesTable>();
