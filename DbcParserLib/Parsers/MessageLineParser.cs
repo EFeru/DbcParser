@@ -17,7 +17,7 @@ namespace DbcParserLib.Parsers
             var match = Regex.Match(line, MessageRegex);
             if(match.Success)
             {
-                var msg = new EditableMessage()
+                var msg = new Message()
                 {
                     Name = match.Groups[2].Value,
                     DLC = byte.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture),

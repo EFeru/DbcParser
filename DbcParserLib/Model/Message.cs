@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DbcParserLib.Model
 {
-    public class Message
+    internal class ImmutableMessage
     {
         public uint ID { get; }
         public bool IsExtID { get; }
@@ -13,10 +13,10 @@ namespace DbcParserLib.Model
         public string Transmitter { get; }
         public string Comment { get; }
         public int CycleTime { get; }
-        public IReadOnlyList<Signal> Signals;
-        public IReadOnlyDictionary<string, CustomProperty> CustomProperties;
+        public IReadOnlyList<ImmutableSignal> Signals { get; }
+        public IReadOnlyDictionary<string, CustomProperty> CustomProperties { get; }
 
-        internal Message(EditableMessage message, IReadOnlyList<Signal> signals)
+        internal ImmutableMessage(Message message, IReadOnlyList<ImmutableSignal> signals)
         {
             ID = message.ID;
             IsExtID = message.IsExtID;
@@ -26,11 +26,12 @@ namespace DbcParserLib.Model
             Comment = message.Comment;
             CycleTime= message.CycleTime;
             Signals = signals;
-            CustomProperties = message.CustomProperties;
+            //TODO: remove explicit cast (CustomProperty in Message class should be Dictionary instead IDictionary)
+            CustomProperties = (IReadOnlyDictionary<string, CustomProperty>)message.CustomProperties;
         }
     }
 
-    internal class EditableMessage
+    public class Message
     {
         public uint ID;
         public bool IsExtID;
@@ -39,17 +40,17 @@ namespace DbcParserLib.Model
         public string Transmitter;
         public string Comment;
         public int CycleTime;
-        public List<EditableSignal> Signals = new List<EditableSignal>();
-        public Dictionary<string, CustomProperty> CustomProperties = new Dictionary<string, CustomProperty>();
+        public List<Signal> Signals = new List<Signal>();
+        public IDictionary<string, CustomProperty> CustomProperties = new Dictionary<string, CustomProperty>();
 
-        public Message CreateMessage()
+        internal ImmutableMessage CreateMessage()
         {
-            var signals = new List<Signal>();
+            var signals = new List<ImmutableSignal>();
             foreach(var signal in Signals)
             {
                 signals.Add(signal.CreateSignal());
             }
-            return new Message(this, signals);
+            return new ImmutableMessage(this, signals);
         }
     }
 }

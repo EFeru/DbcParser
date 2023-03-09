@@ -109,7 +109,7 @@ namespace DbcParserLib.Tests
         public void MsgCustomPropertyIsParsedTest()
         {
             var builder = new DbcBuilder();
-            var message = new EditableMessage { ID = 2394947585 };
+            var message = new Message { ID = 2394947585 };
             message.IsExtID = DbcBuilder.IsExtID(ref message.ID);
             builder.AddMessage(message);
 
@@ -127,10 +127,10 @@ namespace DbcParserLib.Tests
         public void SigCustomPropertyIsParsedTest()
         {
             var builder = new DbcBuilder();
-            var message = new EditableMessage { ID = 2394947585 };
+            var message = new Message { ID = 2394947585 };
             message.IsExtID = DbcBuilder.IsExtID(ref message.ID);
             builder.AddMessage(message);
-            var signal = new EditableSignal { Name = "sig_name" };
+            var signal = new Signal { Name = "sig_name" };
             builder.AddSignal(signal);
 
             var sigInitialValueLineParser = CreateParser();
@@ -147,7 +147,7 @@ namespace DbcParserLib.Tests
         public void NodeCustomPropertyIsParsedTest()
         {
             var builder = new DbcBuilder();
-            var node = new EditableNode { Name = "Node1" };
+            var node = new Node { Name = "Node1" };
             builder.AddNode(node);
 
             var sigInitialValueLineParser = CreateParser();
@@ -161,7 +161,7 @@ namespace DbcParserLib.Tests
         public void NodeScientificNotationCustomPropertyIsParsedTest()
         {
             var builder = new DbcBuilder();
-            var node = new EditableNode { Name = "Node1" };
+            var node = new Node { Name = "Node1" };
             builder.AddNode(node);
 
             var dbc = builder.Build();
@@ -177,7 +177,7 @@ namespace DbcParserLib.Tests
         public void NodeMultipleCustomPropertyAreParsedTest()
         {
             var builder = new DbcBuilder();
-            var node = new EditableNode { Name = "Node1" };
+            var node = new Node { Name = "Node1" };
             builder.AddNode(node);
 
             var sigInitialValueLineParser = CreateParser();
@@ -199,8 +199,8 @@ namespace DbcParserLib.Tests
         public void CustomPropertyIsAssignedToDifferentNodesTest()
         {
             var builder = new DbcBuilder();
-            var node1 = new EditableNode { Name = "Node1" };
-            var node2 = new EditableNode { Name = "Node2" };
+            var node1 = new Node { Name = "Node1" };
+            var node2 = new Node { Name = "Node2" };
             builder.AddNode(node1);
             builder.AddNode(node2);
 

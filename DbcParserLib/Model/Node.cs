@@ -4,29 +4,30 @@ using System.Collections.Generic;
 
 namespace DbcParserLib.Model
 {
-    public class Node
+    internal class ImmutableNode
     {
         public string Name { get; }
         public string Comment { get; }
-        public IReadOnlyDictionary<string, CustomProperty> CustomProperties;
+        public IReadOnlyDictionary<string, CustomProperty> CustomProperties { get; }
 
-        internal Node(EditableNode node)
+        internal ImmutableNode(Node node)
         {
             Name = node.Name;
             Comment = node.Comment;
-            CustomProperties = node.CustomProperties;
+            //TODO: remove explicit cast (CustomProperty in Node class should be Dictionary instead IDictionary)
+            CustomProperties = (IReadOnlyDictionary<string, CustomProperty>)node.CustomProperties;
         }
     }
 
-    internal class EditableNode
+    public class Node
     {
         public string Name;
         public string Comment;
-        public Dictionary<string, CustomProperty> CustomProperties = new Dictionary<string, CustomProperty>();
+        public IDictionary<string, CustomProperty> CustomProperties = new Dictionary<string, CustomProperty>();
 
-        public Node CreateNode()
+        internal ImmutableNode CreateNode()
         {
-            return new Node(this);
+            return new ImmutableNode(this);
         }
     }
 }

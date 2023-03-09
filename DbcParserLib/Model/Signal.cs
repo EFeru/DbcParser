@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DbcParserLib.Model
 {
-    public class Signal
+    internal class ImmutableSignal
     {
         public uint ID { get; }
         public string Name { get; }
@@ -28,9 +28,9 @@ namespace DbcParserLib.Model
         public IReadOnlyDictionary<int, string> ValueTableMap { get; }
         public string Comment { get; }
         public string Multiplexing { get; }
-        public readonly IReadOnlyDictionary<string, CustomProperty> CustomProperties;
+        public IReadOnlyDictionary<string, CustomProperty> CustomProperties { get; }
 
-        internal Signal(EditableSignal signal) 
+        internal ImmutableSignal(Signal signal) 
         {
             ID = signal.ID;
             Name = signal.Name;
@@ -51,11 +51,12 @@ namespace DbcParserLib.Model
             ValueTableMap = signal.ValueTableMap;
             Comment = signal.Comment;
             Multiplexing = signal.Multiplexing;
-            CustomProperties = signal.CustomProperties;
+            //TODO: remove explicit cast (CustomProperty in Signal class should be Dictionary instead IDictionary)
+            CustomProperties = (IReadOnlyDictionary<string, CustomProperty>)signal.CustomProperties;
         }
     }
 
-    internal class EditableSignal
+    public class Signal
     {
         private DbcValueType m_ValueType = DbcValueType.Signed;
 
@@ -91,7 +92,7 @@ namespace DbcParserLib.Model
         public IReadOnlyDictionary<int, string> ValueTableMap { get; private set; }
         public string Comment;
         public string Multiplexing;
-        public readonly Dictionary<string, CustomProperty> CustomProperties = new Dictionary<string, CustomProperty>();
+        public readonly IDictionary<string, CustomProperty> CustomProperties = new Dictionary<string, CustomProperty>();
 
         internal void SetValueTable(IReadOnlyDictionary<int, string> dictValues, string stringValues)
         {
@@ -99,9 +100,9 @@ namespace DbcParserLib.Model
             ValueTable = stringValues;
         }
 
-        public Signal CreateSignal()
+        internal ImmutableSignal CreateSignal()
         {
-            return new Signal(this);
+            return new ImmutableSignal(this);
         }
     }
 

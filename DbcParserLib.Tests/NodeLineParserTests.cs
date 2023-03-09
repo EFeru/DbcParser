@@ -78,8 +78,8 @@ namespace DbcParserLib.Tests
             };
 
             var results = new List<string>();
-            dbcBuilderMock.Setup(mock => mock.AddNode(It.IsAny<EditableNode>()))
-                .Callback<EditableNode>(node => 
+            dbcBuilderMock.Setup(mock => mock.AddNode(It.IsAny<Node>()))
+                .Callback<Node>(node => 
                 {
                     Assert.IsFalse(string.IsNullOrWhiteSpace(node.Name));
                     Assert.IsTrue(string.IsNullOrWhiteSpace(node.Comment));
