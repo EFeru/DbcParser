@@ -43,6 +43,7 @@ namespace DbcParserLib
 
         public void AddSignalComment(uint messageId, string signalName, string comment)
         {
+            IsExtID(ref messageId);
             if (TryGetValueMessageSignal(messageId, signalName, out var signal))
             {
                 signal.Comment = comment;
@@ -60,6 +61,7 @@ namespace DbcParserLib
 
         public void AddSignalValueType(uint messageId, string signalName, DbcValueType valueType)
         {
+            IsExtID(ref messageId);
             if (TryGetValueMessageSignal(messageId, signalName, out var signal))
             {
                 signal.ValueType = valueType;
@@ -77,6 +79,7 @@ namespace DbcParserLib
 
         public void AddMessageComment(uint messageId, string comment)
         {
+            IsExtID(ref messageId);
             if (m_messages.TryGetValue(messageId, out var message))
             {
                 message.Comment = comment;
