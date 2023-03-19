@@ -18,6 +18,7 @@ namespace DbcParserLib
             new SignalValueTypeLineParser(),
             new ValueTableLineParser(),
             new PropertiesLineParser(),
+            new PropertiesDefinitionLineParser(),
             new UnknownLineParser() // Used as a catch all 
         };
         

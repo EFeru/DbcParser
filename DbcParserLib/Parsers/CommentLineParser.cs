@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace DbcParserLib.Parsers
 {
-    public class CommentLineParser : ILineParser
+    internal class CommentLineParser : ILineParser
     {
         private const string CommentLineStarter = "CM_ ";
         private const string NodeParsingRegex = @"CM_ BU_\s+([a-zA-Z_][\w]*)\s+""*([^""]*)""*\s*;";

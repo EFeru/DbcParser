@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Xml.Linq;
 using DbcParserLib.Model;
 
 namespace DbcParserLib
@@ -11,12 +13,17 @@ namespace DbcParserLib
         public string ValueTable { get; set; }
     }
 
-    public class DbcBuilder : IDbcBuilder
+    internal class DbcBuilder : IDbcBuilder
     {
         private readonly ISet<Node> m_nodes = new HashSet<Node>(new NodeEqualityComparer());
         private readonly IDictionary<string, ValuesTable> m_namedTablesMap = new Dictionary<string, ValuesTable>();
         private readonly IDictionary<uint, Message> m_messages = new Dictionary<uint, Message>();
         private readonly IDictionary<uint, IDictionary<string, Signal>> m_signals = new Dictionary<uint, IDictionary<string, Signal>>();
+        private readonly IDictionary<DbcObjectType, IDictionary<string, CustomPropertyDefinition>> m_customProperties = new Dictionary<DbcObjectType, IDictionary<string, CustomPropertyDefinition>>() {
+            {DbcObjectType.Node, new Dictionary<string, CustomPropertyDefinition>()},
+            {DbcObjectType.Message, new Dictionary<string, CustomPropertyDefinition>()},
+            {DbcObjectType.Signal, new Dictionary<string, CustomPropertyDefinition>()},
+        };
 
         private Message m_currentMessage;
 
@@ -38,6 +45,64 @@ namespace DbcParserLib
             {
                 signal.ID = m_currentMessage.ID;
                 m_signals[m_currentMessage.ID][signal.Name] = signal;
+            }
+        }
+
+        public void AddCustomProperty(DbcObjectType objectType, CustomPropertyDefinition customProperty)
+        {
+            m_customProperties[objectType][customProperty.Name] = customProperty;
+        }
+
+        public void AddCustomPropertyDefaultValue(string propertyName, string value)
+        {
+            foreach(var objectType in m_customProperties.Keys)
+            {
+                if (m_customProperties[objectType].TryGetValue(propertyName, out var customProperty))
+                {
+                    customProperty.SetCustomPropertyDefaultValue(value);
+                }
+            }
+        }
+
+        public void AddNodeCustomProperty(string propertyName, string nodeName, string value)
+        {
+            if(m_customProperties[DbcObjectType.Node].TryGetValue(propertyName, out var customProperty))
+            {
+                var node = m_nodes.FirstOrDefault(n => n.Name.Equals(nodeName));
+                if (node != null)
+                {
+                    var property = new CustomProperty(customProperty);
+                    property.SetCustomPropertyValue(value);
+                    node.CustomProperties[propertyName] = property;
+                }
+            }
+        }
+
+        public void AddMessageCustomProperty(string propertyName, uint messageId, string value)
+        {
+            if (m_customProperties[DbcObjectType.Message].TryGetValue(propertyName, out var customProperty))
+            {
+                IsExtID(ref messageId);
+                if (m_messages.TryGetValue(messageId, out var message))
+                {
+                    var property = new CustomProperty(customProperty);
+                    property.SetCustomPropertyValue(value);
+                    message.CustomProperties[propertyName] = property;
+                }
+            }
+        }
+
+        public void AddSignalCustomProperty(string propertyName, uint messageId, string signalName, string value)
+        {
+            if (m_customProperties[DbcObjectType.Signal].TryGetValue(propertyName, out var customProperty))
+            {
+                IsExtID(ref messageId);
+                if (TryGetValueMessageSignal(messageId, signalName, out var signal))
+                {
+                    var property = new CustomProperty(customProperty);
+                    property.SetCustomPropertyValue(value);
+                    signal.CustomProperties[propertyName] = property;
+                }
             }
         }
 
@@ -125,6 +190,14 @@ namespace DbcParserLib
                 return false;
         }
 
+        public void LinkNamedTableToSignal(uint messageId, string signalName, string tableName)
+        {
+            if (m_namedTablesMap.TryGetValue(tableName, out var valuesTable))
+            {
+                LinkTableValuesToSignal(messageId, signalName, valuesTable.ValueTableMap, valuesTable.ValueTable);
+            }
+        }
+
         private bool TryGetValueMessageSignal(uint messageId, string signalName, out Signal signal)
         {
             if (m_signals.TryGetValue(messageId, out var signals) && signals.TryGetValue(signalName, out signal))
@@ -136,16 +209,60 @@ namespace DbcParserLib
             return false;
         }
 
-        public void LinkNamedTableToSignal(uint messageId, string signalName, string tableName)
+        private void FillNodesNotSetCustomPropertyWithDefault()
         {
-            if (m_namedTablesMap.TryGetValue(tableName, out var valuesTable))
+            var nodeCustomProperties = m_customProperties[DbcObjectType.Node];
+            foreach (var customProperty in nodeCustomProperties)
             {
-                LinkTableValuesToSignal(messageId, signalName, valuesTable.ValueTableMap, valuesTable.ValueTable);
+                foreach (var node in m_nodes)
+                {
+                    if (!node.CustomProperties.TryGetValue(customProperty.Key, out var property))
+                    {
+                        node.CustomProperties[customProperty.Key] = new CustomProperty(customProperty.Value);
+                        node.CustomProperties[customProperty.Key].SetCustomPropertyValueFromDefault();
+                    }
+                }
+            }
+        }
+
+        private void FillMesagesNotSetCustomPropertyWithDefault()
+        {
+            var messageCustomProperties = m_customProperties[DbcObjectType.Message];
+            foreach (var customProperty in messageCustomProperties)
+            {
+                foreach (var message in m_messages.Values)
+                {
+                    FillSignalsNotSetCustomPropertyWithDefault(message.ID);
+                    if (!message.CustomProperties.TryGetValue(customProperty.Key, out var property))
+                    {
+                        message.CustomProperties[customProperty.Key] = new CustomProperty(customProperty.Value);
+                        message.CustomProperties[customProperty.Key].SetCustomPropertyValueFromDefault();
+                    }
+                }
+            }
+        }
+
+        private void FillSignalsNotSetCustomPropertyWithDefault(uint messageId)
+        {
+            var signalCustomProperties = m_customProperties[DbcObjectType.Signal];
+            foreach (var customProperty in signalCustomProperties)
+            {
+                foreach (var signal in m_signals[messageId].Values)
+                {
+                    if (!signal.CustomProperties.TryGetValue(customProperty.Key, out var property))
+                    {
+                        signal.CustomProperties[customProperty.Key] = new CustomProperty(customProperty.Value);
+                        signal.CustomProperties[customProperty.Key].SetCustomPropertyValueFromDefault();
+                    }
+                }
             }
         }
 
         public Dbc Build()
         {
+            FillNodesNotSetCustomPropertyWithDefault();
+            FillMesagesNotSetCustomPropertyWithDefault();
+
             foreach (var message in m_messages)
             {
                 message.Value.Signals.Clear();
@@ -156,7 +273,7 @@ namespace DbcParserLib
         }
     }
 
-    internal class NodeEqualityComparer : IEqualityComparer<Node>
+internal class NodeEqualityComparer : IEqualityComparer<Node>
     {
         public bool Equals(Node b1, Node b2)
         {

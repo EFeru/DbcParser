@@ -3,7 +3,7 @@ using DbcParserLib.Model;
 
 namespace DbcParserLib.Parsers
 {
-    public class NodeLineParser : ILineParser
+    internal class NodeLineParser : ILineParser
     {
         private const string NodeLineStarter = "BU_:";
 

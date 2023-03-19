@@ -1,6 +1,6 @@
 namespace DbcParserLib.Parsers
 {
-    public class IgnoreLineParser : ILineParser
+    internal class IgnoreLineParser : ILineParser
     {
         public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {

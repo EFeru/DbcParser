@@ -43,7 +43,7 @@ namespace DbcParserLib.Tests
             var dbc = builder.Build();
 
             Assert.AreEqual(1, dbc.Nodes.Count());
-            Assert.AreEqual(node, dbc.Nodes.First());
+            Assert.AreEqual("nodeName", dbc.Nodes.First().Name);
         }
 
         [Test]
@@ -60,8 +60,8 @@ namespace DbcParserLib.Tests
             var dbc = builder.Build();
 
             Assert.AreEqual(2, dbc.Nodes.Count());
-            Assert.AreEqual(node, dbc.Nodes.First());
-            Assert.AreEqual(node2, dbc.Nodes.Skip(1).First());
+            Assert.AreEqual("nodeName", dbc.Nodes.First().Name);
+            Assert.AreEqual("nodeName2", dbc.Nodes.Skip(1).First().Name);
         }
 
         [Test]
@@ -75,7 +75,7 @@ namespace DbcParserLib.Tests
             var dbc = builder.Build();
 
             Assert.AreEqual(1, dbc.Nodes.Count());
-            Assert.AreEqual(node, dbc.Nodes.First());
+            Assert.AreEqual("nodeName", dbc.Nodes.First().Name);
             Assert.AreEqual("this is a comment", dbc.Nodes.First().Comment);
         }
 
@@ -90,7 +90,7 @@ namespace DbcParserLib.Tests
             var dbc = builder.Build();
 
             Assert.AreEqual(1, dbc.Nodes.Count());
-            Assert.AreEqual(node, dbc.Nodes.First());
+            Assert.AreEqual("nodeName", dbc.Nodes.First().Name);
             Assert.IsNull(dbc.Nodes.First().Comment);
         }
 
@@ -104,7 +104,6 @@ namespace DbcParserLib.Tests
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
         }
 
         [Test]
@@ -118,7 +117,7 @@ namespace DbcParserLib.Tests
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
+            Assert.AreEqual(234, dbc.Messages.First().ID);
             Assert.AreEqual("comment", dbc.Messages.First().Comment);
         }
 
@@ -133,7 +132,7 @@ namespace DbcParserLib.Tests
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
+            Assert.AreEqual(234, dbc.Messages.First().ID);
             Assert.IsNull(dbc.Messages.First().Comment);
         }
 
@@ -162,14 +161,14 @@ namespace DbcParserLib.Tests
             Assert.AreEqual(2, dbc.Messages.Count());
 
             var messagesToArray = dbc.Messages.ToArray();
-            Assert.AreEqual(message1, messagesToArray[0]);
+            Assert.AreEqual(234, messagesToArray[0].ID);
             Assert.AreEqual(1, messagesToArray[0].Signals.Count());
-            Assert.AreEqual(signal1, messagesToArray[0].Signals.First());
+            Assert.AreEqual("name1", messagesToArray[0].Signals.First().Name);
 
-            Assert.AreEqual(message2, messagesToArray[1]);
+            Assert.AreEqual(235, messagesToArray[1].ID);
             Assert.AreEqual(2, messagesToArray[1].Signals.Count());
-            Assert.AreEqual(signal2, messagesToArray[1].Signals.First());
-            Assert.AreEqual(signal3, messagesToArray[1].Signals.Skip(1).First());
+            Assert.AreEqual("name2", messagesToArray[1].Signals.First().Name);
+            Assert.AreEqual("name3", messagesToArray[1].Signals.Skip(1).First().Name);
         }
 
         [Test]
@@ -197,8 +196,8 @@ namespace DbcParserLib.Tests
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
-            Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.AreEqual(234, dbc.Messages.First().ID);
+            Assert.AreEqual("name1", dbc.Messages.First().Signals.First().Name);
             Assert.AreEqual("comment", dbc.Messages.First().Signals.First().Comment);
         }
 
@@ -216,8 +215,8 @@ namespace DbcParserLib.Tests
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
-            Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.AreEqual(234, dbc.Messages.First().ID);
+            Assert.AreEqual("name1", dbc.Messages.First().Signals.First().Name);
             Assert.IsNull(dbc.Messages.First().Signals.First().Comment);
         }
 
@@ -235,8 +234,8 @@ namespace DbcParserLib.Tests
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
-            Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.AreEqual(234, dbc.Messages.First().ID);
+            Assert.AreEqual("name1", dbc.Messages.First().Signals.First().Name);
             Assert.IsNull(dbc.Messages.First().Signals.First().Comment);
         }
 
@@ -255,8 +254,8 @@ namespace DbcParserLib.Tests
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
-            Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.AreEqual(234, dbc.Messages.First().ID);
+            Assert.AreEqual("name1", dbc.Messages.First().Signals.First().Name);
             Assert.AreEqual(testValuesDict, dbc.Messages.First().Signals.First().ValueTableMap);
             Assert.AreEqual("1 fake", dbc.Messages.First().Signals.First().ValueTable);
         }
@@ -277,8 +276,8 @@ namespace DbcParserLib.Tests
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
-            Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.AreEqual(message.ID, dbc.Messages.First().ID);
+            Assert.AreEqual("name1", dbc.Messages.First().Signals.First().Name);
             Assert.AreEqual(testValuesDict, dbc.Messages.First().Signals.First().ValueTableMap);
             Assert.AreEqual("1 fake", dbc.Messages.First().Signals.First().ValueTable);
         }
@@ -298,8 +297,8 @@ namespace DbcParserLib.Tests
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
-            Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.AreEqual(234, dbc.Messages.First().ID);
+            Assert.AreEqual("name1", dbc.Messages.First().Signals.First().Name);
             Assert.IsNull(dbc.Messages.First().Signals.First().ValueTableMap);
             Assert.IsNull(dbc.Messages.First().Signals.First().ValueTable);
         }
@@ -319,8 +318,8 @@ namespace DbcParserLib.Tests
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
-            Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.AreEqual(234, dbc.Messages.First().ID);
+            Assert.AreEqual("name1", dbc.Messages.First().Signals.First().Name);
             Assert.IsNull(dbc.Messages.First().Signals.First().ValueTableMap);
             Assert.IsNull(dbc.Messages.First().Signals.First().ValueTable);
         }
@@ -342,8 +341,8 @@ namespace DbcParserLib.Tests
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
-            Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.AreEqual(234, dbc.Messages.First().ID);
+            Assert.AreEqual("name1", dbc.Messages.First().Signals.First().Name);
             Assert.AreEqual(testValuesDict, dbc.Messages.First().Signals.First().ValueTableMap);
             Assert.AreEqual("1 fake", dbc.Messages.First().Signals.First().ValueTable);
         }
@@ -365,8 +364,8 @@ namespace DbcParserLib.Tests
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
-            Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.AreEqual(234, dbc.Messages.First().ID);
+            Assert.AreEqual("name1", dbc.Messages.First().Signals.First().Name);
             Assert.IsNull(dbc.Messages.First().Signals.First().ValueTableMap);
             Assert.IsNull(dbc.Messages.First().Signals.First().ValueTable);
         }
@@ -388,8 +387,8 @@ namespace DbcParserLib.Tests
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
-            Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.AreEqual(234, dbc.Messages.First().ID);
+            Assert.AreEqual("name1", dbc.Messages.First().Signals.First().Name);
             Assert.IsNull(dbc.Messages.First().Signals.First().ValueTableMap);
             Assert.IsNull(dbc.Messages.First().Signals.First().ValueTable);
         }
@@ -408,8 +407,8 @@ namespace DbcParserLib.Tests
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
-            Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.AreEqual(234, dbc.Messages.First().ID);
+            Assert.AreEqual("name1", dbc.Messages.First().Signals.First().Name);
             Assert.IsNull(dbc.Messages.First().Signals.First().ValueTable);
         }
 
@@ -462,8 +461,8 @@ namespace DbcParserLib.Tests
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(message, dbc.Messages.First());
-            Assert.AreEqual(signal, dbc.Messages.First().Signals.First());
+            Assert.AreEqual(234, dbc.Messages.First().ID);
+            Assert.AreEqual("name1", dbc.Messages.First().Signals.First().Name);
             Assert.AreEqual(testValuesDict2, dbc.Messages.First().Signals.First().ValueTableMap);
             Assert.AreEqual("2 fake2", dbc.Messages.First().Signals.First().ValueTable);
         }
