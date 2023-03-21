@@ -24,8 +24,7 @@ namespace DbcParserLib.Parsers
                     Transmitter = match.Groups[4].Value,
                     ID = uint.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture)
                 };
-                msg.IsExtID = DbcBuilder.IsExtID(ref msg.ID);
-
+                
                 builder.AddMessage(msg);
             }
 

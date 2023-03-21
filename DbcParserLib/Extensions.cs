@@ -66,6 +66,16 @@ namespace DbcParserLib
             return message.Signals.Any(s => s.MultiplexingInfo().Role == MultiplexingRole.Multiplexor);
         }
 
+        public static void IsExtID(this Message message)
+        {
+            // For extended ID bit 31 is always 1
+            if(message.ID >= 0x80000000)
+            {
+                message.IsExtID = true;
+                message.ID -= 0x80000000;
+            }
+        }
+
         public static IReadOnlyDictionary<int, string> ToDictionary(this string records)
         {
             var dict = new Dictionary<int, string>();

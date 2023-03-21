@@ -97,12 +97,28 @@ namespace DbcParserLib.Tests
         public void MessageIsAdded()
         {
             var builder = new DbcBuilder();
-            var message = new Message { };
+            var message = new Message { ID = 1};
             builder.AddMessage(message);
             var dbc = builder.Build();
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
+            Assert.AreEqual(1, dbc.Messages.First().ID);
+            Assert.AreEqual(false, dbc.Messages.First().IsExtID);
+        }
+
+        [Test]
+        public void ExtendedMessageIsAdded()
+        {
+            var builder = new DbcBuilder();
+            var message = new Message { ID = 2147483649 };
+            builder.AddMessage(message);
+            var dbc = builder.Build();
+
+            Assert.IsEmpty(dbc.Nodes);
+            Assert.AreEqual(1, dbc.Messages.Count());
+            Assert.AreEqual(1, dbc.Messages.First().ID);
+            Assert.AreEqual(true, dbc.Messages.First().IsExtID);
         }
 
         [Test]
@@ -264,7 +280,6 @@ namespace DbcParserLib.Tests
         {
             var builder = new DbcBuilder();
             var message = new Message { ID = 2566896411 };
-            message.IsExtID = DbcBuilder.IsExtID(ref message.ID);
             builder.AddMessage(message);
             var signal = new Signal { Name = "name1" };
             builder.AddSignal(signal);

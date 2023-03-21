@@ -110,7 +110,6 @@ namespace DbcParserLib.Tests
         {
             var builder = new DbcBuilder();
             var message = new Message { ID = 2394947585 };
-            message.IsExtID = DbcBuilder.IsExtID(ref message.ID);
             builder.AddMessage(message);
 
             var msgCycleTimeLineParser = CreateParser();
@@ -128,7 +127,6 @@ namespace DbcParserLib.Tests
         {
             var builder = new DbcBuilder();
             var message = new Message { ID = 2394947585 };
-            message.IsExtID = DbcBuilder.IsExtID(ref message.ID);
             builder.AddMessage(message);
             var signal = new Signal { Name = "sig_name" };
             builder.AddSignal(signal);

@@ -97,7 +97,6 @@ namespace DbcParserLib
         {
             if (m_customProperties[CustomPropertyObjectType.Message].TryGetValue(propertyName, out var customProperty))
             {
-                IsExtID(ref messageId);
                 if (m_messages.TryGetValue(messageId, out var message))
                 {
                     var property = new CustomProperty(customProperty);
@@ -111,7 +110,6 @@ namespace DbcParserLib
         {
             if (m_customProperties[CustomPropertyObjectType.Signal].TryGetValue(propertyName, out var customProperty))
             {
-                IsExtID(ref messageId);
                 if (TryGetValueMessageSignal(messageId, signalName, out var signal))
                 {
                     var property = new CustomProperty(customProperty);
@@ -123,7 +121,6 @@ namespace DbcParserLib
 
         public void AddSignalComment(uint messageId, string signalName, string comment)
         {
-            IsExtID(ref messageId);
             if (TryGetValueMessageSignal(messageId, signalName, out var signal))
             {
                 signal.Comment = comment;
@@ -132,7 +129,6 @@ namespace DbcParserLib
 
         public void AddSignalInitialValue(uint messageId, string signalName, double initialValue)
         {
-            IsExtID(ref messageId);
             if (TryGetValueMessageSignal(messageId, signalName, out var signal))
             {
                 signal.InitialValue = initialValue * signal.Factor + signal.Offset;
@@ -141,7 +137,6 @@ namespace DbcParserLib
 
         public void AddSignalValueType(uint messageId, string signalName, DbcValueType valueType)
         {
-            IsExtID(ref messageId);
             if (TryGetValueMessageSignal(messageId, signalName, out var signal))
             {
                 signal.ValueType = valueType;
@@ -159,7 +154,6 @@ namespace DbcParserLib
 
         public void AddMessageComment(uint messageId, string comment)
         {
-            IsExtID(ref messageId);
             if (m_messages.TryGetValue(messageId, out var message))
             {
                 message.Comment = comment;
@@ -202,7 +196,6 @@ namespace DbcParserLib
 
         public void AddMessageCycleTime(uint messageId, int cycleTime)
         {
-            IsExtID(ref messageId);
             if (m_messages.TryGetValue(messageId, out var message))
             {
                 message.CycleTime = cycleTime;
@@ -220,7 +213,6 @@ namespace DbcParserLib
 
         public void LinkTableValuesToSignal(uint messageId, string signalName, IReadOnlyDictionary<int, string> dictValues, string stringValues)
         {
-            IsExtID(ref messageId);
             if (TryGetValueMessageSignal(messageId, signalName, out var signal))
             {
                 signal.SetValueTable(dictValues, stringValues);
@@ -233,18 +225,6 @@ namespace DbcParserLib
             {
                 envVariable.ValueTableMap = dictValues;
             }
-        }
-
-        public static bool IsExtID(ref uint id)
-        {
-            // For extended ID bit 31 is always 1
-            if (id >= 0x80000000)
-            {
-                id -= 0x80000000;
-                return true;
-            }
-            else
-                return false;
         }
 
         public void LinkNamedTableToSignal(uint messageId, string signalName, string tableName)
@@ -273,7 +253,7 @@ namespace DbcParserLib
             {
                 foreach (var node in m_nodes)
                 {
-                    if (!node.CustomProperties.TryGetValue(customProperty.Key, out var property))
+                    if (!node.CustomProperties.TryGetValue(customProperty.Key, out _))
                     {
                         node.CustomProperties[customProperty.Key] = new CustomProperty(customProperty.Value);
                         node.CustomProperties[customProperty.Key].SetCustomPropertyValueFromDefault();
@@ -290,7 +270,7 @@ namespace DbcParserLib
                 foreach (var message in m_messages.Values)
                 {
                     FillSignalsNotSetCustomPropertyWithDefault(message.ID);
-                    if (!message.CustomProperties.TryGetValue(customProperty.Key, out var property))
+                    if (!message.CustomProperties.TryGetValue(customProperty.Key, out _))
                     {
                         message.CustomProperties[customProperty.Key] = new CustomProperty(customProperty.Value);
                         message.CustomProperties[customProperty.Key].SetCustomPropertyValueFromDefault();
@@ -306,7 +286,7 @@ namespace DbcParserLib
             {
                 foreach (var signal in m_signals[messageId].Values)
                 {
-                    if (!signal.CustomProperties.TryGetValue(customProperty.Key, out var property))
+                    if (!signal.CustomProperties.TryGetValue(customProperty.Key, out _))
                     {
                         signal.CustomProperties[customProperty.Key] = new CustomProperty(customProperty.Value);
                         signal.CustomProperties[customProperty.Key].SetCustomPropertyValueFromDefault();
@@ -324,6 +304,7 @@ namespace DbcParserLib
             {
                 message.Value.Signals.Clear();
                 message.Value.Signals.AddRange(m_signals[message.Key].Values);
+                message.Value.IsExtID();
             }
 
             //TODO: uncomment once Immutable classes are used
