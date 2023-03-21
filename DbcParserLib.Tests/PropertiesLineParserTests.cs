@@ -47,10 +47,10 @@ namespace DbcParserLib.Tests
         {
             var builder = new DbcBuilder();
 
-            var sigInitialValueLineParser = CreateParser();
+            var customPropertyLineParsers = CreateParser();
             var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
-            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" INT 5 10;", sigInitialValueLineParser, builder, nextLineProvider));
-            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 7;", sigInitialValueLineParser, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" INT 5 10;", customPropertyLineParsers, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 7;", customPropertyLineParsers, builder, nextLineProvider));
         }
 
         [Test]
@@ -58,10 +58,10 @@ namespace DbcParserLib.Tests
         {
             var builder = new DbcBuilder();
 
-            var sigInitialValueLineParser = CreateParser();
+            var customPropertyLineParsers = CreateParser();
             var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
-            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" FLOAT 5 10.5;", sigInitialValueLineParser, builder, nextLineProvider));
-            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 7.5;", sigInitialValueLineParser, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" FLOAT 5 10.5;", customPropertyLineParsers, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 7.5;", customPropertyLineParsers, builder, nextLineProvider));
         }
 
         [Test]
@@ -69,18 +69,18 @@ namespace DbcParserLib.Tests
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
- 
-            dbcBuilderMock.Setup(mock => mock.AddCustomProperty(It.IsAny<DbcObjectType>(), It.IsAny<CustomPropertyDefinition>()))
-                .Callback<DbcObjectType, CustomPropertyDefinition>((objectType, customProperty) =>
+
+            dbcBuilderMock.Setup(mock => mock.AddCustomProperty(It.IsAny<CustomPropertyObjectType>(), It.IsAny<CustomPropertyDefinition>()))
+                .Callback<CustomPropertyObjectType, CustomPropertyDefinition>((_, customProperty) =>
                 {
                     Assert.AreEqual("AttributeName", customProperty.Name);
-                    Assert.AreEqual(DbcDataType.Float, customProperty.DataType);
+                    Assert.AreEqual(CustomPropertyDataType.Float, customProperty.DataType);
                     Assert.AreEqual(0, customProperty.FloatCustomProperty.Minimum);
                     Assert.AreEqual(0.1, customProperty.FloatCustomProperty.Maximum);
                 });
 
-            var sigInitialValueLineParser = CreateParser();
-            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" FLOAT 0 1e-1;", sigInitialValueLineParser, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            var customPropertyLineParsers = CreateParser();
+            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" FLOAT 0 1e-1;", customPropertyLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object));
         }
 
         [Test]
@@ -88,10 +88,10 @@ namespace DbcParserLib.Tests
         {
             var builder = new DbcBuilder();
 
-            var sigInitialValueLineParser = CreateParser();
+            var customPropertyLineParsers = CreateParser();
             var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
-            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" STRING;", sigInitialValueLineParser, builder, nextLineProvider));
-            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" ""DefaultString"";", sigInitialValueLineParser, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" STRING;", customPropertyLineParsers, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" ""DefaultString"";", customPropertyLineParsers, builder, nextLineProvider));
         }
 
         [Test]
@@ -99,10 +99,10 @@ namespace DbcParserLib.Tests
         {
             var builder = new DbcBuilder();
 
-            var sigInitialValueLineParser = CreateParser();
+            var customPropertyLineParsers = CreateParser();
             var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
-            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" ENUM ""Val1"",""Val2"",""Val3"";", sigInitialValueLineParser, builder, nextLineProvider));
-            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" ""Val2"";", sigInitialValueLineParser, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" ENUM ""Val1"",""Val2"",""Val3"";", customPropertyLineParsers, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" ""Val2"";", customPropertyLineParsers, builder, nextLineProvider));
         }
 
         [Test]
@@ -150,11 +150,15 @@ namespace DbcParserLib.Tests
             var node = new Node { Name = "Node1" };
             builder.AddNode(node);
 
-            var sigInitialValueLineParser = CreateParser();
+            var customPropertyLineParsers = CreateParser();
             var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
-            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" HEX 0 200;", sigInitialValueLineParser, builder, nextLineProvider));
-            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 150;", sigInitialValueLineParser, builder, nextLineProvider));
-            Assert.IsTrue(ParseLine(@"BA_ ""AttributeName"" BU_ Node1 40;", sigInitialValueLineParser, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" HEX 0 200;", customPropertyLineParsers, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 150;", customPropertyLineParsers, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_ ""AttributeName"" BU_ Node1 40;", customPropertyLineParsers, builder, nextLineProvider));
+
+            var dbc = builder.Build();
+            Assert.AreEqual(dbc.Nodes.First().CustomProperties.First().Value.CustomPropertyDefinition.HexCustomProperty.Default, 150);
+            Assert.AreEqual(dbc.Nodes.First().CustomProperties.First().Value.HexCustomProperty.Value, 40);
         }
 
         [Test]
@@ -165,11 +169,11 @@ namespace DbcParserLib.Tests
             builder.AddNode(node);
 
             var dbc = builder.Build();
-            var sigInitialValueLineParser = CreateParser();
+            var customPropertyLineParsers = CreateParser();
             var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
-            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" FLOAT 0 10;", sigInitialValueLineParser, builder, nextLineProvider));
-            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 5;", sigInitialValueLineParser, builder, nextLineProvider));
-            Assert.IsTrue(ParseLine(@"BA_ ""AttributeName"" BU_ Node1 0.7e1;", sigInitialValueLineParser, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" FLOAT 0 10;", customPropertyLineParsers, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 5;", customPropertyLineParsers, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_ ""AttributeName"" BU_ Node1 0.7e1;", customPropertyLineParsers, builder, nextLineProvider));
             Assert.AreEqual(dbc.Nodes.First().CustomProperties.First().Value.FloatCustomProperty.Value, 7);
         }
 
@@ -180,15 +184,15 @@ namespace DbcParserLib.Tests
             var node = new Node { Name = "Node1" };
             builder.AddNode(node);
 
-            var sigInitialValueLineParser = CreateParser();
+            var customPropertyLineParsers = CreateParser();
             var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
-            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName1"" INT 0 200;", sigInitialValueLineParser, builder, nextLineProvider));
-            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName1"" 100;", sigInitialValueLineParser, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName1"" INT 0 200;", customPropertyLineParsers, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName1"" 100;", customPropertyLineParsers, builder, nextLineProvider));
 
-            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName2""  FLOAT 0 10;", sigInitialValueLineParser, builder, nextLineProvider));
-            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName2"" 5.5;", sigInitialValueLineParser, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName2""  FLOAT 0 10;", customPropertyLineParsers, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName2"" 5.5;", customPropertyLineParsers, builder, nextLineProvider));
 
-            Assert.IsTrue(ParseLine(@"BA_ ""AttributeName1"" BU_ Node1 40;", sigInitialValueLineParser, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_ ""AttributeName1"" BU_ Node1 40;", customPropertyLineParsers, builder, nextLineProvider));
 
             var dbc = builder.Build();
             Assert.AreEqual(2, dbc.Nodes.First().CustomProperties.Count);
@@ -204,13 +208,13 @@ namespace DbcParserLib.Tests
             builder.AddNode(node1);
             builder.AddNode(node2);
 
-            var sigInitialValueLineParser = CreateParser();
+            var customPropertyLineParsers = CreateParser();
             var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
-            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" INT 0 200;", sigInitialValueLineParser, builder, nextLineProvider));
-            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 100;", sigInitialValueLineParser, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" INT 0 200;", customPropertyLineParsers, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 100;", customPropertyLineParsers, builder, nextLineProvider));
 
-            Assert.IsTrue(ParseLine(@"BA_ ""AttributeName"" BU_ Node1 40;", sigInitialValueLineParser, builder, nextLineProvider));
-            Assert.IsTrue(ParseLine(@"BA_ ""AttributeName"" BU_ Node2 70;", sigInitialValueLineParser, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_ ""AttributeName"" BU_ Node1 40;", customPropertyLineParsers, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_ ""AttributeName"" BU_ Node2 70;", customPropertyLineParsers, builder, nextLineProvider));
 
             var dbc = builder.Build();
             Assert.AreEqual(40, dbc.Nodes.First().CustomProperties["AttributeName"].IntegerCustomProperty.Value);

@@ -25,6 +25,8 @@ namespace DbcParserLib.Parsers
                 {
                     if (match.Groups[2].Value == "BU_")
                         builder.AddNodeCustomProperty(match.Groups[1].Value, match.Groups[3].Value, match.Groups[9].Value.Replace("\"", ""));
+                    else if (match.Groups[2].Value == "EV_")
+                        builder.AddEnvironmentVariableCustomProperty(match.Groups[1].Value, match.Groups[3].Value, match.Groups[9].Value.Replace("\"", ""));
                     else if (match.Groups[4].Value == "BO_")
                     {
                         builder.AddMessageCustomProperty(match.Groups[1].Value, uint.Parse(match.Groups[5].Value, CultureInfo.InvariantCulture), match.Groups[9].Value.Replace("\"", ""));

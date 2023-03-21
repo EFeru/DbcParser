@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using DbcParserLib.Model;
-using DbcParserLib.Parsers;
 using Moq;
 using NUnit.Framework;
 

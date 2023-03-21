@@ -22,8 +22,8 @@ namespace DbcParserLib.Parsers
                     Name = match.Groups[2].Value,
                     DLC = byte.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture),
                     Transmitter = match.Groups[4].Value,
+                    ID = uint.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture)
                 };
-                msg.ID = uint.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
                 msg.IsExtID = DbcBuilder.IsExtID(ref msg.ID);
 
                 builder.AddMessage(msg);

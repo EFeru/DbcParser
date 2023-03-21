@@ -12,6 +12,7 @@ namespace DbcParserLib.Parsers
         private const string NodeParsingRegex = @"CM_ BU_\s+([a-zA-Z_][\w]*)\s+""*([^""]*)""*\s*;";
         private const string MessageParsingRegex = @"CM_ BO_\s+(\d+)\s+""*([^""]*)""*\s*;";
         private const string SignalParsingRegex = @"CM_ SG_\s+(\d+)\s+([a-zA-Z_][\w]*)\s+""*([^""]*)""*\s*;";
+        private const string EnvironmentVariableParsingRegex = @"CM_ EV_\s+([a-zA-Z_][\w]*)\s+""*([^""]*)""*\s*;";
 
         public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
@@ -41,6 +42,11 @@ namespace DbcParserLib.Parsers
                 return true;
             }
 
+            if (cleanLine.StartsWith("CM_ EV_"))
+            {
+                SetEnvironmentVariableComment(cleanLine, builder);
+                return true;
+            }
             return false;
         }
 
@@ -71,6 +77,16 @@ namespace DbcParserLib.Parsers
             if (match.Success)
             {
                 builder.AddMessageComment(uint.Parse(match.Groups[1].Value), match.Groups[2].Value);
+            }
+        }
+
+        private static void SetEnvironmentVariableComment(string envCommentStr, IDbcBuilder builder)
+        {
+            var match = Regex.Match(envCommentStr, EnvironmentVariableParsingRegex);
+
+            if (match.Success)
+            {
+                builder.AddEnvironmentVariableComment(match.Groups[1].Value, match.Groups[2].Value);
             }
         }
 

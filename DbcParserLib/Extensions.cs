@@ -65,5 +65,24 @@ namespace DbcParserLib
         {
             return message.Signals.Any(s => s.MultiplexingInfo().Role == MultiplexingRole.Multiplexor);
         }
+
+        public static IReadOnlyDictionary<int, string> ToDictionary(this string records)
+        {
+            var dict = new Dictionary<int, string>();
+
+            if (string.IsNullOrWhiteSpace(records))
+                return dict;
+
+            using (var reader = new StringReader(records))
+            {
+                while (reader.Peek() > -1)
+                {
+                    // Add duplicated key control and act (eg. strict -> break, warning -> keep going and log, silent-> keep going)
+                    var tokens = reader.ReadLine().Split(' ');
+                    dict[int.Parse(tokens[0])] = tokens[1];
+                }
+            }
+            return dict;
+        }
     }
 }

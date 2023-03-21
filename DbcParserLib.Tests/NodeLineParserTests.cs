@@ -3,7 +3,6 @@ using DbcParserLib.Parsers;
 using DbcParserLib.Model;
 using Moq;
 using System.Collections.Generic;
-using System.IO;
 
 namespace DbcParserLib.Tests
 {
@@ -32,40 +31,40 @@ namespace DbcParserLib.Tests
         public void EmptyCommentLineIsIgnored()
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
-            var commentLineParser = CreateParser();
+            var nodeLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsFalse(commentLineParser.TryParse(string.Empty, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.IsFalse(nodeLineParser.TryParse(string.Empty, dbcBuilderMock.Object, nextLineProviderMock.Object));
         }
 
         [Test]
         public void RandomStartIsIgnored()
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
-            var commentLineParser = CreateParser();
+            var nodeLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsFalse(commentLineParser.TryParse("CF_", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.IsFalse(nodeLineParser.TryParse("CF_", dbcBuilderMock.Object, nextLineProviderMock.Object));
         }
 
         [Test]
         public void OnlyPrefixIsAcceptedWithNoInteractions()
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
-            var commentLineParser = CreateParser();
+            var nodeLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(commentLineParser.TryParse("BU_:", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.IsTrue(nodeLineParser.TryParse("BU_:", dbcBuilderMock.Object, nextLineProviderMock.Object));
         }
 
         [Test]
         public void OnlyPrefixWithSpacesIsAcceptedWithNoInteractions()
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
-            var commentLineParser = CreateParser();
+            var nodeLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(commentLineParser.TryParse("BU_:        ", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.IsTrue(nodeLineParser.TryParse("BU_:        ", dbcBuilderMock.Object, nextLineProviderMock.Object));
         }
 
         [Test]
@@ -86,10 +85,10 @@ namespace DbcParserLib.Tests
                     results.Add(node.Name);
                 });
 
-            var commentLineParser = CreateParser();
+            var nodeLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(commentLineParser.TryParse(@"BU_: NODE_1 NODE_2    NODE_4   ", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.IsTrue(nodeLineParser.TryParse(@"BU_: NODE_1 NODE_2    NODE_4   ", dbcBuilderMock.Object, nextLineProviderMock.Object));
             CollectionAssert.AreEquivalent(expectations, results);
         }
     }

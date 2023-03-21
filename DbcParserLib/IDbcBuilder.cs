@@ -17,10 +17,16 @@ namespace DbcParserLib
         void AddSignalValueType(uint messageId, string signalName, DbcValueType valueType);
         void LinkNamedTableToSignal(uint messageId, string signalName, string tableName);
         void LinkTableValuesToSignal(uint messageId, string signalName, IReadOnlyDictionary<int, string> dictValues, string stringValues);
-        void AddCustomProperty(DbcObjectType objectType, CustomPropertyDefinition customProperty);
+        void LinkTableValuesToEnvironmentVariable(string variableName, IReadOnlyDictionary<int, string> dictValues);
+        void AddCustomProperty(CustomPropertyObjectType objectType, CustomPropertyDefinition customProperty);
         void AddCustomPropertyDefaultValue(string propertyName, string value);
         void AddNodeCustomProperty(string propertyName, string nodeName, string value);
+        void AddEnvironmentVariableCustomProperty(string propertyName, string variableName, string value);
         void AddMessageCustomProperty(string propertyName, uint messageId, string value);
         void AddSignalCustomProperty(string propertyName, uint messageId, string signalName, string value);
+        void AddEnvironmentVariable(string variableName, EnvironmentVariable environmentVariable);
+        void AddEnvironmentVariableComment(string variableName, string comment);
+        void AddEnvironmentDataVariable(string variableName, uint dataSize);
+        void AddNodeEnvironmentVariable(string nodeName, string variableName);
     }
 }

@@ -10,11 +10,13 @@ namespace DbcParserLib
     {
         public IEnumerable<Node> Nodes {get;}
         public IEnumerable<Message> Messages {get;}
+        public IEnumerable<EnvironmentVariable> EnvironmentVariables { get; }
 
-        public Dbc(IEnumerable<Node> nodes, IEnumerable<Message> messages)
+        public Dbc(IEnumerable<Node> nodes, IEnumerable<Message> messages, IEnumerable<EnvironmentVariable> environmentVariables)
         {
             Nodes = nodes;
             Messages = messages;
+            EnvironmentVariables = environmentVariables;
         }
     }
 }

@@ -16,13 +16,15 @@ namespace DbcParserLib
     internal class DbcBuilder : IDbcBuilder
     {
         private readonly ISet<Node> m_nodes = new HashSet<Node>(new NodeEqualityComparer());
-        private readonly IDictionary<string, ValuesTable> m_namedTablesMap = new Dictionary<string, ValuesTable>();
         private readonly IDictionary<uint, Message> m_messages = new Dictionary<uint, Message>();
         private readonly IDictionary<uint, IDictionary<string, Signal>> m_signals = new Dictionary<uint, IDictionary<string, Signal>>();
-        private readonly IDictionary<DbcObjectType, IDictionary<string, CustomPropertyDefinition>> m_customProperties = new Dictionary<DbcObjectType, IDictionary<string, CustomPropertyDefinition>>() {
-            {DbcObjectType.Node, new Dictionary<string, CustomPropertyDefinition>()},
-            {DbcObjectType.Message, new Dictionary<string, CustomPropertyDefinition>()},
-            {DbcObjectType.Signal, new Dictionary<string, CustomPropertyDefinition>()},
+        private readonly IDictionary<string, EnvironmentVariable> m_environmentVariables = new Dictionary<string, EnvironmentVariable>();
+
+        private readonly IDictionary<string, ValuesTable> m_namedTablesMap = new Dictionary<string, ValuesTable>();
+        private readonly IDictionary<CustomPropertyObjectType, IDictionary<string, CustomPropertyDefinition>> m_customProperties = new Dictionary<CustomPropertyObjectType, IDictionary<string, CustomPropertyDefinition>>() {
+            {CustomPropertyObjectType.Node, new Dictionary<string, CustomPropertyDefinition>()},
+            {CustomPropertyObjectType.Message, new Dictionary<string, CustomPropertyDefinition>()},
+            {CustomPropertyObjectType.Signal, new Dictionary<string, CustomPropertyDefinition>()},
         };
 
         private Message m_currentMessage;
@@ -48,7 +50,7 @@ namespace DbcParserLib
             }
         }
 
-        public void AddCustomProperty(DbcObjectType objectType, CustomPropertyDefinition customProperty)
+        public void AddCustomProperty(CustomPropertyObjectType objectType, CustomPropertyDefinition customProperty)
         {
             m_customProperties[objectType][customProperty.Name] = customProperty;
         }
@@ -66,7 +68,7 @@ namespace DbcParserLib
 
         public void AddNodeCustomProperty(string propertyName, string nodeName, string value)
         {
-            if(m_customProperties[DbcObjectType.Node].TryGetValue(propertyName, out var customProperty))
+            if(m_customProperties[CustomPropertyObjectType.Node].TryGetValue(propertyName, out var customProperty))
             {
                 var node = m_nodes.FirstOrDefault(n => n.Name.Equals(nodeName));
                 if (node != null)
@@ -78,9 +80,22 @@ namespace DbcParserLib
             }
         }
 
+        public void AddEnvironmentVariableCustomProperty(string propertyName, string variableName, string value)
+        {
+            if (m_customProperties[CustomPropertyObjectType.Environment].TryGetValue(propertyName, out var customProperty))
+            {
+                if (m_environmentVariables.TryGetValue(variableName, out var envVariable))
+                {
+                    var property = new CustomProperty(customProperty);
+                    property.SetCustomPropertyValue(value);
+                    envVariable.CustomProperties[propertyName] = property;
+                }
+            }
+        }
+
         public void AddMessageCustomProperty(string propertyName, uint messageId, string value)
         {
-            if (m_customProperties[DbcObjectType.Message].TryGetValue(propertyName, out var customProperty))
+            if (m_customProperties[CustomPropertyObjectType.Message].TryGetValue(propertyName, out var customProperty))
             {
                 IsExtID(ref messageId);
                 if (m_messages.TryGetValue(messageId, out var message))
@@ -94,7 +109,7 @@ namespace DbcParserLib
 
         public void AddSignalCustomProperty(string propertyName, uint messageId, string signalName, string value)
         {
-            if (m_customProperties[DbcObjectType.Signal].TryGetValue(propertyName, out var customProperty))
+            if (m_customProperties[CustomPropertyObjectType.Signal].TryGetValue(propertyName, out var customProperty))
             {
                 IsExtID(ref messageId);
                 if (TryGetValueMessageSignal(messageId, signalName, out var signal))
@@ -151,6 +166,40 @@ namespace DbcParserLib
             }
         }
 
+        public void AddEnvironmentVariableComment(string variableName, string comment)
+        {
+            if (m_environmentVariables.TryGetValue(variableName, out var envVariable))
+            {
+                envVariable.Comment = comment;
+            }
+        }
+
+        public void AddEnvironmentVariable(string variableName, EnvironmentVariable environmentVariable)
+        {
+            m_environmentVariables[variableName] = environmentVariable;
+        }
+
+        public void AddEnvironmentDataVariable(string variableName, uint dataSize)
+        {
+            if (m_environmentVariables.TryGetValue(variableName, out var envVariable))
+            {
+                envVariable.Type = EnvDataType.Data;
+                envVariable.DataEnvironmentVariable = new DataEnvironmentVariable()
+                {
+                    Length = dataSize
+                };
+            }
+        }
+
+        public void AddNodeEnvironmentVariable(string nodeName, string variableName)
+        {
+            var node = m_nodes.FirstOrDefault(n => n.Name.Equals(nodeName));
+            if (node != null)
+            {
+                node.EnvironmentVariables[variableName] = m_environmentVariables[variableName];
+            }
+        }
+
         public void AddMessageCycleTime(uint messageId, int cycleTime)
         {
             IsExtID(ref messageId);
@@ -175,6 +224,14 @@ namespace DbcParserLib
             if (TryGetValueMessageSignal(messageId, signalName, out var signal))
             {
                 signal.SetValueTable(dictValues, stringValues);
+            }
+        }
+
+        public void LinkTableValuesToEnvironmentVariable(string variableName, IReadOnlyDictionary<int, string> dictValues)
+        {
+            if (m_environmentVariables.TryGetValue(variableName, out var envVariable))
+            {
+                envVariable.ValueTableMap = dictValues;
             }
         }
 
@@ -211,7 +268,7 @@ namespace DbcParserLib
 
         private void FillNodesNotSetCustomPropertyWithDefault()
         {
-            var nodeCustomProperties = m_customProperties[DbcObjectType.Node];
+            var nodeCustomProperties = m_customProperties[CustomPropertyObjectType.Node];
             foreach (var customProperty in nodeCustomProperties)
             {
                 foreach (var node in m_nodes)
@@ -227,7 +284,7 @@ namespace DbcParserLib
 
         private void FillMesagesNotSetCustomPropertyWithDefault()
         {
-            var messageCustomProperties = m_customProperties[DbcObjectType.Message];
+            var messageCustomProperties = m_customProperties[CustomPropertyObjectType.Message];
             foreach (var customProperty in messageCustomProperties)
             {
                 foreach (var message in m_messages.Values)
@@ -244,7 +301,7 @@ namespace DbcParserLib
 
         private void FillSignalsNotSetCustomPropertyWithDefault(uint messageId)
         {
-            var signalCustomProperties = m_customProperties[DbcObjectType.Signal];
+            var signalCustomProperties = m_customProperties[CustomPropertyObjectType.Signal];
             foreach (var customProperty in signalCustomProperties)
             {
                 foreach (var signal in m_signals[messageId].Values)
@@ -269,7 +326,27 @@ namespace DbcParserLib
                 message.Value.Signals.AddRange(m_signals[message.Key].Values);
             }
 
-            return new Dbc(m_nodes.ToArray(), m_messages.Values.ToArray());
+            //TODO: uncomment once Immutable classes are used
+            //var nodes = new List<ImmutableNode>();
+            //foreach (var node in m_nodes)
+            //{
+            //    nodes.Add(node.CreateNode());
+            //}
+
+            //var messages = new List<ImmutableMessage>();
+            //foreach (var message in m_messages.Values)
+            //{
+            //    messages.Add(message.CreateMessage());
+            //}
+
+            //var environmentVariables = new List<ImmutableEnvironmentVariable>();
+            //foreach (var environmentVariable in m_environmentVariables.Values)
+            //{
+            //    environmentVariables.Add(environmentVariable.CreateEnvironmentVariable());
+            //}
+            //return new Dbc(nodes, messages, environmentVariables);
+
+            return new Dbc(m_nodes.ToArray(), m_messages.Values.ToArray(), m_environmentVariables.Values.ToArray());
         }
     }
 
