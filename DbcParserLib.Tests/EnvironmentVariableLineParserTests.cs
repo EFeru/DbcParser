@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 namespace DbcParserLib.Tests
 {
+    [TestFixture]
     public class EnvironmentVariableLineParserTests
     {
         private MockRepository m_repository;

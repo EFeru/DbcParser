@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 namespace DbcParserLib.Tests
 {
+    [TestFixture]
     public class DbcBuilderTests
     {
         private MockRepository m_repository;
@@ -104,7 +105,7 @@ namespace DbcParserLib.Tests
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
             Assert.AreEqual(1, dbc.Messages.First().ID);
-            Assert.AreEqual(false, dbc.Messages.First().IsExtID);
+            Assert.IsFalse(dbc.Messages.First().IsExtID);
         }
 
         [Test]
@@ -118,7 +119,7 @@ namespace DbcParserLib.Tests
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
             Assert.AreEqual(1, dbc.Messages.First().ID);
-            Assert.AreEqual(true, dbc.Messages.First().IsExtID);
+            Assert.IsTrue(dbc.Messages.First().IsExtID);
         }
 
         [Test]

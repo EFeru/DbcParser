@@ -3,6 +3,7 @@ using DbcParserLib.Model;
 
 namespace DbcParserLib.Tests
 {
+    [TestFixture]
     public class ExtensionMethodsTests
     {
         [Test]

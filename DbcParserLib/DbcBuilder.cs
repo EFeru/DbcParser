@@ -303,8 +303,10 @@ namespace DbcParserLib
             foreach (var message in m_messages)
             {
                 message.Value.Signals.Clear();
-                message.Value.Signals.AddRange(m_signals[message.Key].Values);
-                message.Value.IsExtID();
+                if(m_signals.TryGetValue(message.Key, out var signals) && signals != null)
+                    message.Value.Signals.AddRange(signals.Values);
+
+                message.Value.AdjustExtendedId();
             }
 
             //TODO: uncomment once Immutable classes are used
