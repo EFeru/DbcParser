@@ -11,9 +11,9 @@ namespace DbcParserLib.Parsers
     {
         private const string PropertiesDefinitionLineStarter = "BA_DEF_ ";
         private const string PropertiesDefinitionDefaultLineStarter = "BA_DEF_DEF_ ";
-        private const string PropertyDefinitionParsingRegex = @"BA_DEF_\s+(?:(BU_|BO_|SG_|EV_)\s+)?""([a-zA-Z_][\w]*)""\s+(?:(?:(INT|HEX)\s+(-?\d+)\s+(-?\d+))|(?:(FLOAT)\s+([\d\+\-eE.]+)\s+([\d\+\-eE.]+))|(STRING)|(ENUM\s+(?:""[^""]*"",*){1,100}))\s*;";
+        private const string PropertyDefinitionParsingRegex = @"BA_DEF_\s+(?:(BU_|BO_|SG_|EV_)\s+)?""([a-zA-Z_][\w]*)""\s+(?:(?:(INT|HEX)\s+(-?\d+)\s+(-?\d+))|(?:(FLOAT)\s+([\d\+\-eE.]+)\s+([\d\+\-eE.]+))|(STRING)|(ENUM\s+(?:""[^""]*"",*)*))\s*;";
         private const string PropertyDefinitionDefaultParsingRegex = @"BA_DEF_DEF_\s+""([a-zA-Z_][\w]*)""\s+(-?\d+|[\d\+\-eE.]+|""[^""]*"")\s*;";
-
+                                                                     
         public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
             var cleanLine = line.Trim(' ');
@@ -42,19 +42,19 @@ namespace DbcParserLib.Parsers
                         Name = match.Groups[2].Value,
                     };
 
-                    DbcObjectType objectType = DbcObjectType.Node;
+                    CustomPropertyObjectType objectType = CustomPropertyObjectType.Node;
                     switch (match.Groups[1].Value)
                     {
                         case "BO_":
-                            objectType = DbcObjectType.Message; break;
+                            objectType = CustomPropertyObjectType.Message; break;
                         case "SG_":
-                            objectType = DbcObjectType.Signal; break;
+                            objectType = CustomPropertyObjectType.Signal; break;
                         case "EV_":
-                            objectType = DbcObjectType.Environment; break;
+                            objectType = CustomPropertyObjectType.Environment; break;
                     }
 
-                    DbcDataType dataType = DbcDataType.Integer;
-                    if (match.Groups[3].Value == "INT" || match.Groups[3].Value == "HEX")
+                    CustomPropertyDataType dataType = CustomPropertyDataType.Integer;
+                    if (match.Groups[3].Value == "INT")
                     {
                         customProperty.IntegerCustomProperty = new NumericCustomPropertyDefinition<int>
                         {
@@ -62,9 +62,18 @@ namespace DbcParserLib.Parsers
                             Maximum = int.Parse(match.Groups[5].Value, CultureInfo.InvariantCulture),
                         };
                     }
+                    else if (match.Groups[3].Value == "HEX")
+                    {
+                        dataType = CustomPropertyDataType.Hex;
+                        customProperty.HexCustomProperty = new NumericCustomPropertyDefinition<int>
+                        {
+                            Minimum = int.Parse(match.Groups[4].Value, CultureInfo.InvariantCulture),
+                            Maximum = int.Parse(match.Groups[5].Value, CultureInfo.InvariantCulture),
+                        };
+                    }
                     else if (match.Groups[6].Value == "FLOAT")
                     {
-                        dataType = DbcDataType.Float;
+                        dataType = CustomPropertyDataType.Float;
                         customProperty.FloatCustomProperty = new NumericCustomPropertyDefinition<double>
                         {
                             Minimum = double.Parse(match.Groups[7].Value, CultureInfo.InvariantCulture),
@@ -73,12 +82,12 @@ namespace DbcParserLib.Parsers
                     }
                     else if (match.Groups[9].Value == "STRING")
                     {
-                        dataType = DbcDataType.String;
+                        dataType = CustomPropertyDataType.String;
                         customProperty.StringCustomProperty = new StringCustomPropertyDefinition();
                     }
                     else if (match.Groups[10].Value.StartsWith("ENUM "))
                     {
-                        dataType = DbcDataType.Enum;
+                        dataType = CustomPropertyDataType.Enum;
                         var enumDefinition = match.Groups[10].Value.Replace("\"", "").Split(' ')[1];
                         customProperty.EnumCustomProperty = new EnumCustomPropertyDefinition
                         {

@@ -8,48 +8,47 @@ namespace DbcParserLib.Model
 {
     public class CustomProperty
     {
-        public readonly CustomPropertyDefinition m_customPropertyDefinition;
-
-        public CustomProperty(CustomPropertyDefinition customPropertyDefinition)
-        {
-            m_customPropertyDefinition = customPropertyDefinition;
-        }
-
+        public readonly CustomPropertyDefinition CustomPropertyDefinition;
         public CustomPropertyValue<int> IntegerCustomProperty { get; set; }
         public CustomPropertyValue<int> HexCustomProperty { get; set; }
         public CustomPropertyValue<double> FloatCustomProperty { get; set; }
         public CustomPropertyValue<string> StringCustomProperty { get; set; }
         public CustomPropertyValue<string> EnumCustomProperty { get; set; }
 
+        public CustomProperty(CustomPropertyDefinition customPropertyDefinition)
+        {
+            CustomPropertyDefinition = customPropertyDefinition;
+        }
+
         public void SetCustomPropertyValue(string value)
         {
-            switch (m_customPropertyDefinition.DataType)
+            switch (CustomPropertyDefinition.DataType)
             {
-                case DbcDataType.Integer:
+                case CustomPropertyDataType.Integer:
                     IntegerCustomProperty = new CustomPropertyValue<int>()
                     {
                         Value = int.Parse(value, CultureInfo.InvariantCulture)
                     };
                     break;
-                case DbcDataType.Hex:
+                case CustomPropertyDataType.Hex:
                     HexCustomProperty = new CustomPropertyValue<int>()
                     {
                         Value = int.Parse(value, CultureInfo.InvariantCulture)
                     };
                     break;
-                case DbcDataType.Float:
+                case CustomPropertyDataType.Float:
                     FloatCustomProperty = new CustomPropertyValue<double>()
                     {
                         Value = float.Parse(value, CultureInfo.InvariantCulture)
                     };
                     break;
-                case DbcDataType.String:
+                case CustomPropertyDataType.String:
                     StringCustomProperty = new CustomPropertyValue<string>()
                     {
                         Value = value
                     };
                     break;
-                case DbcDataType.Enum:
+                case CustomPropertyDataType.Enum:
                     EnumCustomProperty = new CustomPropertyValue<string>()
                     {
                         Value = value
@@ -60,36 +59,36 @@ namespace DbcParserLib.Model
 
         public void SetCustomPropertyValueFromDefault()
         {
-            switch (m_customPropertyDefinition.DataType)
+            switch (CustomPropertyDefinition.DataType)
             {
-                case DbcDataType.Integer:
+                case CustomPropertyDataType.Integer:
                     IntegerCustomProperty = new CustomPropertyValue<int>()
                     {
-                        Value = m_customPropertyDefinition.IntegerCustomProperty.Default
+                        Value = CustomPropertyDefinition.IntegerCustomProperty.Default
                     };
                     break;
-                case DbcDataType.Hex:
+                case CustomPropertyDataType.Hex:
                     HexCustomProperty = new CustomPropertyValue<int>()
                     {
-                        Value = m_customPropertyDefinition.HexCustomProperty.Default
+                        Value = CustomPropertyDefinition.HexCustomProperty.Default
                     };
                     break;
-                case DbcDataType.Float:
+                case CustomPropertyDataType.Float:
                     FloatCustomProperty = new CustomPropertyValue<double>()
                     {
-                        Value = m_customPropertyDefinition.FloatCustomProperty.Default
+                        Value = CustomPropertyDefinition.FloatCustomProperty.Default
                     };
                     break;
-                case DbcDataType.String:
+                case CustomPropertyDataType.String:
                     StringCustomProperty = new CustomPropertyValue<string>()
                     {
-                        Value = m_customPropertyDefinition.StringCustomProperty.Default
+                        Value = CustomPropertyDefinition.StringCustomProperty.Default
                     };
                     break;
-                case DbcDataType.Enum:
+                case CustomPropertyDataType.Enum:
                     EnumCustomProperty = new CustomPropertyValue<string>()
                     {
-                        Value = m_customPropertyDefinition.EnumCustomProperty.Default
+                        Value = CustomPropertyDefinition.EnumCustomProperty.Default
                     };
                     break;
             }

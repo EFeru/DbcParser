@@ -1,7 +1,5 @@
 ﻿using NUnit.Framework;
-using System.Linq;
 using DbcParserLib.Model;
-using System.Collections.Generic;
 
 namespace DbcParserLib.Tests
 {

@@ -1,6 +1,8 @@
+using System;
 using NUnit.Framework;
 using System.Linq;
 using System.IO;
+using DbcParserLib.Model;
 
 namespace DbcParserLib.Tests
 {
@@ -117,9 +119,9 @@ BO_ 200 SENSOR: 39 SENSOR
             Assert.AreEqual(132, signal.ValueTable.Length);
 
             var lineCount = 0;
-            using(var reader = new StringReader(signal.ValueTable))
+            using (var reader = new StringReader(signal.ValueTable))
             {
-                while(reader.Peek() > -1)
+                while (reader.Peek() > -1)
                 {
                     reader.ReadLine();
                     ++lineCount;
@@ -163,10 +165,10 @@ CM_ SG_ 1043 COUNTER_ALT ""only increments on change""; ";
             Assert.AreEqual(3, dbc.Messages.Count());
             Assert.AreEqual(0, dbc.Nodes.Count());
 
-            var messageIds = new[] { 961, 1041, 1043};
-            var signalCount = new[] { 7, 4, 3};
+            var messageIds = new[] { 961, 1041, 1043 };
+            var signalCount = new[] { 7, 4, 3 };
 
-            for(var i = 0; i < messageIds.Length; ++i)
+            for (var i = 0; i < messageIds.Length; ++i)
             {
                 var targetMessage = dbc.Messages.FirstOrDefault(x => x.ID == messageIds[i]);
                 Assert.IsNotNull(targetMessage);
@@ -231,9 +233,7 @@ CM_ SG_ 1043 COUNTER_ALT ""only increments on change""; ";
             Assert.AreEqual(1, dbc.Messages.Count());
             Assert.AreEqual(1, dbc.Nodes.Count());
 
-            Assert.AreEqual(@"Message comment first line
-second line
-third line", dbc.Messages.First().Comment);
+            Assert.AreEqual($"Message comment first line{Environment.NewLine}second line{Environment.NewLine}third line", dbc.Messages.First().Comment);
             Assert.AreEqual("Node comment", dbc.Nodes.First().Comment);
 
             var signal = dbc.Messages.Single().Signals.FirstOrDefault(x => x.Name.Equals("COUNTER_ALT"));
@@ -286,7 +286,6 @@ VAL_ 1043 withNamedTable 3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 
         [Test]
         public void UserDefinedAttributesTest()
         {
-            // This example is taken from kia_ev6.dbc
             var dbcString = @"
 BU_: XXX
 
@@ -317,7 +316,7 @@ BA_ ""EnumAttributeName"" SG_ 1043 COUNTER_ALT ""ThirdVal""; ";
 
             var node = dbc.Nodes.First();
             Assert.AreEqual(1, node.CustomProperties.Count());
-            Assert.AreEqual(70, node.CustomProperties["HexAttribute"].IntegerCustomProperty.Value);
+            Assert.AreEqual(70, node.CustomProperties["HexAttribute"].HexCustomProperty.Value);
 
             var message = dbc.Messages.First();
             Assert.AreEqual(2, message.CustomProperties.Count());
@@ -329,6 +328,108 @@ BA_ ""EnumAttributeName"" SG_ 1043 COUNTER_ALT ""ThirdVal""; ";
             Assert.AreEqual(2, signal.CustomProperties.Count());
             Assert.AreEqual("ThirdVal", signal.CustomProperties["EnumAttributeName"].EnumCustomProperty.Value);
             Assert.AreEqual("DefaultString", signal.CustomProperties["StringAttribute"].StringCustomProperty.Value);
+        }
+
+        [Test]
+        public void EnvironmentVariableTest()
+        {
+            var dbcString = @"
+BU_: XXX
+
+BO_ 1043 BLINKERS: 8 XXX
+ SG_ COUNTER_ALT : 15|4@0+ (1,0) [0|15] """" XXX
+ SG_ LEFT_LAMP : 20|1@0+ (1,0) [0|1] """" XXX
+ SG_ RIGHT_LAMP : 22|1@0+ (1,0) [0|1] """" XXX
+ 
+EV_ EnvVarName: 0 [0|1] """" 0 2 DUMMY_NODE_VECTOR0 XXX; ";
+
+            var dbc = Parser.Parse(dbcString);
+
+            Assert.AreEqual(1, dbc.Messages.Count());
+            Assert.AreEqual(1, dbc.Nodes.Count());
+            Assert.AreEqual(1, dbc.EnvironmentVariables.Count());
+
+            Assert.AreEqual("EnvVarName", dbc.Nodes.First().EnvironmentVariables.First().Key);
+        }
+
+        [Test]
+        public void EnvironmentVariableDataTypeIsCorrectlyAppliedTest()
+        {
+            var dbcString = @"
+BU_: XXX
+
+BO_ 1043 BLINKERS: 8 XXX
+ SG_ COUNTER_ALT : 15|4@0+ (1,0) [0|15] """" XXX
+ SG_ LEFT_LAMP : 20|1@0+ (1,0) [0|1] """" XXX
+ SG_ RIGHT_LAMP : 22|1@0+ (1,0) [0|1] """" XXX
+ 
+EV_ EnvVarName: 0 [0|1] """" 0 2 DUMMY_NODE_VECTOR0 XXX;
+ENVVAR_DATA_ EnvVarName: 5;";
+
+            var dbc = Parser.Parse(dbcString);
+
+            Assert.AreEqual(1, dbc.Messages.Count());
+            Assert.AreEqual(1, dbc.Nodes.Count());
+            Assert.AreEqual(1, dbc.EnvironmentVariables.Count());
+
+            Assert.AreEqual("EnvVarName", dbc.Nodes.First().EnvironmentVariables.First().Key);
+            Assert.AreEqual(EnvDataType.Data, dbc.Nodes.First().EnvironmentVariables.First().Value.Type);
+            Assert.AreEqual(5, dbc.Nodes.First().EnvironmentVariables.First().Value.DataEnvironmentVariable.Length);
+        }
+
+        [Test]
+        public void EnvironmentVariableWithMultipleNodeTest()
+        {
+            var dbcString = @"
+BU_: XXX YYY
+
+BO_ 1043 BLINKERS: 8 XXX
+ SG_ COUNTER_ALT : 15|4@0+ (1,0) [0|15] """" XXX
+ SG_ LEFT_LAMP : 20|1@0+ (1,0) [0|1] """" XXX
+ SG_ RIGHT_LAMP : 22|1@0+ (1,0) [0|1] """" XXX
+ 
+EV_ EnvVarName: 0 [0|1] """" 0 2 DUMMY_NODE_VECTOR0 XXX,YYY;";
+
+            var dbc = Parser.Parse(dbcString);
+
+            Assert.AreEqual(1, dbc.Messages.Count());
+            Assert.AreEqual(2, dbc.Nodes.Count());
+            Assert.AreEqual(1, dbc.EnvironmentVariables.Count());
+
+            Assert.AreEqual("EnvVarName", dbc.Nodes.First().EnvironmentVariables.First().Key);
+            Assert.AreEqual("EnvVarName", dbc.Nodes.Last().EnvironmentVariables.First().Key);
+        }
+
+        [Test]
+        public void MultipleEnvironmentVariableToOneNodeTest()
+        {
+            var dbcString = @"
+BU_: XXX
+
+BO_ 1043 BLINKERS: 8 XXX
+ SG_ COUNTER_ALT : 15|4@0+ (1,0) [0|15] """" XXX
+ SG_ LEFT_LAMP : 20|1@0+ (1,0) [0|1] """" XXX
+ SG_ RIGHT_LAMP : 22|1@0+ (1,0) [0|1] """" XXX
+ 
+EV_ EnvVarName1: 0 [0|1] """" 0 2 DUMMY_NODE_VECTOR0 XXX;
+EV_ EnvVarName2: 1 [0|1.0] """" 0.5 2 DUMMY_NODE_VECTOR1 XXX;
+EV_ EnvVarName3: 0 [0|1] """" 0 2 DUMMY_NODE_VECTOR8000 XXX;
+ENVVAR_DATA_ EnvVarName3: 5;";
+
+            var dbc = Parser.Parse(dbcString);
+
+            Assert.AreEqual(1, dbc.Messages.Count());
+            Assert.AreEqual(1, dbc.Nodes.Count());
+            Assert.AreEqual(3, dbc.EnvironmentVariables.Count());
+
+            Assert.AreEqual("EnvVarName1", dbc.Nodes.First().EnvironmentVariables.First().Key);
+            Assert.AreEqual(EnvDataType.Integer, dbc.Nodes.First().EnvironmentVariables.First().Value.Type);
+
+            Assert.AreEqual("EnvVarName2", dbc.Nodes.First().EnvironmentVariables.ElementAt(1).Key);
+            Assert.AreEqual(EnvDataType.Float, dbc.Nodes.First().EnvironmentVariables.ElementAt(1).Value.Type);
+
+            Assert.AreEqual("EnvVarName3", dbc.Nodes.First().EnvironmentVariables.Last().Key);
+            Assert.AreEqual(EnvDataType.Data, dbc.Nodes.First().EnvironmentVariables.Last().Value.Type);
         }
     }
 }

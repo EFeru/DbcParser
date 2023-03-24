@@ -1,8 +1,6 @@
 using NUnit.Framework;
 using DbcParserLib.Parsers;
 using Moq;
-using System.IO;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace DbcParserLib.Tests
@@ -249,15 +247,6 @@ namespace DbcParserLib.Tests
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
             Assert.IsTrue(commentLineParser.TryParse(@"CM_ BU_ xxx no quotes;", dbcBuilderMock.Object, nextLineProviderMock.Object));
-        }
-    }
-
-    internal class NoNextLineProvider : INextLineProvider
-    {
-        public bool TryGetLine(out string line)
-        {
-            line = null;
-            return false;
         }
     }
 

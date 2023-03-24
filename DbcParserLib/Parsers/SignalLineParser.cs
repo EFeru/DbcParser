@@ -16,7 +16,7 @@ namespace DbcParserLib.Parsers
         private static readonly string[] m_commaSpaceSeparator = new string[] { Helpers.Space, Helpers.Comma };
         private static readonly string[] m_signalLineSplittingItems = new string[] { Helpers.Space, "|", "@", "(", ")", "[", "|", "]" };
         private const string SignalRegex = @"\s*SG_\s+([\w]+)\s*([Mm\d]*)\s*:\s*(\d+)\|(\d+)@([01])([+-])\s+\(([\d\+\-eE.]+),([\d\+\-eE.]+)\)\s+\[([\d\+\-eE.]+)\|([\d\+\-eE.]+)\]\s+""(.*)""\s+([\w\s,]+)";
-
+                                           
         private readonly ParsingStrategy m_parsingStrategy;
 
         public SignalLineParser()
