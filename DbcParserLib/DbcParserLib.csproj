@@ -15,7 +15,7 @@
 - extend signal Length and DLC type to `ushort`
 - various bug fixes on parsit Value table, MsgCycleTime, SigInitialValue</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.3.0</Version>
+    <Version>1.3.1</Version>
   </PropertyGroup>
 
 </Project>
