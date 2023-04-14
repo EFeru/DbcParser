@@ -24,8 +24,8 @@ namespace DbcParserLib.Tests
         {
             var dbcString = @"
 BO_ 200 SENSOR: 39 SENSOR
- SG_ SENSOR__rear m1 : 256|6@1+ (0.1,0) [0|0] ""  DBG
- SG_ SENSOR__front m1 : 1755|1@1+ (0.1,0) [0|0] ""  DBG";
+ SG_ SENSOR__rear m1 : 256|6@1+ (0.1,0) [0|0] """"  DBG
+ SG_ SENSOR__front m1 : 1755|1@1+ (0.1,0) [0|0] """"  DBG";
 
 
             var dbc = Parser.Parse(dbcString);
