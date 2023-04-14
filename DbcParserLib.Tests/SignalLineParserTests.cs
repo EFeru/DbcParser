@@ -180,5 +180,21 @@ namespace DbcParserLib.Tests
 
             Assert.IsTrue(signalLineParser.TryParse(@" SG_ MCU_longitude m7 : 28|29@1- (1E-006,0) [-10|35.6] ""deg""  NEO, WHEEL, TOP", dbcBuilderMock.Object, nextLineProviderMock.Object));
         }
+
+        [Test]
+        public void ParseSignalWithDifferentColonSpaces()
+        {
+            var dbcString = @"
+BO_ 200 SENSOR: 39 SENSOR
+ SG_ SENSOR__rear m1: 256|6@1+ (0.1,0) [0|0] """"  DBG
+ SG_ SENSOR__front m1 :1755|1@1+ (0.1,0) [0|0] """"  DBG
+ SG_ MCU_longitude m7:28|29@1- (1E-006,0) [-10|35.6] ""deg""  NEO";
+
+
+            var dbc = Parser.Parse(dbcString);
+
+            Assert.AreEqual(1, dbc.Messages.Count());
+            Assert.AreEqual(3, dbc.Messages.SelectMany(m => m.Signals).Count());
+        }
     }
 }
