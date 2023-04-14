@@ -20,40 +20,36 @@ namespace DbcParserLib.Parsers
             if (line.TrimStart().StartsWith(SignalLineStarter) == false)
                 return false;
 
-            AddSignal(line, builder);
+            var match = Regex.Match(line, SignalRegex);
+            if (match.Success)
+            {
+                var factorStr = match.Groups[7].Value;
+                var sig = new Signal
+                {
+                    Multiplexing = match.Groups[2].Value,
+                    Name = match.Groups[1].Value,
+                    StartBit = ushort.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture),
+                    Length = ushort.Parse(match.Groups[4].Value, CultureInfo.InvariantCulture),
+                    ByteOrder = byte.Parse(match.Groups[5].Value, CultureInfo.InvariantCulture),   // 0 = MSB (Motorola), 1 = LSB (Intel)
+                    ValueType = (match.Groups[6].Value == SignedSymbol ? DbcValueType.Signed : DbcValueType.Unsigned),
+                    IsInteger = IsInteger(factorStr),
+                    Factor = double.Parse(match.Groups[7].Value, CultureInfo.InvariantCulture),
+                    Offset = double.Parse(match.Groups[8].Value, CultureInfo.InvariantCulture),
+                    Minimum = double.Parse(match.Groups[9].Value, CultureInfo.InvariantCulture),
+                    Maximum = double.Parse(match.Groups[10].Value, CultureInfo.InvariantCulture),
+                    Unit = match.Groups[11].Value,
+                    Receiver = match.Groups[12].Value.Split(m_commaSpaceSeparator, StringSplitOptions.RemoveEmptyEntries)  // can be multiple receivers splitted by ","
+                };
+
+                builder.AddSignal(sig);
+            }
+
             return true;
         }
 
         private static bool IsInteger(string str)
         {
             return int.TryParse(str, out _);
-        }
-
-        private static void AddSignal(string line, IDbcBuilder builder)
-        {
-            var match = Regex.Match(line, SignalRegex);
-
-            if (match.Success == false)
-                return;
-            var factorStr = match.Groups[7].Value;
-            var sig = new Signal
-            {
-                Multiplexing = match.Groups[2].Value,
-                Name = match.Groups[1].Value,
-                StartBit = ushort.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture),
-                Length = ushort.Parse(match.Groups[4].Value, CultureInfo.InvariantCulture),
-                ByteOrder = byte.Parse(match.Groups[5].Value, CultureInfo.InvariantCulture),   // 0 = MSB (Motorola), 1 = LSB (Intel)
-                ValueType = (match.Groups[6].Value == SignedSymbol ? DbcValueType.Signed : DbcValueType.Unsigned),
-                IsInteger = IsInteger(factorStr),
-                Factor = double.Parse(match.Groups[7].Value, CultureInfo.InvariantCulture),
-                Offset = double.Parse(match.Groups[8].Value, CultureInfo.InvariantCulture),
-                Minimum = double.Parse(match.Groups[9].Value, CultureInfo.InvariantCulture),
-                Maximum = double.Parse(match.Groups[10].Value, CultureInfo.InvariantCulture),
-                Unit = match.Groups[11].Value,
-                Receiver = match.Groups[12].Value.Split(m_commaSpaceSeparator, StringSplitOptions.RemoveEmptyEntries)  // can be multiple receivers splitted by ","
-            };
-
-            builder.AddSignal(sig);
         }
     }
 }
