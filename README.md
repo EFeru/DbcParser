@@ -112,3 +112,9 @@ if(message.IsMultiplexed())
 # Contributions
 
 Contributions are appreciated! Feel free to create pull requests to improve this library.
+
+# Support
+
+This project is supported by JetBrains for Open Source development
+
+![JetBrains Logo (Main) logo](https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg)
