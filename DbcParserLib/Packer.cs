@@ -105,7 +105,7 @@ namespace DbcParserLib
             }
 
             // Apply scaling
-            return ((double)iVal * signal.Factor + signal.Offset);
+            return ((double)(iVal * (decimal)signal.Factor + (decimal)signal.Offset));
         }
 
         /// <summary>
