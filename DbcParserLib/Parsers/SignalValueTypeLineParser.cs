@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Text.RegularExpressions;
 using DbcParserLib.Model;
 
@@ -9,7 +8,14 @@ namespace DbcParserLib.Parsers
         private const string SignalValueTypeStarter = "SIG_VALTYPE_ ";
         private const string SignalValueTypeParsingRegex = @"SIG_VALTYPE_\s+(\d+)\s+([a-zA-Z_][\w]*)\s+([0123])\s*;";
 
-        public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
+        private readonly IParseObserver m_observer;
+
+        public SignalValueTypeLineParser(IParseObserver observer)
+        {
+            m_observer = observer;
+        }
+
+        public bool TryParse(string line, int lineNumber, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
             var cleanLine = line.Trim(' ');
 

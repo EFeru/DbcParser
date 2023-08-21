@@ -8,7 +8,14 @@ namespace DbcParserLib.Parsers
         private const string ValueTableDefinitionLineStarter = "VAL_TABLE_ ";
         private const string ValueTableDefinitionParsingRegex = @"VAL_TABLE_\s+([a-zA-Z_][\w]*)\s+((?:\d+\s+(?:""[^""]*"")\s+)*)\s*;";
 
-        public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
+        private readonly IParseObserver m_observer;
+
+        public ValueTableDefinitionLineParser(IParseObserver observer)
+        {
+            m_observer = observer;
+        }
+
+        public bool TryParse(string line, int lineNumber, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
             var cleanLine = line.Trim(' ');
 

@@ -1,6 +1,3 @@
-using System;
-using System.ComponentModel;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -14,7 +11,14 @@ namespace DbcParserLib.Parsers
         private const string SignalParsingRegex = @"CM_ SG_\s+(\d+)\s+([a-zA-Z_][\w]*)\s+""*([^""]*)""*\s*;";
         private const string EnvironmentVariableParsingRegex = @"CM_ EV_\s+([a-zA-Z_][\w]*)\s+""*([^""]*)""*\s*;";
 
-        public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
+        private readonly IParseObserver m_observer;
+
+        public CommentLineParser(IParseObserver observer)
+        {
+            m_observer = observer;
+        }
+
+        public bool TryParse(string line, int lineNumber, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
             var cleanLine = line.Trim();
 
@@ -47,6 +51,8 @@ namespace DbcParserLib.Parsers
                 SetEnvironmentVariableComment(cleanLine, builder);
                 return true;
             }
+
+            m_observer.CommentSintaxError(lineNumber);
             return false;
         }
 

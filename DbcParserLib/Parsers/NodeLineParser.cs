@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Text.RegularExpressions;
 using DbcParserLib.Model;
 
@@ -9,7 +8,14 @@ namespace DbcParserLib.Parsers
         private const string NodeLineStarter = "BU_:";
         private const string NodeLineParsingRegex = @"BU_:((?:\s+(?:[a-zA-Z_][\w]*))*)";
 
-        public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
+        private readonly IParseObserver m_observer;
+
+        public NodeLineParser(IParseObserver observer)
+        {
+            m_observer = observer;
+        }
+
+        public bool TryParse(string line, int lineNumber, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
             if (line.TrimStart().StartsWith(NodeLineStarter) == false)
                 return false;

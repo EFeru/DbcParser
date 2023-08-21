@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using DbcParserLib.Model;
@@ -14,8 +13,15 @@ namespace DbcParserLib.Parsers
         private const string SignedSymbol = "-";
         private static readonly string[] m_commaSpaceSeparator = new string[] { Helpers.Space, Helpers.Comma };
         private const string SignalRegex = @"\s*SG_\s+([\w]+)\s*([Mm\d]*)\s*:\s*(\d+)\|(\d+)@([01])([+-])\s+\(([\d\+\-eE.]+),([\d\+\-eE.]+)\)\s+\[([\d\+\-eE.]+)\|([\d\+\-eE.]+)\]\s+""(.*)""\s+([\w\s,]+)";
-                                           
-        public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
+
+        private readonly IParseObserver m_observer;
+
+        public SignalLineParser(IParseObserver observer)
+        {
+            m_observer = observer;
+        }
+
+        public bool TryParse(string line, int lineNumber, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
             if (line.TrimStart().StartsWith(SignalLineStarter) == false)
                 return false;

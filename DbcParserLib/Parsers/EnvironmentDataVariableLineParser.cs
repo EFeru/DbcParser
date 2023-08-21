@@ -7,7 +7,14 @@ namespace DbcParserLib.Parsers
         private const string EnvironmentDataVariableLineStarter = "ENVVAR_DATA_ ";
         private const string EnvironmentDataVariableParsingRegex = @"ENVVAR_DATA_\s+([a-zA-Z_][\w]*)\s*:\s+(\d+)\s*;";
 
-        public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
+        private readonly IParseObserver m_observer;
+
+        public EnvironmentDataVariableLineParser(IParseObserver observer)
+        {
+            m_observer = observer;
+        }
+
+        public bool TryParse(string line, int lineNumber, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
             var cleanLine = line.Trim(' ');
 

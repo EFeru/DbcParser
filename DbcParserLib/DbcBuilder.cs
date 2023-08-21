@@ -1,8 +1,5 @@
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Xml.Linq;
 using DbcParserLib.Model;
 
 namespace DbcParserLib

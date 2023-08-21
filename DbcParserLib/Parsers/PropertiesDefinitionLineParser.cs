@@ -1,8 +1,5 @@
 ﻿using DbcParserLib.Model;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace DbcParserLib.Parsers
@@ -13,8 +10,15 @@ namespace DbcParserLib.Parsers
         private const string PropertiesDefinitionDefaultLineStarter = "BA_DEF_DEF_ ";
         private const string PropertyDefinitionParsingRegex = @"BA_DEF_\s+(?:(BU_|BO_|SG_|EV_)\s+)?""([a-zA-Z_][\w]*)""\s+(?:(?:(INT|HEX)\s+(-?\d+)\s+(-?\d+))|(?:(FLOAT)\s+([\d\+\-eE.]+)\s+([\d\+\-eE.]+))|(STRING)|(ENUM\s+(?:""[^""]*"",*)*))\s*;";
         private const string PropertyDefinitionDefaultParsingRegex = @"BA_DEF_DEF_\s+""([a-zA-Z_][\w]*)""\s+(-?\d+|[\d\+\-eE.]+|""[^""]*"")\s*;";
-                                                                     
-        public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
+
+        private readonly IParseObserver m_observer;
+
+        public PropertiesDefinitionLineParser(IParseObserver observer)
+        {
+            m_observer = observer;
+        }
+
+        public bool TryParse(string line, int lineNumber, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
             var cleanLine = line.Trim(' ');
 

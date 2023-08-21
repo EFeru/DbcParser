@@ -9,7 +9,14 @@ namespace DbcParserLib.Parsers
         private const string ValueTableLinkParsingRegex = @"VAL_\s+(\d+)\s+([a-zA-Z_][\w]*)\s+([a-zA-Z_][\w]*)\s*;";
         private const string ValueTableParsingRegex = @"VAL_\s+(?:(?:(\d+)\s+([a-zA-Z_][\w]*))|([a-zA-Z_][\w]*))\s+((?:\d+\s+(?:""[^""]*"")\s+)*)\s*;";
 
-        public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
+        private readonly IParseObserver m_observer;
+
+        public ValueTableLineParser(IParseObserver observer)
+        {
+            m_observer = observer;
+        }
+
+        public bool TryParse(string line, int lineNumber, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
             var cleanLine = line.Trim(' ');
 
