@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using DbcParserLib;
-using DbcParserLib.Model;
+using DbcParserLib.Observers;
 
 /* 
  * ------------------------------------
@@ -25,8 +20,9 @@ namespace Demo
 {
     public partial class Form1 : Form
     {
-        public DataTable dtMessages = new DataTable();
-        public DataTable dtSignals = new DataTable();
+        public DataTable dtMessages = new();
+        public DataTable dtSignals = new();
+        private readonly SimpleFailureObserver m_failureObserver = new();
 
         public Form1()
         {
@@ -58,7 +54,7 @@ namespace Demo
 
         private void buttonLoadDbc_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Title = "Open dbc file";
             openFileDialog.FileName = "";
             openFileDialog.Filter = "DBC File|*.dbc";
@@ -74,7 +70,13 @@ namespace Demo
         {
             try
             {
+                // Comment this line to remove parsing failure management (errors will be silent)
+                // You can provide your own IParseObserver implementation to customize parsing failure management
+                Parser.SetParsingFailuresObserver(m_failureObserver);
+                
                 var dbc = Parser.ParseFromPath(filePath);
+                ShowErrors();
+
                 textBoxPath.Text = filePath;
                 PopulateView(dbc);
             }
@@ -82,6 +84,16 @@ namespace Demo
             {
                 MessageBox.Show($"Failed to read dbc file!\n\n{ex}", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
+            }
+        }
+
+        private void ShowErrors()
+        {
+            var errors = m_failureObserver.GetErrorList();
+            if (errors.Count > 0)
+            {
+                MessageBox.Show(string.Join(Environment.NewLine, errors), "Parsing failures!", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
         }
 
