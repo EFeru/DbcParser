@@ -3,6 +3,7 @@ using DbcParserLib.Parsers;
 using DbcParserLib.Model;
 using Moq;
 using System.Linq;
+using DbcParserLib.Observers;
 
 namespace DbcParserLib.Tests
 {
@@ -24,7 +25,7 @@ namespace DbcParserLib.Tests
 
         private static ILineParser CreateParser()
         {
-            return new SignalLineParser();
+            return new SignalLineParser(new SilentFailureObserver());
         }
 
         [Test]
@@ -45,16 +46,6 @@ namespace DbcParserLib.Tests
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
             Assert.IsFalse(signalLineParser.TryParse("CF_", dbcBuilderMock.Object, nextLineProviderMock.Object));
-        }
-
-        [Test]
-        public void OnlyPrefixIsAcceptedWithNoInteractions()
-        {
-            var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
-            var signalLineParser = CreateParser();
-            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
-
-            Assert.IsTrue(signalLineParser.TryParse("SG_", dbcBuilderMock.Object, nextLineProviderMock.Object));
         }
 
         [Test]
@@ -195,6 +186,65 @@ BO_ 200 SENSOR: 39 SENSOR
 
             Assert.AreEqual(1, dbc.Messages.Count());
             Assert.AreEqual(3, dbc.Messages.SelectMany(m => m.Signals).Count());
+        }
+
+        [TestCase("SG_ qGearboxOilMin : 0|16@1+ (0.1,0) [0|6553.5] \"l/min\" \"NATEC\"")]
+        [TestCase("SG_ qGearboxOilMin : 0|16@1+ (0.1,0) [0|6553.5] l/min NATEC")]
+        [TestCase("SG_ \"qGearboxOilMin\" : 0|16@1+ (0.1,0) [0|6553.5] \"l/min\" NATEC")]
+        [TestCase("SG_ qGearboxOilMin 0|16@1+ (0.1,0) [0|6553.5] \"l/min\" NATEC")]
+        [TestCase("SG_ ")]
+        public void SignalSyntaxErrorIsObserved(string line)
+        {
+            var observerMock = m_repository.Create<IParseFailureObserver>();
+            var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+
+            observerMock.Setup(o => o.SignalSyntaxError());
+
+            var lineParser = new SignalLineParser(observerMock.Object);
+            lineParser.TryParse(line, dbcBuilderMock.Object, nextLineProviderMock.Object);
+        }
+
+        [Test]
+        public void SignalMessageNotFoundErrorIsObserved()
+        {
+            var line = "SG_ qGearboxOilMin : 0|16@1+ (0.1,0) [0|6553.5] \"l/min\" NATEC";
+
+            var observerMock = m_repository.Create<IParseFailureObserver>();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+            var dbcBuilder = new DbcBuilder(observerMock.Object);
+
+            observerMock.Setup(o => o.NoMessageFound());
+
+            var lineParser = new SignalLineParser(observerMock.Object);
+            lineParser.TryParse(line, dbcBuilder, nextLineProviderMock.Object);
+        }
+
+        [Test]
+        public void SignalDuplicateErrorIsObserved()
+        {
+            var nodeName = "nodeName";
+            var signalName = "signalName";
+            uint messageId = 123;
+            var line1 = $"BU_: {nodeName}";
+            var line2 = $"BO_ {messageId} messageName: 8 {nodeName}";
+            var line3 = $"SG_ {signalName} : 0|16@1+ (0.1,0) [0|6553.5] \"l/min\" {nodeName}";
+
+            var observerMock = m_repository.Create<IParseFailureObserver>();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+            var dbcBuilder = new DbcBuilder(observerMock.Object);
+
+            observerMock.Setup(o => o.DuplicateSignalInMessage(messageId, signalName));
+
+            var nodeLineParser = new NodeLineParser(observerMock.Object);
+            nodeLineParser.TryParse(line1, dbcBuilder, nextLineProviderMock.Object);
+
+            var messageLineParser = new MessageLineParser(observerMock.Object);
+            messageLineParser.TryParse(line2, dbcBuilder, nextLineProviderMock.Object);
+
+            var signalLineParser = new SignalLineParser(observerMock.Object);
+            signalLineParser.TryParse(line3, dbcBuilder, nextLineProviderMock.Object);
+            signalLineParser.TryParse(line3, dbcBuilder, nextLineProviderMock.Object);
         }
     }
 }

@@ -3,6 +3,7 @@ using DbcParserLib.Parsers;
 using DbcParserLib.Model;
 using Moq;
 using System.Collections.Generic;
+using DbcParserLib.Observers;
 
 namespace DbcParserLib.Tests
 {
@@ -25,9 +26,10 @@ namespace DbcParserLib.Tests
 
         private static List<ILineParser> CreateParser()
         {
+            var observer = new SilentFailureObserver();
             return new List<ILineParser>() {
-                new EnvironmentDataVariableLineParser(),
-                new EnvironmentVariableLineParser()
+                new EnvironmentDataVariableLineParser(observer),
+                new EnvironmentVariableLineParser(observer)
             };
         }
 
@@ -164,6 +166,38 @@ namespace DbcParserLib.Tests
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
             Assert.IsTrue(ParseLine(parsingLine, environmentVariableLineParser, dbcBuilderMock.Object, nextLineProviderMock.Object));
+        }
+
+        [Test]
+        public void EnvironmentDataSyntaxErrorIsObserved()
+        {
+            var line = "ENVVAR_DATA_ varName : -1024;";
+
+            var observerMock = m_repository.Create<IParseFailureObserver>();
+            var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+
+            observerMock.Setup(o => o.EnvironmentDataVariableSyntaxError());
+
+            var lineParser = new EnvironmentDataVariableLineParser(observerMock.Object);
+            lineParser.TryParse(line, dbcBuilderMock.Object, nextLineProviderMock.Object);
+        }
+
+        [Test]
+        public void EnvironmentDataNotFoundErrorIsObserved()
+        {
+            var varName = "testVar";
+            uint varSize = 1024;
+            var line = $"ENVVAR_DATA_ {varName} : {varSize};";
+            
+            var observerMock = m_repository.Create<IParseFailureObserver>();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+            var dbcBuilder = new DbcBuilder(observerMock.Object);
+
+            observerMock.Setup(o => o.EnvironmentVariableNameNotFound(varName));
+
+            var lineParser = new EnvironmentDataVariableLineParser(observerMock.Object);
+            lineParser.TryParse(line, dbcBuilder, nextLineProviderMock.Object);
         }
     }
 }

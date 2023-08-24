@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using DbcParserLib.Parsers;
 using DbcParserLib.Model;
+using DbcParserLib.Observers;
 using Moq;
 
 namespace DbcParserLib.Tests
@@ -23,7 +24,7 @@ namespace DbcParserLib.Tests
 
         private static ILineParser CreateParser()
         {
-            return new MessageLineParser();
+            return new MessageLineParser(new SilentFailureObserver());
         }
 
         [Test]
@@ -104,6 +105,38 @@ namespace DbcParserLib.Tests
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
             Assert.IsTrue(messageLineParser.TryParse(@"BO_ 1041    DOORS_SEATBELTS  :    8  TRX   ", dbcBuilderMock.Object, nextLineProviderMock.Object));
+        }
+
+        [TestCase("BO_ 123 msgName : -32 transmitter")]
+        [TestCase("BO_ -123 msgName : 32 transmitter")]
+        [TestCase("BO_ 123 0msgName : 32 transmitter")]
+        public void MessageSyntaxErrorIsObserved(string line)
+        {
+            var observerMock = m_repository.Create<IParseFailureObserver>();
+            var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+
+            observerMock.Setup(o => o.MessageSyntaxError());
+
+            var lineParser = new MessageLineParser(observerMock.Object);
+            lineParser.TryParse(line, dbcBuilderMock.Object, nextLineProviderMock.Object);
+        }
+
+        [Test]
+        public void DuplicateMessageErrorIsObserved()
+        {
+            uint messageId = 123;
+            var line = $"BO_ {messageId} msgName : 32 transmitter";
+
+            var observerMock = m_repository.Create<IParseFailureObserver>();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+            var dbcBuilder = new DbcBuilder(observerMock.Object);
+
+            observerMock.Setup(o => o.DuplicateMessage(messageId));
+
+            var lineParser = new MessageLineParser(observerMock.Object);
+            lineParser.TryParse(line, dbcBuilder, nextLineProviderMock.Object);
+            lineParser.TryParse(line, dbcBuilder, nextLineProviderMock.Object);
         }
     }
 }
