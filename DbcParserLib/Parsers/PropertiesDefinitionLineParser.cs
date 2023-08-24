@@ -1,4 +1,5 @@
 ﻿using DbcParserLib.Model;
+using DbcParserLib.Observers;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -11,14 +12,14 @@ namespace DbcParserLib.Parsers
         private const string PropertyDefinitionParsingRegex = @"BA_DEF_\s+(?:(BU_|BO_|SG_|EV_)\s+)?""([a-zA-Z_][\w]*)""\s+(?:(?:(INT|HEX)\s+(-?\d+)\s+(-?\d+))|(?:(FLOAT)\s+([\d\+\-eE.]+)\s+([\d\+\-eE.]+))|(STRING)|(ENUM\s+(?:""[^""]*"",*)*))\s*;";
         private const string PropertyDefinitionDefaultParsingRegex = @"BA_DEF_DEF_\s+""([a-zA-Z_][\w]*)""\s+(-?\d+|[\d\+\-eE.]+|""[^""]*"")\s*;";
 
-        private readonly IParseObserver m_observer;
+        private readonly IParseFailureObserver m_observer;
 
-        public PropertiesDefinitionLineParser(IParseObserver observer)
+        public PropertiesDefinitionLineParser(IParseFailureObserver observer)
         {
             m_observer = observer;
         }
 
-        public bool TryParse(string line, int lineNumber, IDbcBuilder builder, INextLineProvider nextLineProvider)
+        public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
             var cleanLine = line.Trim(' ');
 
@@ -30,9 +31,9 @@ namespace DbcParserLib.Parsers
             {
                 var match = Regex.Match(cleanLine, PropertyDefinitionDefaultParsingRegex);
                 if (match.Success)
-                {
                     builder.AddCustomPropertyDefaultValue(match.Groups[1].Value, match.Groups[2].Value.Replace("\"", ""));
-                }
+                else
+                    m_observer.PropertyDefaultSyntaxError();
                 return true;
             }
 
@@ -101,9 +102,13 @@ namespace DbcParserLib.Parsers
                     customProperty.DataType = dataType;
                     builder.AddCustomProperty(objectType, customProperty);
                 }
+                else
+                    m_observer.PropertyDefinitionSyntaxError();
+                    
                 return true;
             }
-            return false;
+
+            return true;
         }
     }
 }

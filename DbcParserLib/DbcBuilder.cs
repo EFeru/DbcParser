@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DbcParserLib.Model;
+using DbcParserLib.Observers;
 
 namespace DbcParserLib
 {
@@ -12,6 +13,8 @@ namespace DbcParserLib
 
     internal class DbcBuilder : IDbcBuilder
     {
+        private readonly IParseFailureObserver m_observer;
+
         private readonly ISet<Node> m_nodes = new HashSet<Node>(new NodeEqualityComparer());
         private readonly IDictionary<uint, Message> m_messages = new Dictionary<uint, Message>();
         private readonly IDictionary<uint, IDictionary<string, Signal>> m_signals = new Dictionary<uint, IDictionary<string, Signal>>();
@@ -26,16 +29,32 @@ namespace DbcParserLib
 
         private Message m_currentMessage;
 
+        public DbcBuilder(IParseFailureObserver observer)
+        {
+            m_observer = observer;
+        }
+
         public void AddNode(Node node)
         {
-            m_nodes.Add(node);
+            if(m_nodes.Contains(node))
+                m_observer.DuplicateNode(node.Name);
+            else
+                m_nodes.Add(node);
         }
 
         public void AddMessage(Message message)
         {
-            m_messages[message.ID] = message;
-            m_currentMessage = message;
-            m_signals[message.ID] = new Dictionary<string, Signal>();
+            if(m_messages.TryGetValue(message.ID, out var msg))
+            {
+                m_currentMessage = msg;
+                m_observer.DuplicateMessage(message.ID);
+            }
+            else
+            {
+                m_messages[message.ID] = message;
+                m_currentMessage = message;
+                m_signals[message.ID] = new Dictionary<string, Signal>();
+            }
         }
 
         public void AddSignal(Signal signal)
@@ -43,24 +62,37 @@ namespace DbcParserLib
             if (m_currentMessage != null)
             {
                 signal.ID = m_currentMessage.ID;
-                m_signals[m_currentMessage.ID][signal.Name] = signal;
+                if(m_signals[m_currentMessage.ID].TryGetValue(signal.Name, out _))
+                    m_observer.DuplicateSignalInMessage(m_currentMessage.ID, signal.Name);
+                else
+                    m_signals[m_currentMessage.ID][signal.Name] = signal;
             }
+            else
+                m_observer.NoMessageFound();
         }
 
         public void AddCustomProperty(CustomPropertyObjectType objectType, CustomPropertyDefinition customProperty)
         {
-            m_customProperties[objectType][customProperty.Name] = customProperty;
+            if(m_customProperties[objectType].TryGetValue(customProperty.Name, out _))
+                m_observer.DuplicateCustomProperty(customProperty.Name);
+            else
+                m_customProperties[objectType][customProperty.Name] = customProperty;
         }
 
         public void AddCustomPropertyDefaultValue(string propertyName, string value)
         {
+            var found = false;
             foreach(var objectType in m_customProperties.Keys)
             {
                 if (m_customProperties[objectType].TryGetValue(propertyName, out var customProperty))
                 {
                     customProperty.SetCustomPropertyDefaultValue(value);
+                    found = true;
                 }
             }
+
+            if(!found)
+                m_observer.CustomPropertyNameNotFound(propertyName);
         }
 
         public void AddNodeCustomProperty(string propertyName, string nodeName, string value)
@@ -72,9 +104,16 @@ namespace DbcParserLib
                 {
                     var property = new CustomProperty(customProperty);
                     property.SetCustomPropertyValue(value);
-                    node.CustomProperties[propertyName] = property;
+                    if(node.CustomProperties.TryGetValue(propertyName, out _))
+                        m_observer.DuplicateCustomPropertyInNode(propertyName, node.Name);
+                    else
+                        node.CustomProperties[propertyName] = property;
                 }
+                else
+                    m_observer.NodeNameNotFound(nodeName);
             }
+            else
+                m_observer.CustomPropertyNameNotFound(propertyName);
         }
 
         public void AddEnvironmentVariableCustomProperty(string propertyName, string variableName, string value)
@@ -85,9 +124,16 @@ namespace DbcParserLib
                 {
                     var property = new CustomProperty(customProperty);
                     property.SetCustomPropertyValue(value);
-                    envVariable.CustomProperties[propertyName] = property;
+                    if(envVariable.CustomProperties.TryGetValue(propertyName, out _))
+                        m_observer.DuplicateCustomPropertyInEnvironmentVariable(propertyName, envVariable.Name);
+                    else
+                        envVariable.CustomProperties[propertyName] = property;
                 }
+                else
+                    m_observer.EnvironmentVariableNameNotFound(variableName);
             }
+            else
+                m_observer.CustomPropertyNameNotFound(propertyName);
         }
 
         public void AddMessageCustomProperty(string propertyName, uint messageId, string value)
@@ -98,9 +144,16 @@ namespace DbcParserLib
                 {
                     var property = new CustomProperty(customProperty);
                     property.SetCustomPropertyValue(value);
-                    message.CustomProperties[propertyName] = property;
+                    if(message.CustomProperties.TryGetValue(propertyName, out _))
+                        m_observer.DuplicateCustomPropertyInMessage(propertyName, message.ID);
+                    else
+                        message.CustomProperties[propertyName] = property;
                 }
+                else
+                    m_observer.MessageIdNotFound(messageId);
             }
+            else
+                m_observer.CustomPropertyNameNotFound(propertyName);
         }
 
         public void AddSignalCustomProperty(string propertyName, uint messageId, string signalName, string value)
@@ -111,25 +164,32 @@ namespace DbcParserLib
                 {
                     var property = new CustomProperty(customProperty);
                     property.SetCustomPropertyValue(value);
-                    signal.CustomProperties[propertyName] = property;
+                    if(signal.CustomProperties.TryGetValue(propertyName, out _))
+                        m_observer.DuplicateCustomPropertyInSignal(propertyName, signal.Name);
+                    else
+                        signal.CustomProperties[propertyName] = property;
                 }
+                else
+                    m_observer.SignalNameNotFound(messageId, signalName);
             }
+            else
+                m_observer.CustomPropertyNameNotFound(propertyName);
         }
 
         public void AddSignalComment(uint messageId, string signalName, string comment)
         {
             if (TryGetValueMessageSignal(messageId, signalName, out var signal))
-            {
                 signal.Comment = comment;
-            }
+            else
+                m_observer.SignalNameNotFound(messageId, signalName);
         }
 
         public void AddSignalInitialValue(uint messageId, string signalName, double initialValue)
         {
             if (TryGetValueMessageSignal(messageId, signalName, out var signal))
-            {
                 signal.InitialValue = initialValue * signal.Factor + signal.Offset;
-            }
+            else
+                m_observer.SignalNameNotFound(messageId, signalName);
         }
 
         public void AddSignalValueType(uint messageId, string signalName, DbcValueType valueType)
@@ -138,36 +198,41 @@ namespace DbcParserLib
             {
                 signal.ValueType = valueType;
             }
+            else
+                m_observer.SignalNameNotFound(messageId, signalName);
         }
 
         public void AddNodeComment(string nodeName, string comment)
         {
             var node = m_nodes.FirstOrDefault(n => n.Name.Equals(nodeName));
             if (node != null)
-            {
                 node.Comment = comment;
-            }
+            else
+                m_observer.NodeNameNotFound(nodeName);
         }
 
         public void AddMessageComment(uint messageId, string comment)
         {
             if (m_messages.TryGetValue(messageId, out var message))
-            {
                 message.Comment = comment;
-            }
+            else
+                m_observer.MessageIdNotFound(messageId);
         }
 
         public void AddEnvironmentVariableComment(string variableName, string comment)
         {
             if (m_environmentVariables.TryGetValue(variableName, out var envVariable))
-            {
                 envVariable.Comment = comment;
-            }
+            else
+                m_observer.EnvironmentVariableNameNotFound(variableName);
         }
 
         public void AddEnvironmentVariable(string variableName, EnvironmentVariable environmentVariable)
         {
-            m_environmentVariables[variableName] = environmentVariable;
+            if(m_environmentVariables.TryGetValue(variableName, out _))
+                m_observer.DuplicateEnvironmentVariableName(variableName);
+            else
+                m_environmentVariables[variableName] = environmentVariable;
         }
 
         public void AddEnvironmentDataVariable(string variableName, uint dataSize)
@@ -180,6 +245,8 @@ namespace DbcParserLib
                     Length = dataSize
                 };
             }
+            else
+                m_observer.EnvironmentVariableNameNotFound(variableName);
         }
 
         public void AddNodeEnvironmentVariable(string nodeName, string variableName)
@@ -187,8 +254,13 @@ namespace DbcParserLib
             var node = m_nodes.FirstOrDefault(n => n.Name.Equals(nodeName));
             if (node != null)
             {
-                node.EnvironmentVariables[variableName] = m_environmentVariables[variableName];
+                if(node.EnvironmentVariables.TryGetValue(variableName, out _))
+                    m_observer.DuplicateEnvironmentVariableInNode(variableName, node.Name);
+                else
+                    node.EnvironmentVariables[variableName] = m_environmentVariables[variableName];
             }
+            else
+                m_observer.NodeNameNotFound(nodeName);
         }
 
         public void AddMessageCycleTime(uint messageId, int cycleTime)
@@ -197,15 +269,22 @@ namespace DbcParserLib
             {
                 message.CycleTime = cycleTime;
             }
+            else
+                m_observer.MessageIdNotFound(messageId);
         }
 
         public void AddNamedValueTable(string name, IReadOnlyDictionary<int, string> dictValues, string stringValues)
         {
-            m_namedTablesMap[name] = new ValuesTable()
+            if(m_namedTablesMap.TryGetValue(name, out _))
+                m_observer.DuplicateValueTableName(name);
+            else
             {
-                ValueTableMap = dictValues,
-                ValueTable = stringValues
-            };
+                m_namedTablesMap[name] = new ValuesTable()
+                {
+                    ValueTableMap = dictValues,
+                    ValueTable = stringValues
+                };
+            }
         }
 
         public void LinkTableValuesToSignal(uint messageId, string signalName, IReadOnlyDictionary<int, string> dictValues, string stringValues)
@@ -214,6 +293,8 @@ namespace DbcParserLib
             {
                 signal.SetValueTable(dictValues, stringValues);
             }
+            else
+                m_observer.SignalNameNotFound(messageId, signalName);
         }
 
         public void LinkTableValuesToEnvironmentVariable(string variableName, IReadOnlyDictionary<int, string> dictValues)
@@ -222,6 +303,8 @@ namespace DbcParserLib
             {
                 envVariable.ValueTableMap = dictValues;
             }
+            else
+                m_observer.EnvironmentVariableNameNotFound(variableName);
         }
 
         public void LinkNamedTableToSignal(uint messageId, string signalName, string tableName)
@@ -230,6 +313,8 @@ namespace DbcParserLib
             {
                 LinkTableValuesToSignal(messageId, signalName, valuesTable.ValueTableMap, valuesTable.ValueTable);
             }
+            else
+                m_observer.TableMapNameNotFound(tableName);
         }
 
         private bool TryGetValueMessageSignal(uint messageId, string signalName, out Signal signal)
@@ -259,7 +344,7 @@ namespace DbcParserLib
             }
         }
 
-        private void FillMesagesNotSetCustomPropertyWithDefault()
+        private void FillMessagesNotSetCustomPropertyWithDefault()
         {
             var messageCustomProperties = m_customProperties[CustomPropertyObjectType.Message];
             foreach (var customProperty in messageCustomProperties)
@@ -295,7 +380,7 @@ namespace DbcParserLib
         public Dbc Build()
         {
             FillNodesNotSetCustomPropertyWithDefault();
-            FillMesagesNotSetCustomPropertyWithDefault();
+            FillMessagesNotSetCustomPropertyWithDefault();
 
             foreach (var message in m_messages)
             {

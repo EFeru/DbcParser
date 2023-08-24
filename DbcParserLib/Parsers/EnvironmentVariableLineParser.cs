@@ -1,4 +1,5 @@
 ﻿using DbcParserLib.Model;
+using DbcParserLib.Observers;
 using System.Text.RegularExpressions;
 
 namespace DbcParserLib.Parsers
@@ -8,14 +9,14 @@ namespace DbcParserLib.Parsers
         private const string EnvironmentVariableLineStarter = "EV_ ";
         private const string EnvironmentVariableParsingRegex = @"EV_\s+([a-zA-Z_][\w]*)\s*:\s+([012])\s+\[([\d\+\-eE.]+)\|([\d\+\-eE.]+)\]\s+""([^""]*)""\s+([\d\+\-eE.]+)\s+(\d+)\s+DUMMY_NODE_VECTOR(800){0,1}([0123])\s+((?:[a-zA-Z_][\w]*)(?:,[a-zA-Z_][\w]*)*)\s*;";
 
-        private readonly IParseObserver m_observer;
+        private readonly IParseFailureObserver m_observer;
 
-        public EnvironmentVariableLineParser(IParseObserver observer)
+        public EnvironmentVariableLineParser(IParseFailureObserver observer)
         {
             m_observer = observer;
         }
 
-        public bool TryParse(string line, int lineNumber, IDbcBuilder builder, INextLineProvider nextLineProvider)
+        public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
             var cleanLine = line.Trim(' ');
 
@@ -87,6 +88,9 @@ namespace DbcParserLib.Parsers
                     builder.AddNodeEnvironmentVariable(node, match.Groups[1].Value);
                 }
             }
+            else
+                m_observer.EnvironmentVariableSyntaxError();
+            
             return true;
         }
     }

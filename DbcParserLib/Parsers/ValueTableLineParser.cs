@@ -1,5 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
+using DbcParserLib.Observers;
 
 namespace DbcParserLib.Parsers
 {
@@ -9,14 +10,14 @@ namespace DbcParserLib.Parsers
         private const string ValueTableLinkParsingRegex = @"VAL_\s+(\d+)\s+([a-zA-Z_][\w]*)\s+([a-zA-Z_][\w]*)\s*;";
         private const string ValueTableParsingRegex = @"VAL_\s+(?:(?:(\d+)\s+([a-zA-Z_][\w]*))|([a-zA-Z_][\w]*))\s+((?:\d+\s+(?:""[^""]*"")\s+)*)\s*;";
 
-        private readonly IParseObserver m_observer;
+        private readonly IParseFailureObserver m_observer;
 
-        public ValueTableLineParser(IParseObserver observer)
+        public ValueTableLineParser(IParseFailureObserver observer)
         {
             m_observer = observer;
         }
 
-        public bool TryParse(string line, int lineNumber, IDbcBuilder builder, INextLineProvider nextLineProvider)
+        public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
             var cleanLine = line.Trim(' ');
 
@@ -27,6 +28,7 @@ namespace DbcParserLib.Parsers
             if (match.Success)
             {
                 builder.LinkNamedTableToSignal(uint.Parse(match.Groups[1].Value), match.Groups[2].Value, match.Groups[3].Value);
+                return true;
             }
 
             match = Regex.Match(cleanLine, ValueTableParsingRegex);
@@ -38,8 +40,10 @@ namespace DbcParserLib.Parsers
                     builder.LinkTableValuesToEnvironmentVariable(match.Groups[3].Value, valueTableDictionary);
                 else
                     builder.LinkTableValuesToSignal(uint.Parse(match.Groups[1].Value), match.Groups[2].Value, valueTableDictionary, valueTable);
+                return true;
             }
 
+            m_observer.ValueTableSyntaxError();
             return true;
         }
     }

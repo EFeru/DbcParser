@@ -1,22 +1,23 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 using DbcParserLib.Model;
+using DbcParserLib.Observers;
 
 namespace DbcParserLib.Parsers
 {
     internal class MessageLineParser : ILineParser
     {
         private const string MessageLineStarter = "BO_ ";
-        private const string MessageRegex = @"BO_ (\d+)\s+(\w+)\s*:\s*(\d+)\s+(\w+)";
+        private const string MessageRegex = @"BO_ (\d+)\s+([a-zA-Z_][\w]*)\s*:\s*(\d+)\s+([a-zA-Z_][\w]*)";
 
-        private readonly IParseObserver m_observer;
+        private readonly IParseFailureObserver m_observer;
 
-        public MessageLineParser(IParseObserver observer)
+        public MessageLineParser(IParseFailureObserver observer)
         {
             m_observer = observer;
         }
 
-        public bool TryParse(string line, int lineNumber, IDbcBuilder builder, INextLineProvider nextLineProvider)
+        public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
             if(line.Trim().StartsWith(MessageLineStarter) == false)
                 return false;
@@ -34,7 +35,9 @@ namespace DbcParserLib.Parsers
                 
                 builder.AddMessage(msg);
             }
-
+            else
+                m_observer.MessageSyntaxError();
+            
             return true;
         }
     }
