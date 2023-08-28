@@ -108,6 +108,17 @@ namespace DbcParserLib.Tests
         }
 
         [Test]
+        public void EnumDefinitionCustomPropertyMoreWhiteSpaceIsParsedTest()
+        {
+            var builder = new DbcBuilder(new SilentFailureObserver());
+
+            var customPropertyLineParsers = CreateParser();
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" ENUM   ""Val1"",""Val2"",""Val3"" ;", customPropertyLineParsers, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" ""Val2"";", customPropertyLineParsers, builder, nextLineProvider));
+        }
+
+        [Test]
         public void MsgCustomPropertyIsParsedTest()
         {
             var builder = new DbcBuilder(new SilentFailureObserver());
@@ -343,6 +354,8 @@ namespace DbcParserLib.Tests
         [TestCase("BA_DEF_ SGG_ \"attributeName\" FLOAT -3.4E+038 3.4E+038;")]
         [TestCase("BA_DEF_ BU_ \"attributeName\" STRING 0;")]
         [TestCase("BA_DEF_ attributeName STRING")]
+        [TestCase("BA_DEF_ BU_ \"Ciao\" ENUM  \"Cyclic\"\"Event\",\"CyclicIfActive\",\"SpontanWithDelay\",\"CyclicAndSpontan\";")]
+        [TestCase("BA_DEF_ BU_ \"Ciao\" ENUM  \"Cyclic\",\"Event\", \"CyclicIfActive\",\"SpontanWithDelay\",\"CyclicAndSpontan\";")]
         public void PropertyDefinitionSyntaxErrorIsObserved(string line)
         {
             var observerMock = m_repository.Create<IParseFailureObserver>();
