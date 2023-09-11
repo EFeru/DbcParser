@@ -5,6 +5,7 @@ using Moq;
 using System.Linq;
 using System.IO;
 using System.Collections.Generic;
+using DbcParserLib.Observers;
 
 namespace DbcParserLib.Tests
 {
@@ -26,9 +27,10 @@ namespace DbcParserLib.Tests
 
         private static List<ILineParser> CreateParser()
         {
+            var observer = new SilentFailureObserver();
             return new List<ILineParser>() {
-                new PropertiesLineParser(),
-                new PropertiesDefinitionLineParser()
+                new PropertiesLineParser(observer),
+                new PropertiesDefinitionLineParser(observer)
             };
         }
 
@@ -45,7 +47,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void IntDefinitionCustomPropertyIsParsedTest()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
 
             var customPropertyLineParsers = CreateParser();
             var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
@@ -56,7 +58,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void FloatDefinitionCustomPropertyIsParsedTest()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
 
             var customPropertyLineParsers = CreateParser();
             var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
@@ -86,7 +88,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void StringDefinitionCustomPropertyIsParsedTest()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
 
             var customPropertyLineParsers = CreateParser();
             var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
@@ -97,7 +99,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void EnumDefinitionCustomPropertyIsParsedTest()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
 
             var customPropertyLineParsers = CreateParser();
             var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
@@ -106,9 +108,20 @@ namespace DbcParserLib.Tests
         }
 
         [Test]
+        public void EnumDefinitionCustomPropertyMoreWhiteSpaceIsParsedTest()
+        {
+            var builder = new DbcBuilder(new SilentFailureObserver());
+
+            var customPropertyLineParsers = CreateParser();
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" ENUM   ""Val1"",""Val2"",""Val3"" ;", customPropertyLineParsers, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" ""Val2"";", customPropertyLineParsers, builder, nextLineProvider));
+        }
+
+        [Test]
         public void MsgCustomPropertyIsParsedTest()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
             var message = new Message { ID = 2394947585 };
             builder.AddMessage(message);
 
@@ -125,7 +138,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void SigCustomPropertyIsParsedTest()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
             var message = new Message { ID = 2394947585 };
             builder.AddMessage(message);
             var signal = new Signal { Name = "sig_name" };
@@ -144,7 +157,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void NodeCustomPropertyIsParsedTest()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
             var node = new Node { Name = "Node1" };
             builder.AddNode(node);
 
@@ -162,7 +175,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void NodeScientificNotationCustomPropertyIsParsedTest()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
             var node = new Node { Name = "Node1" };
             builder.AddNode(node);
 
@@ -178,7 +191,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void NodeMultipleCustomPropertyAreParsedTest()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
             var node = new Node { Name = "Node1" };
             builder.AddNode(node);
 
@@ -200,7 +213,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void CustomPropertyIsAssignedToDifferentNodesTest()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
             var node1 = new Node { Name = "Node1" };
             var node2 = new Node { Name = "Node2" };
             builder.AddNode(node1);
@@ -217,6 +230,160 @@ namespace DbcParserLib.Tests
             var dbc = builder.Build();
             Assert.AreEqual(40, dbc.Nodes.First().CustomProperties["AttributeName"].IntegerCustomProperty.Value);
             Assert.AreEqual(70, dbc.Nodes.ElementAt(1).CustomProperties["AttributeName"].IntegerCustomProperty.Value);
+        }
+
+        [TestCase("BA_ \"attributeName\" BO_ -123 100;")]
+        [TestCase("BA_ \"attributeName\" SG_ 123 signalName value;")]
+        [TestCase("BA_ \"attributeName\" EV_ varName 1e10")]
+        [TestCase("BA_ attributeName BU_ nodeName 0;")]
+        public void PropertySyntaxErrorIsObserved(string line)
+        {
+            var observerMock = m_repository.Create<IParseFailureObserver>();
+            var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+
+            observerMock.Setup(o => o.PropertySyntaxError());
+
+            var lineParser = new PropertiesLineParser(observerMock.Object);
+            lineParser.TryParse(line, dbcBuilderMock.Object, nextLineProviderMock.Object);
+        }
+
+        [Test]
+        public void CustomPropertyNotFoundErrorIsObserved()
+        {
+            var propertyName = "attributeName";
+            var nodeName = "nodeName";
+            var value = "100";
+            var line = $"BA_ \"{propertyName}\" BU_ {nodeName} {value};";
+
+            var observerMock = m_repository.Create<IParseFailureObserver>();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+            var dbcBuilder = new DbcBuilder(observerMock.Object);
+
+            observerMock.Setup(o => o.CustomPropertyNameNotFound(propertyName));
+
+            var lineParser = new PropertiesLineParser(observerMock.Object);
+            lineParser.TryParse(line, dbcBuilder, nextLineProviderMock.Object);
+        }
+
+        [Test]
+        public void CustomPropertyNodeNotFoundErrorIsObserved()
+        {
+            var propertyName = "attributeName";
+            var nodeName = "nodeName";
+            var value = "100";
+
+            var line1 = $"BA_DEF_ BU_ \"{propertyName}\" INT 0 65535;";
+            var line2 = $"BA_ \"{propertyName}\" BU_ {nodeName} {value};";
+
+            var observerMock = m_repository.Create<IParseFailureObserver>();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+            var dbcBuilder = new DbcBuilder(observerMock.Object);
+
+            observerMock.Setup(o => o.NodeNameNotFound(nodeName));
+
+            ILineParser lineParser = new PropertiesDefinitionLineParser(observerMock.Object);
+            lineParser.TryParse(line1, dbcBuilder, nextLineProviderMock.Object);
+            
+            lineParser = new PropertiesLineParser(observerMock.Object);
+            lineParser.TryParse(line2, dbcBuilder, nextLineProviderMock.Object);
+        }
+
+        [Test]
+        public void DuplicateCustomPropertyErrorIsObserved()
+        {
+            var propertyName = "attributeName";
+            var nodeName = "nodeName";
+            var value = "100";
+
+            var line1 = $"BA_DEF_ BU_ \"{propertyName}\" INT 0 65535;";
+            var line2 = $"BA_ \"{propertyName}\" BU_ {nodeName} {value};";
+
+            var observerMock = m_repository.Create<IParseFailureObserver>();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+            var dbcBuilder = new DbcBuilder(observerMock.Object);
+
+            observerMock.Setup(o => o.DuplicateCustomPropertyInNode(propertyName, nodeName));
+
+            dbcBuilder.AddNode(new Node()
+            {
+                Name = nodeName
+            });
+            ILineParser lineParser = new PropertiesDefinitionLineParser(observerMock.Object);
+            lineParser.TryParse(line1, dbcBuilder, nextLineProviderMock.Object);
+            
+            lineParser = new PropertiesLineParser(observerMock.Object);
+            lineParser.TryParse(line2, dbcBuilder, nextLineProviderMock.Object);
+            lineParser.TryParse(line2, dbcBuilder, nextLineProviderMock.Object);
+        }
+
+        [TestCase("BA_DEF_DEF_ \"attributeName\" BO_ -123 100;")]
+        [TestCase("BA_DEF_DEF_ \"attributeName\" SG_ 123 signalName value")]
+        [TestCase("BA_DEF_DEF_ \"attributeName\" EV_ 0varName 1e10;")]
+        [TestCase("BA_DEF_DEF_ attributeName BU_ nodeName 0;")]
+        public void PropertyDefaultSyntaxErrorIsObserved(string line)
+        {
+            var observerMock = m_repository.Create<IParseFailureObserver>();
+            var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+
+            observerMock.Setup(o => o.PropertyDefaultSyntaxError());
+
+            var lineParser = new PropertiesDefinitionLineParser(observerMock.Object);
+            lineParser.TryParse(line, dbcBuilderMock.Object, nextLineProviderMock.Object);
+        }
+
+        [Test]
+        public void CustomPropertyDefaultNotFoundErrorIsObserved()
+        {
+            var propertyName = "attributeName";
+            var line = $"BA_DEF_DEF_ \"{propertyName}\" 0;";
+
+            var observerMock = m_repository.Create<IParseFailureObserver>();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+            var dbcBuilder = new DbcBuilder(observerMock.Object);
+
+            observerMock.Setup(o => o.CustomPropertyNameNotFound(propertyName));
+
+            var lineParser = new PropertiesDefinitionLineParser(observerMock.Object);
+            lineParser.TryParse(line, dbcBuilder, nextLineProviderMock.Object);
+        }
+
+        [TestCase("BA_DEF_ BO_ \"GenMsgCycleTime\" INT 1.5 65535;")]
+        [TestCase("BA_DEF_ \"attributeName\" STRING")]
+        [TestCase("BA_DEF_ SGG_ \"attributeName\" FLOAT -3.4E+038 3.4E+038;")]
+        [TestCase("BA_DEF_ BU_ \"attributeName\" STRING 0;")]
+        [TestCase("BA_DEF_ attributeName STRING")]
+        [TestCase("BA_DEF_ BU_ \"Ciao\" ENUM  \"Cyclic\"\"Event\",\"CyclicIfActive\",\"SpontanWithDelay\",\"CyclicAndSpontan\";")]
+        [TestCase("BA_DEF_ BU_ \"Ciao\" ENUM  \"Cyclic\",\"Event\", \"CyclicIfActive\",\"SpontanWithDelay\",\"CyclicAndSpontan\";")]
+        public void PropertyDefinitionSyntaxErrorIsObserved(string line)
+        {
+            var observerMock = m_repository.Create<IParseFailureObserver>();
+            var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+
+            observerMock.Setup(o => o.PropertyDefinitionSyntaxError());
+
+            var lineParser = new PropertiesDefinitionLineParser(observerMock.Object);
+            lineParser.TryParse(line, dbcBuilderMock.Object, nextLineProviderMock.Object);
+        }
+
+        [Test]
+        public void CustomPropertyDuplicateErrorIsObserved()
+        {
+            var propertyName = "attributeName";
+            var line1 = $"BA_DEF_ BO_ \"{propertyName}\" STRING;";
+            var line2 = $"BA_DEF_ BO_ \"{propertyName}\" INT 0 65535;";
+
+            var observerMock = m_repository.Create<IParseFailureObserver>();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+            var dbcBuilder = new DbcBuilder(observerMock.Object);
+
+            observerMock.Setup(o => o.DuplicateCustomProperty(propertyName));
+
+            var lineParser = new PropertiesDefinitionLineParser(observerMock.Object);
+            lineParser.TryParse(line1, dbcBuilder, nextLineProviderMock.Object);
+            lineParser.TryParse(line2, dbcBuilder, nextLineProviderMock.Object);
         }
     }
 }

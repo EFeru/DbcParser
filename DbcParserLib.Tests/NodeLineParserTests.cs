@@ -3,6 +3,7 @@ using DbcParserLib.Parsers;
 using DbcParserLib.Model;
 using Moq;
 using System.Collections.Generic;
+using DbcParserLib.Observers;
 
 namespace DbcParserLib.Tests
 {
@@ -24,7 +25,7 @@ namespace DbcParserLib.Tests
 
         private static ILineParser CreateParser()
         {
-            return new NodeLineParser();
+            return new NodeLineParser(new SilentFailureObserver());
         }
 
         [Test]
@@ -90,6 +91,36 @@ namespace DbcParserLib.Tests
 
             Assert.IsTrue(nodeLineParser.TryParse(@"BU_: NODE_1 NODE_2    NODE_4   ", dbcBuilderMock.Object, nextLineProviderMock.Object));
             CollectionAssert.AreEquivalent(expectations, results);
+        }
+
+        [TestCase("BU_: 0nodeName")]
+        [TestCase("BU_:nodeName")]
+        public void NodeSyntaxErrorIsObserved(string line)
+        {
+            var observerMock = m_repository.Create<IParseFailureObserver>();
+            var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+
+            observerMock.Setup(o => o.NodeSyntaxError());
+
+            var lineParser = new NodeLineParser(observerMock.Object);
+            lineParser.TryParse(line, dbcBuilderMock.Object, nextLineProviderMock.Object);
+        }
+
+        [Test]
+        public void DuplicateNodeErrorIsObserved()
+        {
+            var nodeName = "testNode";
+            var line = $"BU_: {nodeName} {nodeName}";
+        
+            var observerMock = m_repository.Create<IParseFailureObserver>();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+            var dbcBuilder = new DbcBuilder(observerMock.Object);
+        
+            observerMock.Setup(o => o.DuplicateNode(nodeName));
+        
+            var lineParser = new NodeLineParser(observerMock.Object);
+            lineParser.TryParse(line, dbcBuilder, nextLineProviderMock.Object);
         }
     }
 }

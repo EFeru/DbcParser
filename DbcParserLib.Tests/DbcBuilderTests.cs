@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DbcParserLib.Model;
+using DbcParserLib.Observers;
 using Moq;
 using NUnit.Framework;
 
@@ -26,7 +27,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void NoInteractionProduceAnEmptyDbc()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
             var dbc = builder.Build();
 
             Assert.IsEmpty(dbc.Nodes);
@@ -36,7 +37,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void SingleNodeIsAdded()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
             var node = new Node { Name = "nodeName" };
             builder.AddNode(node);
 
@@ -49,7 +50,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void DuplicatedNodesAreSkipped()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
             var node = new Node { Name = "nodeName" };
             var node2 = new Node { Name = "nodeName2" };
             var node3 = new Node { Name = "nodeName" };
@@ -67,7 +68,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void NodeCommentIsAddedToNode()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
             var node = new Node { Name = "nodeName" };
             builder.AddNode(node);
             builder.AddNodeComment("nodeName", "this is a comment");
@@ -82,7 +83,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void NodeCommentIsSkippedIfNodeIsNotFound()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
             var node = new Node { Name = "nodeName" };
             builder.AddNode(node);
             builder.AddNodeComment("anotherNodeName", "this is a comment");
@@ -97,7 +98,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void MessageIsAdded()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
             var message = new Message { ID = 1};
             builder.AddMessage(message);
             var dbc = builder.Build();
@@ -111,7 +112,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void ExtendedMessageIsAdded()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
             var message = new Message { ID = 2147483649 };
             builder.AddMessage(message);
             var dbc = builder.Build();
@@ -125,7 +126,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void CommentIsAddedToMessage()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
             var message = new Message { ID = 234 };
             builder.AddMessage(message);
             builder.AddMessageComment(234, "comment");
@@ -140,7 +141,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void CommentIsNotAddedToMissingMessage()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
             var message = new Message { ID = 234 };
             builder.AddMessage(message);
             builder.AddMessageComment(235, "comment");
@@ -155,7 +156,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void SignalIsAddedToCurrentMessage()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
             var message1 = new Message { ID = 234 };
             builder.AddMessage(message1);
 
@@ -190,7 +191,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void SignalIsNotAddedIfNoMessageHasBeenProvidedFirst()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
             builder.AddSignal(new Signal { });
             var dbc = builder.Build();
 
@@ -201,7 +202,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void CommentIsAddedToSignal()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
             var message = new Message { ID = 234 };
             builder.AddMessage(message);
             var signal = new Signal { Name = "name1" };
@@ -220,7 +221,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void CommentIsNotAddedToMissingSignalMessageId()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
             var message = new Message { ID = 234 };
             builder.AddMessage(message);
             var signal = new Signal { Name = "name1" };
@@ -239,7 +240,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void CommentIsNotAddedToMissingSignalName()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
             var message = new Message { ID = 234 };
             builder.AddMessage(message);
             var signal = new Signal { Name = "name1" };
@@ -258,7 +259,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void TableValuesAreAddedToSignal()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
             var message = new Message { ID = 234 };
             builder.AddMessage(message);
             var signal = new Signal { Name = "name1" };
@@ -279,7 +280,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void TableValuesWithExtendedMessageIdAreAddedToSignal()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
             var message = new Message { ID = 2566896411 };
             builder.AddMessage(message);
             var signal = new Signal { Name = "name1" };
@@ -300,7 +301,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void TableValueIsNotAddedToMissingSignalMessageId()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
             var message = new Message { ID = 234 };
             builder.AddMessage(message);
             var signal = new Signal { Name = "name1" };
@@ -321,7 +322,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void TableValueIsNotAddedToMissingSignalName()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
             var message = new Message { ID = 234 };
             builder.AddMessage(message);
             var signal = new Signal { Name = "name1" };
@@ -342,7 +343,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void NamedTableValuesAreAddedToSignal()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
             var message = new Message { ID = 234 };
             builder.AddMessage(message);
             var signal = new Signal { Name = "name1" };
@@ -365,7 +366,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void NamedTableValueIsNotAddedToMissingSignalMessageId()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
             var message = new Message { ID = 234 };
             builder.AddMessage(message);
             var signal = new Signal { Name = "name1" };
@@ -388,7 +389,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void NamedTableValueIsNotAddedToMissingSignalName()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
             var message = new Message { ID = 234 };
             builder.AddMessage(message);
             var signal = new Signal { Name = "name1" };
@@ -411,7 +412,7 @@ namespace DbcParserLib.Tests
         [Test]
         public void NamedTableValueIsNotAddedIfTableNameDoesNotExist()
         {
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
             var message = new Message { ID = 234 };
             builder.AddMessage(message);
             var signal = new Signal { Name = "name1" };
@@ -431,7 +432,7 @@ namespace DbcParserLib.Tests
         public void NamedTableValueThatAreNotUsedDoNotHarmOnBuild()
         {
             var testValuesDict = new Dictionary<int, string>() { { 1, "fake" } };
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
 
             builder.AddNamedValueTable("aTableName", testValuesDict, "1 fake");
             builder.AddNamedValueTable("aTableName2", testValuesDict, "1 fake");
@@ -446,7 +447,7 @@ namespace DbcParserLib.Tests
         public void NamedTablesWithSameNameAreManaged()
         {
             var testValuesDict = new Dictionary<int, string>() { { 1, "fake" } };
-            var builder = new DbcBuilder();
+            var builder = new DbcBuilder(new SilentFailureObserver());
 
             builder.AddNamedValueTable("aTableName", testValuesDict, "1 fake");
             builder.AddNamedValueTable("aTableName", testValuesDict, "1 fake");
@@ -455,31 +456,6 @@ namespace DbcParserLib.Tests
 
             Assert.IsEmpty(dbc.Nodes);
             Assert.IsEmpty(dbc.Messages);
-        }
-
-        [Test]
-        public void NamedTablesWithSameNameOverridesPrevious()
-        {
-            var builder = new DbcBuilder();
-            var message = new Message { ID = 234 };
-            builder.AddMessage(message);
-            var signal = new Signal { Name = "name1" };
-            builder.AddSignal(signal);
-            var testValuesDict = new Dictionary<int, string>() { { 1, "fake1" } };
-            var testValuesDict2 = new Dictionary<int, string>() { { 2, "fake2" } };
-
-            builder.AddNamedValueTable("aTableName", testValuesDict, "1 fake1");
-            builder.AddNamedValueTable("aTableName", testValuesDict2, "2 fake2");
-
-            builder.LinkNamedTableToSignal(234, "name1", "aTableName");
-            var dbc = builder.Build();
-
-            Assert.IsEmpty(dbc.Nodes);
-            Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(234, dbc.Messages.First().ID);
-            Assert.AreEqual("name1", dbc.Messages.First().Signals.First().Name);
-            Assert.AreEqual(testValuesDict2, dbc.Messages.First().Signals.First().ValueTableMap);
-            Assert.AreEqual("2 fake2", dbc.Messages.First().Signals.First().ValueTable);
         }
     }
 }

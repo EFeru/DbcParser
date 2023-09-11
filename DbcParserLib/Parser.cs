@@ -1,30 +1,40 @@
 using System.IO;
 using System.Collections.Generic;
 using DbcParserLib.Parsers;
-using System.Reflection;
-using System.Xml;
+using DbcParserLib.Observers;
 
 namespace DbcParserLib
 {
     public static class Parser
     {
-        private static IEnumerable<ILineParser> LineParsers = new List<ILineParser>()
+        private static IParseFailureObserver m_parseObserver = new SilentFailureObserver();
+        private static IEnumerable<ILineParser> LineParsers = new List<ILineParser>();
+
+        private static void CreateLineParsers()
         {
-            new IgnoreLineParser(), // Used to skip line we know we want to skip
-            new NodeLineParser(),
-            new MessageLineParser(),
-            new CommentLineParser(),
-            new SignalLineParser(),
-            new SignalValueTypeLineParser(),
-            new ValueTableDefinitionLineParser(),
-            new ValueTableLineParser(),
-            new PropertiesDefinitionLineParser(),
-            new PropertiesLineParser(),
-            new EnvironmentVariableLineParser(),
-            new EnvironmentDataVariableLineParser(),
-            new UnknownLineParser() // Used as a catch all 
-        };
-        
+            LineParsers = new List<ILineParser>()
+            {
+                new IgnoreLineParser(m_parseObserver), // Used to skip line we know we want to skip
+                new NodeLineParser(m_parseObserver),
+                new MessageLineParser(m_parseObserver),
+                new CommentLineParser(m_parseObserver),
+                new SignalLineParser(m_parseObserver),
+                new SignalValueTypeLineParser(m_parseObserver),
+                new ValueTableDefinitionLineParser(m_parseObserver),
+                new ValueTableLineParser(m_parseObserver),
+                new PropertiesDefinitionLineParser(m_parseObserver),
+                new PropertiesLineParser(m_parseObserver),
+                new EnvironmentVariableLineParser(m_parseObserver),
+                new EnvironmentDataVariableLineParser(m_parseObserver),
+                new UnknownLineParser(m_parseObserver) // Used as a catch all 
+            };
+        }
+
+        public static void SetParsingFailuresObserver(IParseFailureObserver observer)
+        {
+            m_parseObserver = observer;
+        }
+
         public static Dbc ParseFromPath(string dbcPath)
         {
             using (var fileStream = new FileStream(dbcPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
@@ -51,7 +61,10 @@ namespace DbcParserLib
 
         private static Dbc ParseFromReader(TextReader reader)
         {
-            var builder = new DbcBuilder();
+            CreateLineParsers();
+            m_parseObserver.Clear();
+
+            var builder = new DbcBuilder(m_parseObserver);
             var nextLineProvider = new NextLineProvider(reader);
 
             while (reader.Peek() >= 0)
@@ -62,10 +75,10 @@ namespace DbcParserLib
 
         private static void ParseLine(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
-            if(string.IsNullOrWhiteSpace(line))
+            m_parseObserver.CurrentLine++;
+            if (string.IsNullOrWhiteSpace(line))
                 return;
 
-            
             foreach(var parser in LineParsers)
             {
                 if(parser.TryParse(line, builder, nextLineProvider))

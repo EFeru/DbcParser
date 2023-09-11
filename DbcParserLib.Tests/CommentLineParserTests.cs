@@ -2,6 +2,7 @@ using NUnit.Framework;
 using DbcParserLib.Parsers;
 using Moq;
 using System.Collections.Generic;
+using DbcParserLib.Observers;
 
 namespace DbcParserLib.Tests
 {
@@ -24,7 +25,7 @@ namespace DbcParserLib.Tests
 
         private static ILineParser CreateParser()
         {
-            return new CommentLineParser();
+            return new CommentLineParser(new SilentFailureObserver());
         }
 
         [Test]
@@ -247,6 +248,23 @@ namespace DbcParserLib.Tests
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
             Assert.IsTrue(commentLineParser.TryParse(@"CM_ BU_ xxx no quotes;", dbcBuilderMock.Object, nextLineProviderMock.Object));
+        }
+
+        [TestCase("CM_ SG_ 865 \"Test with incorrect \"syntax\"\";")]
+        [TestCase("CM_ BU_ NodeName \"Test with incorrect \"syntax\"\";")]
+        [TestCase("CM_ BO_ 865 \"Test with incorrect \"syntax\"\";")]
+        [TestCase("CM_ EV_ VarName \"Test with incorrect \"syntax\"\";")]
+        [TestCase("CM_ \"Test with incorrect \"syntax\"\";")]
+        public void CommentSyntaxErrorIsObserved(string commentLine)
+        {
+            var observerMock = m_repository.Create<IParseFailureObserver>();
+            var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+
+            observerMock.Setup(o => o.CommentSyntaxError());
+
+            var commentParser = new CommentLineParser(observerMock.Object);
+            commentParser.TryParse(commentLine, dbcBuilderMock.Object, nextLineProviderMock.Object);
         }
     }
 

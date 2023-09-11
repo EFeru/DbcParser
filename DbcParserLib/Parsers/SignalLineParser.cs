@@ -1,20 +1,25 @@
 using System;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using DbcParserLib.Model;
+using DbcParserLib.Observers;
 
 namespace DbcParserLib.Parsers
 {
     internal class SignalLineParser : ILineParser
     {
-        private delegate void ParsingStrategy(string line, IDbcBuilder builder);
-
-        private const string SignalLineStarter = "SG_";
+        private const string SignalLineStarter = "SG_ ";
         private const string SignedSymbol = "-";
         private static readonly string[] m_commaSpaceSeparator = new string[] { Helpers.Space, Helpers.Comma };
         private const string SignalRegex = @"\s*SG_\s+([\w]+)\s*([Mm\d]*)\s*:\s*(\d+)\|(\d+)@([01])([+-])\s+\(([\d\+\-eE.]+),([\d\+\-eE.]+)\)\s+\[([\d\+\-eE.]+)\|([\d\+\-eE.]+)\]\s+""(.*)""\s+([\w\s,]+)";
-                                           
+
+        private readonly IParseFailureObserver m_observer;
+
+        public SignalLineParser(IParseFailureObserver observer)
+        {
+            m_observer = observer;
+        }
+
         public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
             if (line.TrimStart().StartsWith(SignalLineStarter) == false)
@@ -43,6 +48,8 @@ namespace DbcParserLib.Parsers
 
                 builder.AddSignal(sig);
             }
+            else
+                m_observer.SignalSyntaxError();
 
             return true;
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using DbcParserLib.Observers;
 
 namespace DbcParserLib.Parsers
 {
@@ -7,6 +8,13 @@ namespace DbcParserLib.Parsers
     {
         private const string ValueTableDefinitionLineStarter = "VAL_TABLE_ ";
         private const string ValueTableDefinitionParsingRegex = @"VAL_TABLE_\s+([a-zA-Z_][\w]*)\s+((?:\d+\s+(?:""[^""]*"")\s+)*)\s*;";
+
+        private readonly IParseFailureObserver m_observer;
+
+        public ValueTableDefinitionLineParser(IParseFailureObserver observer)
+        {
+            m_observer = observer;
+        }
 
         public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
@@ -22,6 +30,9 @@ namespace DbcParserLib.Parsers
                 var valueTableDictionary = valueTable.ToDictionary();
                 builder.AddNamedValueTable(match.Groups[1].Value, valueTableDictionary, valueTable);
             }
+            else
+                m_observer.ValueTableDefinitionSyntaxError();
+
             return true;
         }
     }
