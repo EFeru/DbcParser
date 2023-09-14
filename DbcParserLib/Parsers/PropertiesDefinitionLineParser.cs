@@ -9,7 +9,7 @@ namespace DbcParserLib.Parsers
     {
         private const string PropertiesDefinitionLineStarter = "BA_DEF_ ";
         private const string PropertiesDefinitionDefaultLineStarter = "BA_DEF_DEF_ ";
-        private const string PropertyDefinitionParsingRegex = @"BA_DEF_\s+(BU_|BO_|SG_|EV_)\s+""([a-zA-Z_][\w]*)""\s+(?:(?:(INT|HEX)\s+(-?\d+)\s+(-?\d+))|(?:(FLOAT)\s+([\d\+\-eE.]+)\s+([\d\+\-eE.]+))|(STRING)|(?:(ENUM)\s+((?:""[^""]*"",+)*(""[^""]*""))))\s*;";
+        private const string PropertyDefinitionParsingRegex = @"BA_DEF_(?:\s+(BU_|BO_|SG_|EV_))?\s+""([a-zA-Z_][\w]*)""\s+(?:(?:(INT|HEX)\s+(-?\d+)\s+(-?\d+))|(?:(FLOAT)\s+([\d\+\-eE.]+)\s+([\d\+\-eE.]+))|(STRING)|(?:(ENUM)\s+((?:""[^""]*"",+)*(""[^""]*""))))\s*;";
         private const string PropertyDefinitionDefaultParsingRegex = @"BA_DEF_DEF_\s+""([a-zA-Z_][\w]*)""\s+(-?\d+|[\d\+\-eE.]+|""[^""]*"")\s*;";
 
         private readonly IParseFailureObserver m_observer;
