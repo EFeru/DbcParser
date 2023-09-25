@@ -23,31 +23,31 @@ namespace DbcParserLib.Model
                 case CustomPropertyDataType.Integer:
                     IntegerCustomProperty = new CustomPropertyValue<int>()
                     {
-                        Value = int.Parse(value, CultureInfo.InvariantCulture)
+                        Value = int.Parse(value.Replace("\"", ""), CultureInfo.InvariantCulture)
                     };
                     break;
                 case CustomPropertyDataType.Hex:
                     HexCustomProperty = new CustomPropertyValue<int>()
                     {
-                        Value = int.Parse(value, CultureInfo.InvariantCulture)
+                        Value = int.Parse(value.Replace("\"", ""), CultureInfo.InvariantCulture)
                     };
                     break;
                 case CustomPropertyDataType.Float:
                     FloatCustomProperty = new CustomPropertyValue<double>()
                     {
-                        Value = float.Parse(value, CultureInfo.InvariantCulture)
+                        Value = float.Parse(value.Replace("\"", ""), CultureInfo.InvariantCulture)
                     };
                     break;
                 case CustomPropertyDataType.String:
                     StringCustomProperty = new CustomPropertyValue<string>()
                     {
-                        Value = value
+                        Value = value.Replace("\"", "")
                     };
                     break;
                 case CustomPropertyDataType.Enum:
                     EnumCustomProperty = new CustomPropertyValue<string>()
                     {
-                        Value = value
+                        Value = CustomPropertyDefinition.TryGetEnumValue(value, out var enumValue) ? enumValue : value.Replace("\"", "")
                     };
                     break;
             }

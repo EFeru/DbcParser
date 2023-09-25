@@ -17,21 +17,42 @@ namespace DbcParserLib.Model
             switch (DataType)
             {
                 case CustomPropertyDataType.Integer:
-                    IntegerCustomProperty.Default = int.Parse(value, CultureInfo.InvariantCulture);
+                    IntegerCustomProperty.Default = int.Parse(value.Replace("\"", ""), CultureInfo.InvariantCulture);
                     break;
                 case CustomPropertyDataType.Hex:
-                    HexCustomProperty.Default = int.Parse(value, CultureInfo.InvariantCulture);
+                    HexCustomProperty.Default = int.Parse(value.Replace("\"", ""), CultureInfo.InvariantCulture);
                     break;
                 case CustomPropertyDataType.Float:
-                    FloatCustomProperty.Default = float.Parse(value, CultureInfo.InvariantCulture);
+                    FloatCustomProperty.Default = float.Parse(value.Replace("\"", ""), CultureInfo.InvariantCulture);
                     break;
                 case CustomPropertyDataType.String:
-                    StringCustomProperty.Default = value;
+                    StringCustomProperty.Default = value.Replace("\"", "");
                     break;
                 case CustomPropertyDataType.Enum:
-                    EnumCustomProperty.Default = value;
+                    EnumCustomProperty.Default = TryGetEnumValue(value, out var enumValue) ? enumValue : value.Replace("\"", "");
                     break;
             }
+        }
+
+        internal bool TryGetEnumValue(string value, out string enumValue)
+        {
+            enumValue = null;
+
+            if (value.Contains("\""))
+                return false;
+
+            if (EnumCustomProperty == null)
+                return false;
+
+            if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var index))
+                return false;
+
+            if (index < 0 || index >= EnumCustomProperty.Values.Length)
+                return false;
+
+            enumValue = EnumCustomProperty.Values[index];
+
+            return true;
         }
     }
 

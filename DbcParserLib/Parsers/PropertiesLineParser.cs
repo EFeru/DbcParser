@@ -27,18 +27,18 @@ namespace DbcParserLib.Parsers
             if (match.Success)
             {
                 if (match.Groups[2].Value == "BU_")
-                    builder.AddNodeCustomProperty(match.Groups[1].Value, match.Groups[3].Value, match.Groups[9].Value.Replace("\"", ""));
+                    builder.AddNodeCustomProperty(match.Groups[1].Value, match.Groups[3].Value, match.Groups[9].Value);
                 else if (match.Groups[2].Value == "EV_")
-                    builder.AddEnvironmentVariableCustomProperty(match.Groups[1].Value, match.Groups[3].Value, match.Groups[9].Value.Replace("\"", ""));
+                    builder.AddEnvironmentVariableCustomProperty(match.Groups[1].Value, match.Groups[3].Value, match.Groups[9].Value);
                 else if (match.Groups[4].Value == "BO_")
                 {
-                    builder.AddMessageCustomProperty(match.Groups[1].Value, uint.Parse(match.Groups[5].Value, CultureInfo.InvariantCulture), match.Groups[9].Value.Replace("\"", ""));
+                    builder.AddMessageCustomProperty(match.Groups[1].Value, uint.Parse(match.Groups[5].Value, CultureInfo.InvariantCulture), match.Groups[9].Value);
                     if (match.Groups[1].Value == "GenMsgCycleTime")
                         builder.AddMessageCycleTime(uint.Parse(match.Groups[5].Value, CultureInfo.InvariantCulture), int.Parse(match.Groups[9].Value, CultureInfo.InvariantCulture));
                 }
                 else if (match.Groups[6].Value == "SG_")
                 {
-                    builder.AddSignalCustomProperty(match.Groups[1].Value, uint.Parse(match.Groups[7].Value, CultureInfo.InvariantCulture), match.Groups[8].Value, match.Groups[9].Value.Replace("\"", ""));
+                    builder.AddSignalCustomProperty(match.Groups[1].Value, uint.Parse(match.Groups[7].Value, CultureInfo.InvariantCulture), match.Groups[8].Value, match.Groups[9].Value);
                     if (match.Groups[1].Value == "GenSigStartValue")
                         builder.AddSignalInitialValue(uint.Parse(match.Groups[7].Value, CultureInfo.InvariantCulture), match.Groups[8].Value, double.Parse(match.Groups[9].Value, CultureInfo.InvariantCulture));
                 }

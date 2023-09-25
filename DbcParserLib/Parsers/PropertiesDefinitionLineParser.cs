@@ -31,7 +31,7 @@ namespace DbcParserLib.Parsers
             {
                 var match = Regex.Match(cleanLine, PropertyDefinitionDefaultParsingRegex);
                 if (match.Success)
-                    builder.AddCustomPropertyDefaultValue(match.Groups[1].Value, match.Groups[2].Value.Replace("\"", ""));
+                    builder.AddCustomPropertyDefaultValue(match.Groups[1].Value, match.Groups[2].Value);
                 else
                     m_observer.PropertyDefaultSyntaxError();
                 return true;
