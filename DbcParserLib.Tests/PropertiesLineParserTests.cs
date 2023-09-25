@@ -136,6 +136,23 @@ namespace DbcParserLib.Tests
         }
 
         [Test]
+        public void MsgCustomPropertyEnumIndexedValueIsParsedTest()
+        {
+            var builder = new DbcBuilder(new SilentFailureObserver());
+            var message = new Message { ID = 2394947585 };
+            builder.AddMessage(message);
+
+            var customPropertyLineParsers = CreateParser();
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            Assert.IsTrue(ParseLine(@"BA_DEF_ BO_ ""AttributeName"" ENUM ""Val1"",""Val2"",""Val3"";", customPropertyLineParsers, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" ""Val1"";", customPropertyLineParsers, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_ ""AttributeName"" BO_ 2394947585 1;", customPropertyLineParsers, builder, nextLineProvider));
+
+            var dbc = builder.Build();
+            Assert.AreEqual("Val2", dbc.Messages.First().CustomProperties["AttributeName"].EnumCustomProperty.Value);
+        }
+
+        [Test]
         public void SigCustomPropertyIsParsedTest()
         {
             var builder = new DbcBuilder(new SilentFailureObserver());
