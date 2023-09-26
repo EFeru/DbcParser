@@ -99,23 +99,59 @@ namespace DbcParserLib.Tests
         [Test]
         public void EnumDefinitionCustomPropertyIsParsedTest()
         {
-            var builder = new DbcBuilder(new SilentFailureObserver());
+            var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+
+            dbcBuilderMock.Setup(mock => mock.AddCustomProperty(It.IsAny<CustomPropertyObjectType>(), It.IsAny<CustomPropertyDefinition>()))
+                .Callback<CustomPropertyObjectType, CustomPropertyDefinition>((objectType, customProperty) =>
+                {
+                    Assert.AreEqual("AttributeName", customProperty.Name);
+                    Assert.AreEqual(CustomPropertyDataType.Enum, customProperty.DataType);
+                    Assert.AreEqual(3, customProperty.EnumCustomProperty.Values.Length);
+                    Assert.AreEqual("Val1", customProperty.EnumCustomProperty.Values[0]);
+                    Assert.AreEqual("Val2", customProperty.EnumCustomProperty.Values[1]);
+                    Assert.AreEqual("Val3", customProperty.EnumCustomProperty.Values[2]);
+                });
+
+            dbcBuilderMock.Setup(mock => mock.AddCustomPropertyDefaultValue(It.IsAny<string>(), It.IsAny<string>()))
+                .Callback<string, string>((propertyName, value) =>
+                {
+                    Assert.AreEqual("AttributeName", propertyName);
+                    Assert.AreEqual("Val2", value);
+                });
 
             var customPropertyLineParsers = CreateParser();
-            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
-            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" ENUM ""Val1"",""Val2"",""Val3"";", customPropertyLineParsers, builder, nextLineProvider));
-            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" ""Val2"";", customPropertyLineParsers, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" ENUM ""Val1"",""Val2"",""Val3"";", customPropertyLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" ""Val2"";", customPropertyLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object));
         }
 
         [Test]
         public void EnumDefinitionCustomPropertyMoreWhiteSpaceIsParsedTest()
         {
-            var builder = new DbcBuilder(new SilentFailureObserver());
+            var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+
+            dbcBuilderMock.Setup(mock => mock.AddCustomProperty(It.IsAny<CustomPropertyObjectType>(), It.IsAny<CustomPropertyDefinition>()))
+                .Callback<CustomPropertyObjectType, CustomPropertyDefinition>((_, customProperty) =>
+                {
+                    Assert.AreEqual("AttributeName", customProperty.Name);
+                    Assert.AreEqual(CustomPropertyDataType.Enum, customProperty.DataType);
+                    Assert.AreEqual(3, customProperty.EnumCustomProperty.Values.Length);
+                    Assert.AreEqual("Val1", customProperty.EnumCustomProperty.Values[0]);
+                    Assert.AreEqual("Val2", customProperty.EnumCustomProperty.Values[1]);
+                    Assert.AreEqual("Val3", customProperty.EnumCustomProperty.Values[2]);
+                });
+
+            dbcBuilderMock.Setup(mock => mock.AddCustomPropertyDefaultValue(It.IsAny<string>(), It.IsAny<string>()))
+                .Callback<string, string>((propertyName, value) =>
+                {
+                    Assert.AreEqual("AttributeName", propertyName);
+                    Assert.AreEqual("Val2", value);
+                });
 
             var customPropertyLineParsers = CreateParser();
-            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
-            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" ENUM   ""Val1"",""Val2"",""Val3"" ;", customPropertyLineParsers, builder, nextLineProvider));
-            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" ""Val2"";", customPropertyLineParsers, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" ENUM   ""Val1"",""Val2"",""Val3"" ;", customPropertyLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" ""Val2"";", customPropertyLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object));
         }
 
         [Test]
