@@ -266,7 +266,7 @@ namespace DbcParserLib.Tests
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
             var dbcBuilder = new DbcBuilder(observerMock.Object);
 
-            observerMock.Setup(o => o.DuplicateValueTableName(tableName));
+            observerMock.Setup(o => o.DuplicatedValueTableName(tableName));
 
             var lineParser = new ValueTableDefinitionLineParser(observerMock.Object);
             lineParser.TryParse(line, dbcBuilder, nextLineProviderMock.Object);

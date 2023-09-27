@@ -234,7 +234,7 @@ BO_ 200 SENSOR: 39 SENSOR
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
             var dbcBuilder = new DbcBuilder(observerMock.Object);
 
-            observerMock.Setup(o => o.DuplicateSignalInMessage(messageId, signalName));
+            observerMock.Setup(o => o.DuplicatedSignalInMessage(messageId, signalName));
 
             var nodeLineParser = new NodeLineParser(observerMock.Object);
             nodeLineParser.TryParse(line1, dbcBuilder, nextLineProviderMock.Object);

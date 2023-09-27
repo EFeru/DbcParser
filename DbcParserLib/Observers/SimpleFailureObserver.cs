@@ -14,57 +14,57 @@ namespace DbcParserLib.Observers
             m_errors.Add($"{error} at line {CurrentLine}");
         }
 
-        public void DuplicateMessage(uint messageId)
+        public void DuplicatedMessage(uint messageId)
         {
             AddError($"Duplicated message (ID {messageId})");
         }
 
-        public void DuplicateNode(string nodeName)
+        public void DuplicatedNode(string nodeName)
         {
             AddError($"Duplicated node '{nodeName}'");
         }
 
-        public void DuplicateSignalInMessage(uint messageId, string signalName)
+        public void DuplicatedSignalInMessage(uint messageId, string signalName)
         {
             AddError($"Duplicated signal '{signalName}' in message (ID {messageId})");
         }
 
-        public void DuplicateValueTableName(string tableName)
+        public void DuplicatedValueTableName(string tableName)
         {
             AddError($"Duplicated value table '{tableName}'");
         }
 
-        public void DuplicateEnvironmentVariableName(string variableName)
+        public void DuplicatedEnvironmentVariableName(string variableName)
         {
             AddError($"Duplicated environment variable '{variableName}'");
         }
 
-        public void DuplicateCustomProperty(string propertyName)
+        public void DuplicatedProperty(string propertyName)
         {
             AddError($"Duplicated custom property '{propertyName}'");
         }
 
-        public void DuplicateCustomPropertyInNode(string propertyName, string nodeName)
+        public void DuplicatedPropertyInNode(string propertyName, string nodeName)
         {
             AddError($"Duplicated custom property '{propertyName}' in node '{nodeName}'");
         }
 
-        public void DuplicateCustomPropertyInEnvironmentVariable(string propertyName, string environmentVariableName)
+        public void DuplicatedPropertyInEnvironmentVariable(string propertyName, string environmentVariableName)
         {
             AddError($"Duplicated custom property '{propertyName}' in environment variable '{environmentVariableName}'");
         }
 
-        public void DuplicateCustomPropertyInMessage(string propertyName, uint messageId)
+        public void DuplicatedPropertyInMessage(string propertyName, uint messageId)
         {
             AddError($"Duplicated custom property '{propertyName}' in message (ID {messageId})");
         }
 
-        public void DuplicateCustomPropertyInSignal(string propertyName, string signalName)
+        public void DuplicatedPropertyInSignal(string propertyName, string signalName)
         {
             AddError($"Duplicated custom property '{propertyName}' in signal '{signalName}'");
         }
 
-        public void DuplicateEnvironmentVariableInNode(string environmentVariableName, string nodeName)
+        public void DuplicatedEnvironmentVariableInNode(string environmentVariableName, string nodeName)
         {
             AddError($"Duplicated environment variable '{environmentVariableName}' in node '{nodeName}'");
         }
@@ -149,7 +149,7 @@ namespace DbcParserLib.Observers
             AddError($"Environment variable '{variableName}' not found");
         }
 
-        public void CustomPropertyNameNotFound(string propertyName)
+        public void PropertyNameNotFound(string propertyName)
         {
             AddError($"Custom property '{propertyName}' not found");
         }
@@ -157,6 +157,16 @@ namespace DbcParserLib.Observers
         public void TableMapNameNotFound(string tableName)
         {
             AddError($"Table map '{tableName}' not found");
+        }
+
+        public void PropertyValueOutOfBound(string propertyName, string value)
+        {
+            AddError($"Out of bound value [{value}] for '{propertyName}' property");
+        }
+
+        public void PropertyValueOutOfIndex(string propertyName, string index)
+        {
+            AddError($"Out of index value [{index}] for '{propertyName}' property");
         }
 
         public void UnknownLine()
