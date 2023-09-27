@@ -132,7 +132,7 @@ namespace DbcParserLib.Tests
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
             var dbcBuilder = new DbcBuilder(observerMock.Object);
 
-            observerMock.Setup(o => o.DuplicateMessage(messageId));
+            observerMock.Setup(o => o.DuplicatedMessage(messageId));
 
             var lineParser = new MessageLineParser(observerMock.Object);
             lineParser.TryParse(line, dbcBuilder, nextLineProviderMock.Object);

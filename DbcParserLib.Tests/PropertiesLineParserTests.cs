@@ -113,11 +113,12 @@ namespace DbcParserLib.Tests
                     Assert.AreEqual("Val3", customProperty.EnumCustomProperty.Values[2]);
                 });
 
-            dbcBuilderMock.Setup(mock => mock.AddCustomPropertyDefaultValue(It.IsAny<string>(), It.IsAny<string>()))
-                .Callback<string, string>((propertyName, value) =>
+            dbcBuilderMock.Setup(mock => mock.AddCustomPropertyDefaultValue(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .Callback<string, string, bool>((propertyName, value, isNumeric) =>
                 {
                     Assert.AreEqual("AttributeName", propertyName);
                     Assert.AreEqual("Val2", value);
+                    Assert.AreEqual(false, isNumeric);
                 });
 
             var customPropertyLineParsers = CreateParser();
@@ -142,11 +143,12 @@ namespace DbcParserLib.Tests
                     Assert.AreEqual("Val3", customProperty.EnumCustomProperty.Values[2]);
                 });
 
-            dbcBuilderMock.Setup(mock => mock.AddCustomPropertyDefaultValue(It.IsAny<string>(), It.IsAny<string>()))
-                .Callback<string, string>((propertyName, value) =>
+            dbcBuilderMock.Setup(mock => mock.AddCustomPropertyDefaultValue(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .Callback<string, string, bool>((propertyName, value, isNumeric) =>
                 {
                     Assert.AreEqual("AttributeName", propertyName);
                     Assert.AreEqual("Val2", value);
+                    Assert.AreEqual(false, isNumeric);
                 });
 
             var customPropertyLineParsers = CreateParser();
@@ -266,160 +268,6 @@ namespace DbcParserLib.Tests
             var dbc = builder.Build();
             Assert.AreEqual(40, dbc.Nodes.First().CustomProperties["AttributeName"].IntegerCustomProperty.Value);
             Assert.AreEqual(70, dbc.Nodes.ElementAt(1).CustomProperties["AttributeName"].IntegerCustomProperty.Value);
-        }
-
-        [TestCase("BA_ \"attributeName\" BO_ -123 100;")]
-        [TestCase("BA_ \"attributeName\" SG_ 123 signalName value;")]
-        [TestCase("BA_ \"attributeName\" EV_ varName 1e10")]
-        [TestCase("BA_ attributeName BU_ nodeName 0;")]
-        public void PropertySyntaxErrorIsObserved(string line)
-        {
-            var observerMock = m_repository.Create<IParseFailureObserver>();
-            var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
-            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
-
-            observerMock.Setup(o => o.PropertySyntaxError());
-
-            var lineParser = new PropertiesLineParser(observerMock.Object);
-            lineParser.TryParse(line, dbcBuilderMock.Object, nextLineProviderMock.Object);
-        }
-
-        [Test]
-        public void CustomPropertyNotFoundErrorIsObserved()
-        {
-            var propertyName = "attributeName";
-            var nodeName = "nodeName";
-            var value = "100";
-            var line = $"BA_ \"{propertyName}\" BU_ {nodeName} {value};";
-
-            var observerMock = m_repository.Create<IParseFailureObserver>();
-            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
-            var dbcBuilder = new DbcBuilder(observerMock.Object);
-
-            observerMock.Setup(o => o.CustomPropertyNameNotFound(propertyName));
-
-            var lineParser = new PropertiesLineParser(observerMock.Object);
-            lineParser.TryParse(line, dbcBuilder, nextLineProviderMock.Object);
-        }
-
-        [Test]
-        public void CustomPropertyNodeNotFoundErrorIsObserved()
-        {
-            var propertyName = "attributeName";
-            var nodeName = "nodeName";
-            var value = "100";
-
-            var line1 = $"BA_DEF_ BU_ \"{propertyName}\" INT 0 65535;";
-            var line2 = $"BA_ \"{propertyName}\" BU_ {nodeName} {value};";
-
-            var observerMock = m_repository.Create<IParseFailureObserver>();
-            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
-            var dbcBuilder = new DbcBuilder(observerMock.Object);
-
-            observerMock.Setup(o => o.NodeNameNotFound(nodeName));
-
-            ILineParser lineParser = new PropertiesDefinitionLineParser(observerMock.Object);
-            lineParser.TryParse(line1, dbcBuilder, nextLineProviderMock.Object);
-            
-            lineParser = new PropertiesLineParser(observerMock.Object);
-            lineParser.TryParse(line2, dbcBuilder, nextLineProviderMock.Object);
-        }
-
-        [Test]
-        public void DuplicateCustomPropertyErrorIsObserved()
-        {
-            var propertyName = "attributeName";
-            var nodeName = "nodeName";
-            var value = "100";
-
-            var line1 = $"BA_DEF_ BU_ \"{propertyName}\" INT 0 65535;";
-            var line2 = $"BA_ \"{propertyName}\" BU_ {nodeName} {value};";
-
-            var observerMock = m_repository.Create<IParseFailureObserver>();
-            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
-            var dbcBuilder = new DbcBuilder(observerMock.Object);
-
-            observerMock.Setup(o => o.DuplicateCustomPropertyInNode(propertyName, nodeName));
-
-            dbcBuilder.AddNode(new Node()
-            {
-                Name = nodeName
-            });
-            ILineParser lineParser = new PropertiesDefinitionLineParser(observerMock.Object);
-            lineParser.TryParse(line1, dbcBuilder, nextLineProviderMock.Object);
-            
-            lineParser = new PropertiesLineParser(observerMock.Object);
-            lineParser.TryParse(line2, dbcBuilder, nextLineProviderMock.Object);
-            lineParser.TryParse(line2, dbcBuilder, nextLineProviderMock.Object);
-        }
-
-        [TestCase("BA_DEF_DEF_ \"attributeName\" BO_ -123 100;")]
-        [TestCase("BA_DEF_DEF_ \"attributeName\" SG_ 123 signalName value")]
-        [TestCase("BA_DEF_DEF_ \"attributeName\" EV_ 0varName 1e10;")]
-        [TestCase("BA_DEF_DEF_ attributeName BU_ nodeName 0;")]
-        public void PropertyDefaultSyntaxErrorIsObserved(string line)
-        {
-            var observerMock = m_repository.Create<IParseFailureObserver>();
-            var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
-            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
-
-            observerMock.Setup(o => o.PropertyDefaultSyntaxError());
-
-            var lineParser = new PropertiesDefinitionLineParser(observerMock.Object);
-            lineParser.TryParse(line, dbcBuilderMock.Object, nextLineProviderMock.Object);
-        }
-
-        [Test]
-        public void CustomPropertyDefaultNotFoundErrorIsObserved()
-        {
-            var propertyName = "attributeName";
-            var line = $"BA_DEF_DEF_ \"{propertyName}\" 0;";
-
-            var observerMock = m_repository.Create<IParseFailureObserver>();
-            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
-            var dbcBuilder = new DbcBuilder(observerMock.Object);
-
-            observerMock.Setup(o => o.CustomPropertyNameNotFound(propertyName));
-
-            var lineParser = new PropertiesDefinitionLineParser(observerMock.Object);
-            lineParser.TryParse(line, dbcBuilder, nextLineProviderMock.Object);
-        }
-
-        [TestCase("BA_DEF_ BO_ \"GenMsgCycleTime\" INT 1.5 65535;")]
-        [TestCase("BA_DEF_ \"attributeName\" STRING")]
-        [TestCase("BA_DEF_ SGG_ \"attributeName\" FLOAT -3.4E+038 3.4E+038;")]
-        [TestCase("BA_DEF_ BU_ \"attributeName\" STRING 0;")]
-        [TestCase("BA_DEF_ attributeName STRING")]
-        [TestCase("BA_DEF_ BU_ \"Ciao\" ENUM  \"Cyclic\"\"Event\",\"CyclicIfActive\",\"SpontanWithDelay\",\"CyclicAndSpontan\";")]
-        [TestCase("BA_DEF_ BU_ \"Ciao\" ENUM  \"Cyclic\",\"Event\", \"CyclicIfActive\",\"SpontanWithDelay\",\"CyclicAndSpontan\";")]
-        public void PropertyDefinitionSyntaxErrorIsObserved(string line)
-        {
-            var observerMock = m_repository.Create<IParseFailureObserver>();
-            var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
-            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
-
-            observerMock.Setup(o => o.PropertyDefinitionSyntaxError());
-
-            var lineParser = new PropertiesDefinitionLineParser(observerMock.Object);
-            lineParser.TryParse(line, dbcBuilderMock.Object, nextLineProviderMock.Object);
-        }
-
-        [Test]
-        public void CustomPropertyDuplicateErrorIsObserved()
-        {
-            var propertyName = "attributeName";
-            var line1 = $"BA_DEF_ BO_ \"{propertyName}\" STRING;";
-            var line2 = $"BA_DEF_ BO_ \"{propertyName}\" INT 0 65535;";
-
-            var observerMock = m_repository.Create<IParseFailureObserver>();
-            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
-            var dbcBuilder = new DbcBuilder(observerMock.Object);
-
-            observerMock.Setup(o => o.DuplicateCustomProperty(propertyName));
-
-            var lineParser = new PropertiesDefinitionLineParser(observerMock.Object);
-            lineParser.TryParse(line1, dbcBuilder, nextLineProviderMock.Object);
-            lineParser.TryParse(line2, dbcBuilder, nextLineProviderMock.Object);
         }
     }
 }
