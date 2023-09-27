@@ -102,7 +102,6 @@ namespace DbcParserLib.Tests
 
             observerMock.Setup(o => o.PropertySyntaxError());
             ParseLine(line1, line2, observerMock.Object);
-
         }
 
         [Test]
@@ -116,7 +115,6 @@ namespace DbcParserLib.Tests
 
             observerMock.Setup(o => o.PropertyValueOutOfBound(propertyName, "110"));
             ParseLine(line1, line2, observerMock.Object);
-
         }
 
         [Test]
@@ -130,7 +128,6 @@ namespace DbcParserLib.Tests
 
             observerMock.Setup(o => o.PropertyValueOutOfBound(propertyName, "110"));
             ParseLine(line1, line2, observerMock.Object);
-
         }
 
         [Test]
@@ -144,7 +141,6 @@ namespace DbcParserLib.Tests
 
             observerMock.Setup(o => o.PropertyValueOutOfBound(propertyName, "20"));
             ParseLine(line1, line2, observerMock.Object);
-
         }
 
         [Test]
@@ -158,7 +154,6 @@ namespace DbcParserLib.Tests
 
             observerMock.Setup(o => o.PropertySyntaxError());
             ParseLine(line1, line2, observerMock.Object);
-
         }
 
         [Test]
@@ -172,7 +167,6 @@ namespace DbcParserLib.Tests
 
             observerMock.Setup(o => o.PropertySyntaxError());
             ParseLine(line1, line2, observerMock.Object);
-
         }
 
         [Test]
@@ -186,7 +180,6 @@ namespace DbcParserLib.Tests
 
             observerMock.Setup(o => o.PropertySyntaxError());
             ParseLine(line1, line2, observerMock.Object);
-
         }
 
         [Test]
@@ -200,7 +193,6 @@ namespace DbcParserLib.Tests
 
             observerMock.Setup(o => o.PropertySyntaxError());
             ParseLine(line1, line2, observerMock.Object);
-
         }
 
         [Test]
@@ -214,7 +206,6 @@ namespace DbcParserLib.Tests
 
             observerMock.Setup(o => o.PropertyValueOutOfIndex(propertyName, "3"));
             ParseLine(line1, line2, observerMock.Object);
-
         }
 
         [Test]
@@ -228,7 +219,6 @@ namespace DbcParserLib.Tests
 
             observerMock.Setup(o => o.PropertyValueOutOfBound(propertyName, "3"));
             ParseLine(line1, line2, observerMock.Object);
-
         }
 
         [Test]
