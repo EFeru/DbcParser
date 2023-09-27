@@ -9,9 +9,7 @@ namespace DbcParserLib.Parsers
     {
         private const string PropertiesDefinitionLineStarter = "BA_DEF_ ";
         private const string PropertiesDefinitionDefaultLineStarter = "BA_DEF_DEF_ ";
-        // language=regex
         private const string PropertyDefinitionParsingRegex = @"BA_DEF_(?:\s+(BU_|BO_|SG_|EV_))?\s+""([a-zA-Z_][\w]*)""\s+(?:(?:(INT|HEX)\s+(-?\d+)\s+(-?\d+))|(?:(FLOAT)\s+([\d\+\-eE.]+)\s+([\d\+\-eE.]+))|(STRING)|(?:(ENUM)\s+((?:""[^""]*"",+)*(?:""[^""]*""))))\s*;";
-        // language=regex
         private const string PropertyDefinitionDefaultParsingRegex = @"BA_DEF_DEF_\s+""([a-zA-Z_][\w]*)""\s+(-?\d+|[\d\+\-eE.]+|""[^""]*"")\s*;";
 
         private readonly IParseFailureObserver m_observer;
@@ -33,7 +31,7 @@ namespace DbcParserLib.Parsers
             {
                 var match = Regex.Match(cleanLine, PropertyDefinitionDefaultParsingRegex);
                 if (match.Success)
-                    builder.AddCustomPropertyDefaultValue(match.Groups[1].Value, match.Groups[2].Value.Replace("\"", ""));
+                    builder.AddCustomPropertyDefaultValue(match.Groups[1].Value, match.Groups[2].Value.Replace("\"", ""), !match.Groups[2].Value.StartsWith("\""));
                 else
                     m_observer.PropertyDefaultSyntaxError();
                 return true;
@@ -44,7 +42,7 @@ namespace DbcParserLib.Parsers
                 var match = Regex.Match(cleanLine, PropertyDefinitionParsingRegex);
                 if (match.Success)
                 {
-                    var customProperty = new CustomPropertyDefinition
+                    var customProperty = new CustomPropertyDefinition(m_observer)
                     {
                         Name = match.Groups[2].Value,
                     };

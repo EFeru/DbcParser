@@ -37,7 +37,7 @@ namespace DbcParserLib
         public void AddNode(Node node)
         {
             if(m_nodes.Contains(node))
-                m_observer.DuplicateNode(node.Name);
+                m_observer.DuplicatedNode(node.Name);
             else
                 m_nodes.Add(node);
         }
@@ -47,7 +47,7 @@ namespace DbcParserLib
             if(m_messages.TryGetValue(message.ID, out var msg))
             {
                 m_currentMessage = msg;
-                m_observer.DuplicateMessage(message.ID);
+                m_observer.DuplicatedMessage(message.ID);
             }
             else
             {
@@ -63,7 +63,7 @@ namespace DbcParserLib
             {
                 signal.ID = m_currentMessage.ID;
                 if(m_signals[m_currentMessage.ID].TryGetValue(signal.Name, out _))
-                    m_observer.DuplicateSignalInMessage(m_currentMessage.ID, signal.Name);
+                    m_observer.DuplicatedSignalInMessage(m_currentMessage.ID, signal.Name);
                 else
                     m_signals[m_currentMessage.ID][signal.Name] = signal;
             }
@@ -74,28 +74,28 @@ namespace DbcParserLib
         public void AddCustomProperty(CustomPropertyObjectType objectType, CustomPropertyDefinition customProperty)
         {
             if(m_customProperties[objectType].TryGetValue(customProperty.Name, out _))
-                m_observer.DuplicateCustomProperty(customProperty.Name);
+                m_observer.DuplicatedProperty(customProperty.Name);
             else
                 m_customProperties[objectType][customProperty.Name] = customProperty;
         }
 
-        public void AddCustomPropertyDefaultValue(string propertyName, string value)
+        public void AddCustomPropertyDefaultValue(string propertyName, string value, bool isNumeric)
         {
             var found = false;
             foreach(var objectType in m_customProperties.Keys)
             {
                 if (m_customProperties[objectType].TryGetValue(propertyName, out var customProperty))
                 {
-                    customProperty.SetCustomPropertyDefaultValue(value);
+                    customProperty.SetCustomPropertyDefaultValue(value, isNumeric);
                     found = true;
                 }
             }
 
             if(!found)
-                m_observer.CustomPropertyNameNotFound(propertyName);
+                m_observer.PropertyNameNotFound(propertyName);
         }
 
-        public void AddNodeCustomProperty(string propertyName, string nodeName, string value)
+        public void AddNodeCustomProperty(string propertyName, string nodeName, string value, bool isNumeric)
         {
             if(m_customProperties[CustomPropertyObjectType.Node].TryGetValue(propertyName, out var customProperty))
             {
@@ -103,9 +103,9 @@ namespace DbcParserLib
                 if (node != null)
                 {
                     var property = new CustomProperty(customProperty);
-                    property.SetCustomPropertyValue(value);
+                    property.SetCustomPropertyValue(value, isNumeric);
                     if(node.CustomProperties.TryGetValue(propertyName, out _))
-                        m_observer.DuplicateCustomPropertyInNode(propertyName, node.Name);
+                        m_observer.DuplicatedPropertyInNode(propertyName, node.Name);
                     else
                         node.CustomProperties[propertyName] = property;
                 }
@@ -113,19 +113,19 @@ namespace DbcParserLib
                     m_observer.NodeNameNotFound(nodeName);
             }
             else
-                m_observer.CustomPropertyNameNotFound(propertyName);
+                m_observer.PropertyNameNotFound(propertyName);
         }
 
-        public void AddEnvironmentVariableCustomProperty(string propertyName, string variableName, string value)
+        public void AddEnvironmentVariableCustomProperty(string propertyName, string variableName, string value, bool isNumeric)
         {
             if (m_customProperties[CustomPropertyObjectType.Environment].TryGetValue(propertyName, out var customProperty))
             {
                 if (m_environmentVariables.TryGetValue(variableName, out var envVariable))
                 {
                     var property = new CustomProperty(customProperty);
-                    property.SetCustomPropertyValue(value);
+                    property.SetCustomPropertyValue(value, isNumeric);
                     if(envVariable.CustomProperties.TryGetValue(propertyName, out _))
-                        m_observer.DuplicateCustomPropertyInEnvironmentVariable(propertyName, envVariable.Name);
+                        m_observer.DuplicatedPropertyInEnvironmentVariable(propertyName, envVariable.Name);
                     else
                         envVariable.CustomProperties[propertyName] = property;
                 }
@@ -133,19 +133,19 @@ namespace DbcParserLib
                     m_observer.EnvironmentVariableNameNotFound(variableName);
             }
             else
-                m_observer.CustomPropertyNameNotFound(propertyName);
+                m_observer.PropertyNameNotFound(propertyName);
         }
 
-        public void AddMessageCustomProperty(string propertyName, uint messageId, string value)
+        public void AddMessageCustomProperty(string propertyName, uint messageId, string value, bool isNumeric)
         {
             if (m_customProperties[CustomPropertyObjectType.Message].TryGetValue(propertyName, out var customProperty))
             {
                 if (m_messages.TryGetValue(messageId, out var message))
                 {
                     var property = new CustomProperty(customProperty);
-                    property.SetCustomPropertyValue(value);
+                    property.SetCustomPropertyValue(value, isNumeric);
                     if(message.CustomProperties.TryGetValue(propertyName, out _))
-                        m_observer.DuplicateCustomPropertyInMessage(propertyName, message.ID);
+                        m_observer.DuplicatedPropertyInMessage(propertyName, message.ID);
                     else
                         message.CustomProperties[propertyName] = property;
                 }
@@ -153,19 +153,19 @@ namespace DbcParserLib
                     m_observer.MessageIdNotFound(messageId);
             }
             else
-                m_observer.CustomPropertyNameNotFound(propertyName);
+                m_observer.PropertyNameNotFound(propertyName);
         }
 
-        public void AddSignalCustomProperty(string propertyName, uint messageId, string signalName, string value)
+        public void AddSignalCustomProperty(string propertyName, uint messageId, string signalName, string value, bool isNumeric)
         {
             if (m_customProperties[CustomPropertyObjectType.Signal].TryGetValue(propertyName, out var customProperty))
             {
                 if (TryGetValueMessageSignal(messageId, signalName, out var signal))
                 {
                     var property = new CustomProperty(customProperty);
-                    property.SetCustomPropertyValue(value);
+                    property.SetCustomPropertyValue(value, isNumeric);
                     if(signal.CustomProperties.TryGetValue(propertyName, out _))
-                        m_observer.DuplicateCustomPropertyInSignal(propertyName, signal.Name);
+                        m_observer.DuplicatedPropertyInSignal(propertyName, signal.Name);
                     else
                         signal.CustomProperties[propertyName] = property;
                 }
@@ -173,7 +173,7 @@ namespace DbcParserLib
                     m_observer.SignalNameNotFound(messageId, signalName);
             }
             else
-                m_observer.CustomPropertyNameNotFound(propertyName);
+                m_observer.PropertyNameNotFound(propertyName);
         }
 
         public void AddSignalComment(uint messageId, string signalName, string comment)
@@ -230,7 +230,7 @@ namespace DbcParserLib
         public void AddEnvironmentVariable(string variableName, EnvironmentVariable environmentVariable)
         {
             if(m_environmentVariables.TryGetValue(variableName, out _))
-                m_observer.DuplicateEnvironmentVariableName(variableName);
+                m_observer.DuplicatedEnvironmentVariableName(variableName);
             else
                 m_environmentVariables[variableName] = environmentVariable;
         }
@@ -255,7 +255,7 @@ namespace DbcParserLib
             if (node != null)
             {
                 if(node.EnvironmentVariables.TryGetValue(variableName, out _))
-                    m_observer.DuplicateEnvironmentVariableInNode(variableName, node.Name);
+                    m_observer.DuplicatedEnvironmentVariableInNode(variableName, node.Name);
                 else
                     node.EnvironmentVariables[variableName] = m_environmentVariables[variableName];
             }
@@ -276,7 +276,7 @@ namespace DbcParserLib
         public void AddNamedValueTable(string name, IReadOnlyDictionary<int, string> dictValues, string stringValues)
         {
             if(m_namedTablesMap.TryGetValue(name, out _))
-                m_observer.DuplicateValueTableName(name);
+                m_observer.DuplicatedValueTableName(name);
             else
             {
                 m_namedTablesMap[name] = new ValuesTable()

@@ -4,47 +4,47 @@ namespace DbcParserLib.Observers
     {
         public int CurrentLine {get; set;}
 
-        public void DuplicateMessage(uint messageId)
+        public void DuplicatedMessage(uint messageId)
         {
         }
 
-        public void DuplicateNode(string nodeName)
+        public void DuplicatedNode(string nodeName)
         {
         }
 
-        public void DuplicateSignalInMessage(uint messageId, string signalName)
+        public void DuplicatedSignalInMessage(uint messageId, string signalName)
         {
         }
 
-        public void DuplicateValueTableName(string tableName)
+        public void DuplicatedValueTableName(string tableName)
         {
         }
 
-        public void DuplicateEnvironmentVariableName(string variableName)
+        public void DuplicatedEnvironmentVariableName(string variableName)
         {
         }
 
-        public void DuplicateCustomProperty(string propertyName)
+        public void DuplicatedProperty(string propertyName)
         {
         }
 
-        public void DuplicateCustomPropertyInNode(string propertyName, string nodeName)
+        public void DuplicatedPropertyInNode(string propertyName, string nodeName)
         {
         }
 
-        public void DuplicateCustomPropertyInEnvironmentVariable(string propertyName, string environmentVariableName)
+        public void DuplicatedPropertyInEnvironmentVariable(string propertyName, string environmentVariableName)
         {
         }
 
-        public void DuplicateCustomPropertyInMessage(string propertyName, uint messageId)
+        public void DuplicatedPropertyInMessage(string propertyName, uint messageId)
         {
         }
 
-        public void DuplicateCustomPropertyInSignal(string propertyName, string signalName)
+        public void DuplicatedPropertyInSignal(string propertyName, string signalName)
         {
         }
 
-        public void DuplicateEnvironmentVariableInNode(string environmentVariableName, string nodeName)
+        public void DuplicatedEnvironmentVariableInNode(string environmentVariableName, string nodeName)
         {
         }
 
@@ -112,11 +112,19 @@ namespace DbcParserLib.Observers
         {
         }
 
-        public void CustomPropertyNameNotFound(string propertyName)
+        public void PropertyNameNotFound(string propertyName)
         {
         }
 
         public void TableMapNameNotFound(string tableName)
+        {
+        }
+
+        public void PropertyValueOutOfBound(string propertyName, string value)
+        {
+        }
+
+        public void PropertyValueOutOfIndex(string propertyName, string index)
         {
         }
 

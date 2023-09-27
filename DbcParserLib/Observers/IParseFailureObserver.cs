@@ -4,17 +4,17 @@
     {
         int CurrentLine {get; set;}
 
-        void DuplicateMessage(uint messageId);
-        void DuplicateNode(string nodeName);
-        void DuplicateSignalInMessage(uint messageId, string signalName);
-        void DuplicateValueTableName(string tableName);
-        void DuplicateEnvironmentVariableName(string variableName);
-        void DuplicateCustomProperty(string propertyName);
-        void DuplicateCustomPropertyInNode(string propertyName, string nodeName);
-        void DuplicateCustomPropertyInEnvironmentVariable(string propertyName, string environmentVariableName);
-        void DuplicateCustomPropertyInMessage(string propertyName, uint messageId);
-        void DuplicateCustomPropertyInSignal(string propertyName, string signalName);
-        void DuplicateEnvironmentVariableInNode(string environmentVariableName, string nodeName);
+        void DuplicatedMessage(uint messageId);
+        void DuplicatedNode(string nodeName);
+        void DuplicatedSignalInMessage(uint messageId, string signalName);
+        void DuplicatedValueTableName(string tableName);
+        void DuplicatedEnvironmentVariableName(string variableName);
+        void DuplicatedProperty(string propertyName);
+        void DuplicatedPropertyInNode(string propertyName, string nodeName);
+        void DuplicatedPropertyInEnvironmentVariable(string propertyName, string environmentVariableName);
+        void DuplicatedPropertyInMessage(string propertyName, uint messageId);
+        void DuplicatedPropertyInSignal(string propertyName, string signalName);
+        void DuplicatedEnvironmentVariableInNode(string environmentVariableName, string nodeName);
         void CommentSyntaxError();
         void EnvironmentDataVariableSyntaxError();
         void MessageSyntaxError();
@@ -31,8 +31,10 @@
         void NodeNameNotFound(string nodeName);
         void MessageIdNotFound(uint messageId);
         void EnvironmentVariableNameNotFound(string variableName);
-        void CustomPropertyNameNotFound(string propertyName);
+        void PropertyNameNotFound(string propertyName);
         void TableMapNameNotFound(string tableName);
+        void PropertyValueOutOfBound(string propertyName, string value);
+        void PropertyValueOutOfIndex(string propertyName, string index);
         void UnknownLine();
         void NoMessageFound();
         void Clear();

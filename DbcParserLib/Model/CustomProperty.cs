@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace DbcParserLib.Model
+﻿namespace DbcParserLib.Model
 {
     public class CustomProperty
     {
@@ -16,38 +14,55 @@ namespace DbcParserLib.Model
             CustomPropertyDefinition = customPropertyDefinition;
         }
 
-        public void SetCustomPropertyValue(string value)
+        public void SetCustomPropertyValue(string value, bool isNumeric)
         {
             switch (CustomPropertyDefinition.DataType)
             {
                 case CustomPropertyDataType.Integer:
+                    if(!CustomPropertyDefinition.TryGetIntegerValue(value, isNumeric, out var integerValue))
+                        return;
+
                     IntegerCustomProperty = new CustomPropertyValue<int>()
                     {
-                        Value = int.Parse(value, CultureInfo.InvariantCulture)
+                        Value = integerValue
                     };
                     break;
+
                 case CustomPropertyDataType.Hex:
+                    if(!CustomPropertyDefinition.TryGetHexValue(value, isNumeric, out var hexValue))
+                        return;
+
                     HexCustomProperty = new CustomPropertyValue<int>()
                     {
-                        Value = int.Parse(value, CultureInfo.InvariantCulture)
+                        Value = hexValue
                     };
                     break;
+
                 case CustomPropertyDataType.Float:
+                    if(!CustomPropertyDefinition.TryGetFloatValue(value, isNumeric, out var floatValue))
+                        return;
                     FloatCustomProperty = new CustomPropertyValue<double>()
                     {
-                        Value = float.Parse(value, CultureInfo.InvariantCulture)
+                        Value = floatValue
                     };
                     break;
+
                 case CustomPropertyDataType.String:
+                    if(!CustomPropertyDefinition.IsString(isNumeric))
+                        return;
                     StringCustomProperty = new CustomPropertyValue<string>()
                     {
                         Value = value
                     };
                     break;
+
                 case CustomPropertyDataType.Enum:
+                    if(!CustomPropertyDefinition.TryGetEnumValue(value, isNumeric, out var enumValue))
+                        return;
+
                     EnumCustomProperty = new CustomPropertyValue<string>()
                     {
-                        Value = value
+                        Value = enumValue
                     };
                     break;
             }
