@@ -160,14 +160,26 @@ namespace DbcParserLib.Tests
         public void ValueTableWithMapDefinitionIsParsedAndLinkedToChannel()
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
-            dbcBuilderMock.Setup(builder => builder.LinkTableValuesToSignal(470, "channelName",
-                new Dictionary<int, string>() { { 3, @"""AEB_LOCK_STATE_SNA""" }, { 2, @"""AEB_LOCK_STATE_UNUSED""" }, { 1, @"""AEB_LOCK_STATE_UNLOCKED""" }, { 0, @"""AEB_LOCK_STATE_LOCKED""" } },
-                Helpers.ConvertToMultiLine(@"3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 ""AEB_LOCK_STATE_UNLOCKED"" 0 ""AEB_LOCK_STATE_LOCKED""".SplitBySpace(), 0)));
+            var multiline = Helpers.ConvertToMultiLine(
+                @"3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 ""AEB_LOCK_STATE_UNLOCKED"" 0 ""AEB_LOCK_STATE_LOCKED"""
+                    .SplitBySpace(), 0);
+            dbcBuilderMock.Setup(
+                builder => builder.LinkTableValuesToSignal(
+                    470, 
+                    "channelName",
+                    new Dictionary<int, string>
+                    {
+                        { 3, @"""AEB_LOCK_STATE_SNA""" }, 
+                        { 2, @"""AEB_LOCK_STATE_UNUSED""" }, 
+                        { 1, @"""AEB_LOCK_STATE_UNLOCKED""" }, 
+                        { 0, @"""AEB_LOCK_STATE_LOCKED""" }
+                    },
+                    multiline
+                ));
             var valueTableLineParsers = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
             Assert.IsTrue(ParseLine(@"VAL_ 470 channelName 3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 ""AEB_LOCK_STATE_UNLOCKED"" 0 ""AEB_LOCK_STATE_LOCKED"" ;", valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object));
-
         }
 
         [TestCase("VAL_ 869 qGearboxOil 0 \"Running\" 1 \"Idle\" ")]
@@ -271,6 +283,21 @@ namespace DbcParserLib.Tests
             var lineParser = new ValueTableDefinitionLineParser(observerMock.Object);
             lineParser.TryParse(line, dbcBuilder, nextLineProviderMock.Object);
             lineParser.TryParse(line, dbcBuilder, nextLineProviderMock.Object);
+        }
+
+        [Test]
+        public void ValueTableDefinitionContainsAdditionalSpacesBeforeSemicolon()
+        {
+            var tableName = "tableName";
+            var line = $"VAL_TABLE_ {tableName} 0 \"Running\" 1 \"Idle\"  ;";
+
+            var observerMock = m_repository.Create<IParseFailureObserver>();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+            var dbcBuilder = new DbcBuilder(observerMock.Object);
+
+            var lineParser = new ValueTableDefinitionLineParser(observerMock.Object);
+            
+            Assert.IsTrue(lineParser.TryParse(line, dbcBuilder, nextLineProviderMock.Object));
         }
     }
 }
