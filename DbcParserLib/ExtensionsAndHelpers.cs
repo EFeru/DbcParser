@@ -87,8 +87,13 @@ namespace DbcParserLib
             {
                 while (reader.Peek() > -1)
                 {
+                    var line = reader.ReadLine();
+                    
+                    if (string.IsNullOrWhiteSpace(line))
+                        continue;
+                    
                     // Add duplicated key control and act (eg. strict -> break, warning -> keep going and log, silent-> keep going)
-                    var tokens = reader.ReadLine().Split(' ');
+                    var tokens = line.Split(' ');
                     dict[int.Parse(tokens[0])] = tokens[1];
                 }
             }
