@@ -2,7 +2,6 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using DbcParserLib.Model;
-using System;
 
 namespace DbcParserLib
 {
@@ -31,12 +30,6 @@ namespace DbcParserLib
         internal static ulong BitMask(this Signal signal)
         {
             return (ulong.MaxValue >> (64 - signal.Length));
-        }
-
-        [Obsolete("Please use ValueTableMap instead. ToPairs() and ValueTable will be removed in future releases")]
-        public static IEnumerable<KeyValuePair<int, string>> ToPairs(this Signal signal)
-        {
-            return signal.ValueTableMap;
         }
 
         private const string MultiplexorLabel = "M";
