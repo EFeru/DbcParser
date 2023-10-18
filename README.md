@@ -40,6 +40,30 @@ var filteredSelection = dbc
 			.ToArray();
 ```
 
+### Parsing errors management
+From **v1.4.0** parsing errors management has been introduced to inform users about syntax errors occurred during parsing procedure.
+The `IParseFailureObserver` interface provides all methods to handle syntax errors, like:
+- Generic syntax error (eg. `;`, `'`, `,` missing)
+- Duplicated object definition (eg. messages with same ID; nodes, signals, custom properties with same name etc..)
+- Object definition missing (eg. custom property is assigned before its declaration)
+- Value consistency (eg. custom property value is out of bound with respect to min and max values defined in the property)
+
+The library comes with two different implementations:
+1. `SilentFailureObserver`: the default one. It silently swallow errors when parsing
+2. `SimpleFailureObserver`: simple observer that logs any error. Errors list can be retrieve through `GetErrorList()` method, like in the example below
+
+```cs
+// Comment this two lines to remove errors parsing management (errors will be silent)
+// You can provide your own IParseFailureObserver implementation to customize errors parsing management
+var failureObserver = new SimpleFailureObserver();
+Parser.SetParsingFailuresObserver(failureObserver);
+
+var dbc = Parser.ParseFromPath(filePath);
+var errors = failureObserver.GetErrorList();
+```
+
+The user is free to create its own implementation to customize error management.
+
 ## Packing/Unpacking signals
 
 ### Simple scenario
@@ -103,6 +127,22 @@ if(message.IsMultiplexed())
 	// ...
 }
 ```
+
+<br>
+
+# Obsolete stuff
+
+Below you can find a list of obsolete stuff that are going to be removed in the future releases.
+
+| Class       | Property/Method     | Obsolete      | Removed               | Replaced by      | Comment       |
+| --------    | -------             | -------       | -------               | -------          | -------       |
+| Signal      | IsSigned            | v1.3.0        | planned in **1.4.3**  | `ValueType`      | Byte property replaced by `DbcValueType` property which provides <br> more informations about signal type |
+| Signal      | ValueTable          | v1.3.0        | planned in **1.4.3**  | `ValueTableMap`  | String property replaced by a `IDictionary<int,string>` property |
+| Signal      | ToPairs()           | v1.3.0        | **v1.4.2**            | -                | Extension method used to convert ValueTable into ValueTableMap |
+| Message     | CycleTime           | v1.4.2        | planned in **1.4.4**  | `CycleTime()`    | CycleTime is no more a message property (replaced by an extension method) |
+
+<br>
+
 # Useful references
 - [High level overview](https://docs.openvehicles.com/en/latest/components/vehicle_dbc/docs/dbc-primer.html)
 - [Very well done overview, many resources on that site](https://github.com/stefanhoelzl/CANpy/blob/master/docs/DBC_Specification.md)
