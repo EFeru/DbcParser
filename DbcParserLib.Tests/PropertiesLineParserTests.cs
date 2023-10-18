@@ -157,7 +157,7 @@ namespace DbcParserLib.Tests
         }
 
         [Test]
-        public void MsgCustomPropertyIsParsedTest()
+        public void MsgCycleTimePropertyIsParsedTest()
         {
             var builder = new DbcBuilder(new SilentFailureObserver());
             var message = new Message { ID = 2394947585 };
@@ -176,7 +176,7 @@ namespace DbcParserLib.Tests
         }
 
         [Test]
-        public void SigCustomPropertyIsParsedTest()
+        public void SigInitialValueIntegerPropertyIsParsedTest()
         {
             var builder = new DbcBuilder(new SilentFailureObserver());
             var message = new Message { ID = 2394947585 };
@@ -191,7 +191,30 @@ namespace DbcParserLib.Tests
             Assert.IsTrue(ParseLine(@"BA_ ""GenSigStartValue"" SG_ 2394947585 sig_name 40;", sigInitialValueLineParser, builder, nextLineProvider));
 
             var dbc = builder.Build();
+            Assert.AreEqual(true, dbc.Messages.First().Signals.First().InitialValue(out var initialValue));
             Assert.AreEqual(40, dbc.Messages.First().Signals.First().InitialValue);
+            Assert.AreEqual(40, initialValue);
+        }
+
+        [Test]
+        public void SigInitialValueHexPropertyIsParsedTest()
+        {
+            var builder = new DbcBuilder(new SilentFailureObserver());
+            var message = new Message { ID = 2394947585 };
+            builder.AddMessage(message);
+            var signal = new Signal { Name = "sig_name" };
+            builder.AddSignal(signal);
+
+            var sigInitialValueLineParser = CreateParser();
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            Assert.IsTrue(ParseLine(@"BA_DEF_ SG_ ""GenSigStartValue"" HEX 0 200;", sigInitialValueLineParser, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""GenSigStartValue"" 150;", sigInitialValueLineParser, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_ ""GenSigStartValue"" SG_ 2394947585 sig_name 40;", sigInitialValueLineParser, builder, nextLineProvider));
+
+            var dbc = builder.Build();
+            Assert.AreEqual(true, dbc.Messages.First().Signals.First().InitialValue(out var initialValue));
+            Assert.AreEqual(40, dbc.Messages.First().Signals.First().InitialValue);
+            Assert.AreEqual(40, initialValue);
         }
 
         [Test]

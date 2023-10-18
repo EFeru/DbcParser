@@ -102,16 +102,44 @@ namespace DbcParserLib
 
         public static bool CycleTime(this Message message, out int cycleTime)
         {
+            cycleTime = 0;
+
             if (message.CustomProperties.TryGetValue("GenMsgCycleTime", out var property))
             {
                 cycleTime = property.IntegerCustomProperty.Value;
                 return true;
             }
             else
-            {
-                cycleTime = 0;
                 return false;
+        }
+
+        internal static bool InitialValue(this Signal signal, out double initialValue)
+        {
+            initialValue = 0;
+
+            if (signal.CustomProperties.TryGetValue("GenSigStartValue", out var property))
+            {
+                double value = 0;
+                switch (property.CustomPropertyDefinition.DataType)
+                {
+                    case CustomPropertyDataType.Float:
+                        value = property.FloatCustomProperty.Value;
+                        break;
+                    case CustomPropertyDataType.Hex:
+                        value = property.HexCustomProperty.Value;
+                        break;
+                    case CustomPropertyDataType.Integer:
+                        value = property.IntegerCustomProperty.Value;
+                        break;
+                    default:
+                        return false;
+                }
+
+                initialValue = value * signal.Factor + signal.Offset;
+                return true;
             }
+            else
+                return false;
         }
     }
 }

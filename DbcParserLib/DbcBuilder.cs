@@ -184,14 +184,6 @@ namespace DbcParserLib
                 m_observer.SignalNameNotFound(messageId, signalName);
         }
 
-        public void AddSignalInitialValue(uint messageId, string signalName, double initialValue)
-        {
-            if (TryGetValueMessageSignal(messageId, signalName, out var signal))
-                signal.InitialValue = initialValue * signal.Factor + signal.Offset;
-            else
-                m_observer.SignalNameNotFound(messageId, signalName);
-        }
-
         public void AddSignalValueType(uint messageId, string signalName, DbcValueType valueType)
         {
             if (TryGetValueMessageSignal(messageId, signalName, out var signal))

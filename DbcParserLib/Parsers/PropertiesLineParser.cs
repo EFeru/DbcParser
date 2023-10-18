@@ -36,11 +36,7 @@ namespace DbcParserLib.Parsers
                 else if (match.Groups[4].Value == "BO_")
                     builder.AddMessageCustomProperty(match.Groups[1].Value, uint.Parse(match.Groups[5].Value, CultureInfo.InvariantCulture), stringValue, isNumeric);
                 else if (match.Groups[6].Value == "SG_")
-                {
                     builder.AddSignalCustomProperty(match.Groups[1].Value, uint.Parse(match.Groups[7].Value, CultureInfo.InvariantCulture), match.Groups[8].Value, stringValue, isNumeric);
-                    if (match.Groups[1].Value == "GenSigStartValue")
-                        builder.AddSignalInitialValue(uint.Parse(match.Groups[7].Value, CultureInfo.InvariantCulture), match.Groups[8].Value, double.Parse(match.Groups[9].Value, CultureInfo.InvariantCulture));
-                }
             }
             else
                 m_observer.PropertySyntaxError();

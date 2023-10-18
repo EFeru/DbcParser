@@ -78,7 +78,16 @@ namespace DbcParserLib.Model
                 IsSigned = (byte)(value == DbcValueType.Unsigned ? 0 : 1);
             }
         }
-        public double InitialValue;
+
+        public double InitialValue
+        {
+            get
+            {
+                this.InitialValue(out var initialValue);
+                return initialValue;
+            }
+        }
+
         public double Factor = 1;
         public bool IsInteger = false;
         public double Offset;
