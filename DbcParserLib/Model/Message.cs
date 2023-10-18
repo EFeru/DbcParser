@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DbcParserLib.Model
 {
@@ -37,7 +38,16 @@ namespace DbcParserLib.Model
         public ushort DLC;
         public string Transmitter;
         public string Comment;
-        public int CycleTime;
+        [Obsolete("Please use CycleTime(out int cycleTime) instead. CycleTime property will be removed and will be accessible only through extension method")]
+        public int CycleTime
+        {
+            get
+            {
+                this.CycleTime(out var cycleTime);
+                return cycleTime;
+            }
+        }
+
         public List<Signal> Signals = new List<Signal>();
         public IDictionary<string, CustomProperty> CustomProperties = new Dictionary<string, CustomProperty>();
 

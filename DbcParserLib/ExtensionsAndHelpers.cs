@@ -99,5 +99,19 @@ namespace DbcParserLib
             }
             return dict;
         }
+
+        public static bool CycleTime(this Message message, out int cycleTime)
+        {
+            if (message.CustomProperties.TryGetValue("GenMsgCycleTime", out var property))
+            {
+                cycleTime = property.IntegerCustomProperty.Value;
+                return true;
+            }
+            else
+            {
+                cycleTime = 0;
+                return false;
+            }
+        }
     }
 }

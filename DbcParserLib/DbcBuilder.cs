@@ -263,16 +263,6 @@ namespace DbcParserLib
                 m_observer.NodeNameNotFound(nodeName);
         }
 
-        public void AddMessageCycleTime(uint messageId, int cycleTime)
-        {
-            if (m_messages.TryGetValue(messageId, out var message))
-            {
-                message.CycleTime = cycleTime;
-            }
-            else
-                m_observer.MessageIdNotFound(messageId);
-        }
-
         public void AddNamedValueTable(string name, IReadOnlyDictionary<int, string> dictValues, string stringValues)
         {
             if(m_namedTablesMap.TryGetValue(name, out _))

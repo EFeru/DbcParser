@@ -170,7 +170,9 @@ namespace DbcParserLib.Tests
             Assert.IsTrue(ParseLine(@"BA_ ""GenMsgCycleTime"" BO_ 2394947585 100;", msgCycleTimeLineParser, builder, nextLineProvider));
 
             var dbc = builder.Build();
+            Assert.AreEqual(true, dbc.Messages.First().CycleTime(out var cycleTime));
             Assert.AreEqual(100, dbc.Messages.First().CycleTime);
+            Assert.AreEqual(100, cycleTime);
         }
 
         [Test]
