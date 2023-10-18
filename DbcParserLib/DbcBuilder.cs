@@ -103,7 +103,9 @@ namespace DbcParserLib
                 if (node != null)
                 {
                     var property = new CustomProperty(customProperty);
-                    property.SetCustomPropertyValue(value, isNumeric);
+                    if(!property.SetCustomPropertyValue(value, isNumeric))
+                        return;
+
                     if(node.CustomProperties.TryGetValue(propertyName, out _))
                         m_observer.DuplicatedPropertyInNode(propertyName, node.Name);
                     else
@@ -123,7 +125,9 @@ namespace DbcParserLib
                 if (m_environmentVariables.TryGetValue(variableName, out var envVariable))
                 {
                     var property = new CustomProperty(customProperty);
-                    property.SetCustomPropertyValue(value, isNumeric);
+                    if(!property.SetCustomPropertyValue(value, isNumeric))
+                        return;
+
                     if(envVariable.CustomProperties.TryGetValue(propertyName, out _))
                         m_observer.DuplicatedPropertyInEnvironmentVariable(propertyName, envVariable.Name);
                     else
@@ -143,7 +147,9 @@ namespace DbcParserLib
                 if (m_messages.TryGetValue(messageId, out var message))
                 {
                     var property = new CustomProperty(customProperty);
-                    property.SetCustomPropertyValue(value, isNumeric);
+                    if(!property.SetCustomPropertyValue(value, isNumeric))
+                        return;
+
                     if(message.CustomProperties.TryGetValue(propertyName, out _))
                         m_observer.DuplicatedPropertyInMessage(propertyName, message.ID);
                     else
@@ -163,7 +169,9 @@ namespace DbcParserLib
                 if (TryGetValueMessageSignal(messageId, signalName, out var signal))
                 {
                     var property = new CustomProperty(customProperty);
-                    property.SetCustomPropertyValue(value, isNumeric);
+                    if(!property.SetCustomPropertyValue(value, isNumeric))
+                        return;
+
                     if(signal.CustomProperties.TryGetValue(propertyName, out _))
                         m_observer.DuplicatedPropertyInSignal(propertyName, signal.Name);
                     else
