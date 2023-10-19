@@ -57,7 +57,7 @@ namespace DbcParserLib.Model
 
     public class Signal
     {
-        private DbcValueType m_ValueType = DbcValueType.Signed;
+        private DbcValueType m_valueType = DbcValueType.Signed;
 
         public uint ID;
         public string Name;
@@ -68,17 +68,23 @@ namespace DbcParserLib.Model
         public byte IsSigned { get; private set; } = 1;
         public DbcValueType ValueType
         {
-            get
-            {
-                return m_ValueType;
-            }
+            get => m_valueType;
             set
             {
-                m_ValueType = value;
+                m_valueType = value;
                 IsSigned = (byte)(value == DbcValueType.Unsigned ? 0 : 1);
             }
         }
-        public double InitialValue;
+
+        public double InitialValue
+        {
+            get
+            {
+                this.InitialValue(out var initialValue);
+                return initialValue;
+            }
+        }
+
         public double Factor = 1;
         public bool IsInteger = false;
         public double Offset;
