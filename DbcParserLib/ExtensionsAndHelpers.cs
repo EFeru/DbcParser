@@ -2,6 +2,7 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using DbcParserLib.Model;
+using System;
 
 namespace DbcParserLib
 {
@@ -30,6 +31,12 @@ namespace DbcParserLib
         internal static ulong BitMask(this Signal signal)
         {
             return (ulong.MaxValue >> (64 - signal.Length));
+        }
+
+        [Obsolete("Please use ValueTableMap instead. ToPairs() and ValueTable will be removed in future releases")]
+        public static IEnumerable<KeyValuePair<int, string>> ToPairs(this Signal signal)
+        {
+            return signal.ValueTableMap;
         }
 
         private const string MultiplexorLabel = "M";
@@ -91,48 +98,6 @@ namespace DbcParserLib
                 }
             }
             return dict;
-        }
-
-        public static bool CycleTime(this Message message, out int cycleTime)
-        {
-            cycleTime = 0;
-
-            if (message.CustomProperties.TryGetValue("GenMsgCycleTime", out var property))
-            {
-                cycleTime = property.IntegerCustomProperty.Value;
-                return true;
-            }
-            else
-                return false;
-        }
-
-        internal static bool InitialValue(this Signal signal, out double initialValue)
-        {
-            initialValue = 0;
-
-            if (signal.CustomProperties.TryGetValue("GenSigStartValue", out var property))
-            {
-                double value = 0;
-                switch (property.CustomPropertyDefinition.DataType)
-                {
-                    case CustomPropertyDataType.Float:
-                        value = property.FloatCustomProperty.Value;
-                        break;
-                    case CustomPropertyDataType.Hex:
-                        value = property.HexCustomProperty.Value;
-                        break;
-                    case CustomPropertyDataType.Integer:
-                        value = property.IntegerCustomProperty.Value;
-                        break;
-                    default:
-                        return false;
-                }
-
-                initialValue = value * signal.Factor + signal.Offset;
-                return true;
-            }
-            else
-                return false;
         }
     }
 }

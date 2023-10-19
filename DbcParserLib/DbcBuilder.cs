@@ -103,9 +103,7 @@ namespace DbcParserLib
                 if (node != null)
                 {
                     var property = new CustomProperty(customProperty);
-                    if(!property.SetCustomPropertyValue(value, isNumeric))
-                        return;
-
+                    property.SetCustomPropertyValue(value, isNumeric);
                     if(node.CustomProperties.TryGetValue(propertyName, out _))
                         m_observer.DuplicatedPropertyInNode(propertyName, node.Name);
                     else
@@ -125,9 +123,7 @@ namespace DbcParserLib
                 if (m_environmentVariables.TryGetValue(variableName, out var envVariable))
                 {
                     var property = new CustomProperty(customProperty);
-                    if(!property.SetCustomPropertyValue(value, isNumeric))
-                        return;
-
+                    property.SetCustomPropertyValue(value, isNumeric);
                     if(envVariable.CustomProperties.TryGetValue(propertyName, out _))
                         m_observer.DuplicatedPropertyInEnvironmentVariable(propertyName, envVariable.Name);
                     else
@@ -147,9 +143,7 @@ namespace DbcParserLib
                 if (m_messages.TryGetValue(messageId, out var message))
                 {
                     var property = new CustomProperty(customProperty);
-                    if(!property.SetCustomPropertyValue(value, isNumeric))
-                        return;
-
+                    property.SetCustomPropertyValue(value, isNumeric);
                     if(message.CustomProperties.TryGetValue(propertyName, out _))
                         m_observer.DuplicatedPropertyInMessage(propertyName, message.ID);
                     else
@@ -169,9 +163,7 @@ namespace DbcParserLib
                 if (TryGetValueMessageSignal(messageId, signalName, out var signal))
                 {
                     var property = new CustomProperty(customProperty);
-                    if(!property.SetCustomPropertyValue(value, isNumeric))
-                        return;
-
+                    property.SetCustomPropertyValue(value, isNumeric);
                     if(signal.CustomProperties.TryGetValue(propertyName, out _))
                         m_observer.DuplicatedPropertyInSignal(propertyName, signal.Name);
                     else
@@ -188,6 +180,14 @@ namespace DbcParserLib
         {
             if (TryGetValueMessageSignal(messageId, signalName, out var signal))
                 signal.Comment = comment;
+            else
+                m_observer.SignalNameNotFound(messageId, signalName);
+        }
+
+        public void AddSignalInitialValue(uint messageId, string signalName, double initialValue)
+        {
+            if (TryGetValueMessageSignal(messageId, signalName, out var signal))
+                signal.InitialValue = initialValue * signal.Factor + signal.Offset;
             else
                 m_observer.SignalNameNotFound(messageId, signalName);
         }
@@ -261,6 +261,16 @@ namespace DbcParserLib
             }
             else
                 m_observer.NodeNameNotFound(nodeName);
+        }
+
+        public void AddMessageCycleTime(uint messageId, int cycleTime)
+        {
+            if (m_messages.TryGetValue(messageId, out var message))
+            {
+                message.CycleTime = cycleTime;
+            }
+            else
+                m_observer.MessageIdNotFound(messageId);
         }
 
         public void AddNamedValueTable(string name, IReadOnlyDictionary<int, string> dictValues, string stringValues)

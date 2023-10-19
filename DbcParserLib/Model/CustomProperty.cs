@@ -14,13 +14,13 @@
             CustomPropertyDefinition = customPropertyDefinition;
         }
 
-        public bool SetCustomPropertyValue(string value, bool isNumeric)
+        public void SetCustomPropertyValue(string value, bool isNumeric)
         {
             switch (CustomPropertyDefinition.DataType)
             {
                 case CustomPropertyDataType.Integer:
                     if(!CustomPropertyDefinition.TryGetIntegerValue(value, isNumeric, out var integerValue))
-                        return false;
+                        return;
 
                     IntegerCustomProperty = new CustomPropertyValue<int>()
                     {
@@ -30,7 +30,7 @@
 
                 case CustomPropertyDataType.Hex:
                     if(!CustomPropertyDefinition.TryGetHexValue(value, isNumeric, out var hexValue))
-                        return false;
+                        return;
 
                     HexCustomProperty = new CustomPropertyValue<int>()
                     {
@@ -40,7 +40,7 @@
 
                 case CustomPropertyDataType.Float:
                     if(!CustomPropertyDefinition.TryGetFloatValue(value, isNumeric, out var floatValue))
-                        return false;
+                        return;
                     FloatCustomProperty = new CustomPropertyValue<double>()
                     {
                         Value = floatValue
@@ -49,7 +49,7 @@
 
                 case CustomPropertyDataType.String:
                     if(!CustomPropertyDefinition.IsString(isNumeric))
-                        return false;
+                        return;
                     StringCustomProperty = new CustomPropertyValue<string>()
                     {
                         Value = value
@@ -58,7 +58,7 @@
 
                 case CustomPropertyDataType.Enum:
                     if(!CustomPropertyDefinition.TryGetEnumValue(value, isNumeric, out var enumValue))
-                        return false;
+                        return;
 
                     EnumCustomProperty = new CustomPropertyValue<string>()
                     {
@@ -66,7 +66,6 @@
                     };
                     break;
             }
-            return true;
         }
 
         public void SetCustomPropertyValueFromDefault()

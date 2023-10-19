@@ -20,6 +20,7 @@ namespace DbcParserLib.Model
             m_observer = observer;
         }
 
+
         public void SetCustomPropertyDefaultValue(string value, bool isNumeric)
         {
             switch (DataType)
