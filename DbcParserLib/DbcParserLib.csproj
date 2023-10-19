@@ -13,7 +13,7 @@
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <PackageReleaseNotes></PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.4.1</Version>
+    <Version>1.4.2</Version>
   </PropertyGroup>
 
 </Project>
