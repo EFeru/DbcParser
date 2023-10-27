@@ -182,6 +182,57 @@ namespace DbcParserLib.Tests
             Assert.IsTrue(ParseLine(@"VAL_ 470 channelName 3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 ""AEB_LOCK_STATE_UNLOCKED"" 0 ""AEB_LOCK_STATE_LOCKED"" ;", valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object));
         }
 
+        [TestCase("VAL_TABLE_ TableName 0 \"Running\" 1 \"  Idle\" ;")]
+        [TestCase("VAL_TABLE_ TableName 0 \"Running\" 1 \" Idle \" ;")]
+        [TestCase("VAL_TABLE_ TableName 0 \"Running\" 1 \"  \" ;")]
+        [TestCase("VAL_TABLE_ TableName 0 \"Running\" 1 \"\" ;")]
+        public void ValueTableDefinitionWithSpacesInValuesIsParsed(string line)
+        {
+            var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
+            var finalDict = new Dictionary<int, string>();
+
+            dbcBuilderMock.Setup(
+                builder => builder.AddNamedValueTable(
+                    "TableName",
+                    It.IsAny<Dictionary<int, string>>(),
+                    It.IsAny<string>()
+                )).Callback<string, IReadOnlyDictionary<int, string>, string>((_, dict, _) =>
+            {
+                finalDict = new Dictionary<int, string>(dict);
+            });
+            var valueTableLineParsers = CreateParser();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+
+            Assert.IsTrue(ParseLine(line, valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.AreEqual(2, finalDict.Count);
+        }
+
+        [TestCase("VAL_ 869 qGearboxOil 0 \"Running\" 1 \"  Idle\" ;")]
+        [TestCase("VAL_ 869 qGearboxOil 0 \"Running\" 1 \" Idle \" ;")]
+        [TestCase("VAL_ 869 qGearboxOil 0 \"Running\" 1 \"  \" ;")]
+        [TestCase("VAL_ 869 qGearboxOil 0 \"Running\" 1 \"\" ;")]
+        public void ValueTableWithSpacesInValuesIsParsed(string line)
+        {
+            var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
+            var finalDict = new Dictionary<int, string>();
+
+            dbcBuilderMock.Setup(
+                builder => builder.LinkTableValuesToSignal(
+                    869,
+                    "qGearboxOil",
+                    It.IsAny<Dictionary<int, string>>(),
+                    It.IsAny<string>()
+                )).Callback<uint, string, IReadOnlyDictionary<int, string>, string>((_, _, dict, _) =>
+            {
+                finalDict = new Dictionary<int, string>(dict);
+            });
+            var valueTableLineParsers = CreateParser();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+
+            Assert.IsTrue(ParseLine(line, valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.AreEqual(2, finalDict.Count);
+        }
+
         [TestCase("VAL_ 869 qGearboxOil 0 \"Running\" 1 \"Idle\" ")]
         [TestCase("VAL_ 869 qGearboxOil 0 \"Running\" 1 \"Idle\";")]
         [TestCase("VAL_ -869 qGearboxOil 0 \"Running\" 1 \"Idle\" ;")]

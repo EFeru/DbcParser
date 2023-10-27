@@ -1,6 +1,7 @@
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using DbcParserLib.Model;
 
 namespace DbcParserLib
@@ -71,6 +72,7 @@ namespace DbcParserLib
 
         internal static IReadOnlyDictionary<int, string> ToDictionary(this string records)
         {
+            const string valueTableValueRegex = @"(-?\d+)\s+(""[^""]*"")";
             var dict = new Dictionary<int, string>();
 
             if (string.IsNullOrWhiteSpace(records))
@@ -85,9 +87,9 @@ namespace DbcParserLib
                     if (string.IsNullOrWhiteSpace(line))
                         continue;
                     
-                    // Add duplicated key control and act (eg. strict -> break, warning -> keep going and log, silent-> keep going)
-                    var tokens = line.Split(' ');
-                    dict[int.Parse(tokens[0])] = tokens[1];
+                    var match = Regex.Match(line, valueTableValueRegex);
+                    if (match.Success)
+                        dict[int.Parse(match.Groups[1].Value)] = match.Groups[2].Value;
                 }
             }
             return dict;
