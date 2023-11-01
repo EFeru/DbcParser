@@ -19,7 +19,7 @@ namespace DbcParserLib
             var sb = new StringBuilder();
             for (var i = offset; i < records.Length - 1; i += 2)
             {
-                sb.AppendLine($"{records[i]} {records[i + 1]}");
+                sb.AppendFormat("{0} {1} {2}", records[i], records[i+1], '\n');
             }
 
             return sb.ToString();
