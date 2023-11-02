@@ -136,8 +136,7 @@ namespace DbcParserLib.Tests
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             dbcBuilderMock.Setup(builder => builder.AddNamedValueTable("DI_aebLockState",
-                new Dictionary<int, string>() { { 3, @"""AEB_LOCK_STATE_SNA""" }, { 2, @"""AEB_LOCK_STATE_UNUSED""" }, { 1, @"""AEB_LOCK_STATE_UNLOCKED""" }, { 0, @"""AEB_LOCK_STATE_LOCKED""" } },
-                Helpers.ConvertToMultiLine(@"3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 ""AEB_LOCK_STATE_UNLOCKED"" 0 ""AEB_LOCK_STATE_LOCKED""".SplitBySpace(), 0)));
+                new Dictionary<int, string>() { { 3, @"""AEB_LOCK_STATE_SNA""" }, { 2, @"""AEB_LOCK_STATE_UNUSED""" }, { 1, @"""AEB_LOCK_STATE_UNLOCKED""" }, { 0, @"""AEB_LOCK_STATE_LOCKED""" } }));
             var valueTableLineParsers = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
@@ -173,8 +172,7 @@ namespace DbcParserLib.Tests
                         { 2, @"""AEB_LOCK_STATE_UNUSED""" }, 
                         { 1, @"""AEB_LOCK_STATE_UNLOCKED""" }, 
                         { 0, @"""AEB_LOCK_STATE_LOCKED""" }
-                    },
-                    multiline
+                    }
                 ));
             var valueTableLineParsers = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
@@ -194,9 +192,8 @@ namespace DbcParserLib.Tests
             dbcBuilderMock.Setup(
                 builder => builder.AddNamedValueTable(
                     "TableName",
-                    It.IsAny<Dictionary<int, string>>(),
-                    It.IsAny<string>()
-                )).Callback<string, IReadOnlyDictionary<int, string>, string>((_, dict, _) =>
+                    It.IsAny<Dictionary<int, string>>()))
+                .Callback<string, IReadOnlyDictionary<int, string>>((_, dict) =>
             {
                 finalDict = new Dictionary<int, string>(dict);
             });
@@ -220,9 +217,8 @@ namespace DbcParserLib.Tests
                 builder => builder.LinkTableValuesToSignal(
                     869,
                     "qGearboxOil",
-                    It.IsAny<Dictionary<int, string>>(),
-                    It.IsAny<string>()
-                )).Callback<uint, string, IReadOnlyDictionary<int, string>, string>((_, _, dict, _) =>
+                    It.IsAny<Dictionary<int, string>>()))
+                .Callback<uint, string, IReadOnlyDictionary<int, string>>((_, _, dict) =>
             {
                 finalDict = new Dictionary<int, string>(dict);
             });

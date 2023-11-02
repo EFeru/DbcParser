@@ -40,7 +40,7 @@ namespace DbcParserLib.Parsers
                 if (match.Groups[3].Value != "")
                     builder.LinkTableValuesToEnvironmentVariable(match.Groups[3].Value, valueTableDictionary);
                 else
-                    builder.LinkTableValuesToSignal(uint.Parse(match.Groups[1].Value), match.Groups[2].Value, valueTableDictionary, valueTable);
+                    builder.LinkTableValuesToSignal(uint.Parse(match.Groups[1].Value), match.Groups[2].Value, valueTableDictionary);
                 return true;
             }
 

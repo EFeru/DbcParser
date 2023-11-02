@@ -1,7 +1,7 @@
 using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using System.Linq;
-using System.IO;
 using DbcParserLib.Model;
 
 namespace DbcParserLib.Tests
@@ -71,7 +71,7 @@ BO_ 200 SENSOR: 39 SENSOR
 
             var signal = targetMessage.Signals.FirstOrDefault(x => x.Name.Equals("UI_camBlockBlurThreshold"));
             Assert.IsNotNull(signal);
-            Assert.AreEqual(0, signal.IsSigned);
+            Assert.AreEqual(DbcValueType.Unsigned, signal.ValueType);
             Assert.AreEqual(11, signal.StartBit);
             Assert.AreEqual(6, signal.Length);
             Assert.AreEqual(0.01587, signal.Factor);
@@ -93,7 +93,7 @@ BO_ 200 SENSOR: 39 SENSOR
 
             var signal = targetMessage.Signals.FirstOrDefault(x => x.Name.Equals("DI_torqueMotor"));
             Assert.IsNotNull(signal);
-            Assert.AreEqual(1, signal.IsSigned);
+            Assert.AreEqual(DbcValueType.Signed, signal.ValueType);
             Assert.AreEqual("Nm", signal.Unit);
             Assert.AreEqual(13, signal.Length);
             Assert.AreEqual(0.25, signal.Factor);
@@ -101,34 +101,6 @@ BO_ 200 SENSOR: 39 SENSOR
             Assert.AreEqual(-750, signal.Minimum);
             Assert.AreEqual(750, signal.Maximum);
             Assert.AreEqual(1, signal.Receiver.Length);
-        }
-
-        [Test]
-        public void CheckTableValuesSignalPropertiesTest()
-        {
-            var dbc = Parser.ParseFromPath(MainDbcFilePath);
-
-            var targetMessage = dbc.Messages.FirstOrDefault(x => x.ID == 264);
-            Assert.IsNotNull(targetMessage);
-
-            Assert.AreEqual(7, targetMessage.Signals.Count);
-
-            var signal = targetMessage.Signals.FirstOrDefault(x => x.Name.Equals("DI_soptState"));
-            Assert.IsNotNull(signal);
-            Assert.IsFalse(string.IsNullOrWhiteSpace(signal.ValueTable));
-            Assert.AreEqual(132, signal.ValueTable.Length);
-
-            var lineCount = 0;
-            using (var reader = new StringReader(signal.ValueTable))
-            {
-                while (reader.Peek() > -1)
-                {
-                    reader.ReadLine();
-                    ++lineCount;
-                }
-            }
-
-            Assert.AreEqual(6, lineCount);
         }
 
         [Test]
@@ -253,6 +225,14 @@ BO_ 1043 BLINKERS: 8 XXX
  
 VAL_ 1043 withNamedTable DI_aebLockState ; ";
 
+            var expectedValueTableMap = new Dictionary<int, string>()
+            {
+                { 3, "\"AEB_LOCK_STATE_SNA\"" },
+                { 2, "\"AEB_LOCK_STATE_UNUSED\"" },
+                { 1, "\"AEB_LOCK_STATE_UNLOCKED\"" },
+                { 0, "\"AEB_LOCK_STATE_LOCKED\""}
+            };
+
             var dbc = Parser.Parse(dbcString);
 
             Assert.AreEqual(1, dbc.Messages.Count());
@@ -260,7 +240,7 @@ VAL_ 1043 withNamedTable DI_aebLockState ; ";
 
             var signal = dbc.Messages.Single().Signals.Single();
             Assert.IsNotNull(signal);
-            Assert.AreEqual(107, signal.ValueTable.Length);
+            Assert.AreEqual(expectedValueTableMap, signal.ValueTableMap);
         }
 
         [Test]
@@ -273,6 +253,14 @@ BO_ 1043 BLINKERS: 8 XXX
  
 VAL_ 1043 withNamedTable 3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 ""AEB_LOCK_STATE_UNLOCKED"" 0 ""AEB_LOCK_STATE_LOCKED"" ;";
 
+            var expectedValueTableMap = new Dictionary<int, string>()
+            {
+                { 3, "\"AEB_LOCK_STATE_SNA\"" },
+                { 2, "\"AEB_LOCK_STATE_UNUSED\"" },
+                { 1, "\"AEB_LOCK_STATE_UNLOCKED\"" },
+                { 0, "\"AEB_LOCK_STATE_LOCKED\""}
+            };
+
             var dbc = Parser.Parse(dbcString);
 
             Assert.AreEqual(1, dbc.Messages.Count());
@@ -280,7 +268,7 @@ VAL_ 1043 withNamedTable 3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 
 
             var signal = dbc.Messages.Single().Signals.Single();
             Assert.IsNotNull(signal);
-            Assert.AreEqual(107, signal.ValueTable.Length);
+            Assert.AreEqual(expectedValueTableMap, signal.ValueTableMap);
         }
 
         [Test]

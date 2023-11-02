@@ -29,7 +29,7 @@ namespace DbcParserLib.Parsers
             {
                 var valueTable = Regex.Replace(match.Groups[2].Value.TrimStart(), ValueTableNewLineRegex, ValueTableNewLineRegexReplace);
                 var valueTableDictionary = valueTable.ToDictionary();
-                builder.AddNamedValueTable(match.Groups[1].Value, valueTableDictionary, valueTable);
+                builder.AddNamedValueTable(match.Groups[1].Value, valueTableDictionary);
             }
             else
                 m_observer.ValueTableDefinitionSyntaxError();
