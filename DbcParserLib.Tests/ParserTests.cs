@@ -227,10 +227,10 @@ VAL_ 1043 withNamedTable DI_aebLockState ; ";
 
             var expectedValueTableMap = new Dictionary<int, string>()
             {
-                { 3, "\"AEB_LOCK_STATE_SNA\"" },
-                { 2, "\"AEB_LOCK_STATE_UNUSED\"" },
-                { 1, "\"AEB_LOCK_STATE_UNLOCKED\"" },
-                { 0, "\"AEB_LOCK_STATE_LOCKED\""}
+                { 3, "AEB_LOCK_STATE_SNA" },
+                { 2, "AEB_LOCK_STATE_UNUSED" },
+                { 1, "AEB_LOCK_STATE_UNLOCKED" },
+                { 0, "AEB_LOCK_STATE_LOCKED"}
             };
 
             var dbc = Parser.Parse(dbcString);
@@ -255,10 +255,10 @@ VAL_ 1043 withNamedTable 3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 
 
             var expectedValueTableMap = new Dictionary<int, string>()
             {
-                { 3, "\"AEB_LOCK_STATE_SNA\"" },
-                { 2, "\"AEB_LOCK_STATE_UNUSED\"" },
-                { 1, "\"AEB_LOCK_STATE_UNLOCKED\"" },
-                { 0, "\"AEB_LOCK_STATE_LOCKED\""}
+                { 3, "AEB_LOCK_STATE_SNA" },
+                { 2, "AEB_LOCK_STATE_UNUSED" },
+                { 1, "AEB_LOCK_STATE_UNLOCKED" },
+                { 0, "AEB_LOCK_STATE_LOCKED"}
             };
 
             var dbc = Parser.Parse(dbcString);

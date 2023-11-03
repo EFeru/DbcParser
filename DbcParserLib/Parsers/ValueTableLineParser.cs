@@ -35,13 +35,15 @@ namespace DbcParserLib.Parsers
             match = Regex.Match(cleanLine, ValueTableParsingRegex);
             if (match.Success)
             {
-                var valueTable = Regex.Replace(match.Groups[4].Value.TrimStart(), ValueTableNewLineRegex, ValueTableNewLineRegexReplace);
-                var valueTableDictionary = valueTable.ToDictionary();
-                if (match.Groups[3].Value != "")
-                    builder.LinkTableValuesToEnvironmentVariable(match.Groups[3].Value, valueTableDictionary);
-                else
-                    builder.LinkTableValuesToSignal(uint.Parse(match.Groups[1].Value), match.Groups[2].Value, valueTableDictionary);
-                return true;
+                if (match.Groups[4].Value.TryParseToDict(out var valueTableDictionary))
+                {
+                    if (match.Groups[3].Value != "")
+                        builder.LinkTableValuesToEnvironmentVariable(match.Groups[3].Value, valueTableDictionary);
+                    else
+                        builder.LinkTableValuesToSignal(uint.Parse(match.Groups[1].Value), match.Groups[2].Value,
+                            valueTableDictionary);
+                    return true;
+                }
             }
 
             m_observer.ValueTableSyntaxError();

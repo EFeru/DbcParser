@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using NUnit.Framework;
 using DbcParserLib.Model;
 
 namespace DbcParserLib.Tests
@@ -132,6 +133,90 @@ namespace DbcParserLib.Tests
         {
             var message = new Message();
             Assert.IsFalse(message.IsMultiplexed());
+        }
+
+        [TestCase("1 \"First\" 2 \"Second\" 3 \"Third\"")]
+        [TestCase("1 \"First with spaces\" 2 \" Second \" 3 \"T h i r d\"")]
+        [TestCase("1 \"First with spaces\" 2 \" \" 3 \"\"")]
+        public void FsmNoErrorTest(string text)
+        {
+            var operation = text.TryParseToDict(out _);
+            Assert.IsTrue(operation);
+        }
+
+        [TestCase("1 \"First 2 \"Second\" 3 \"Third\"")]
+        [TestCase("1 First 2 \"Second\" 3 \"Third\"")]
+        [TestCase("1 \"First\" 2 Second\" 3 \"Third\"")]
+        [TestCase("One \"First with spaces\" 2 \" Second \"")]
+        [TestCase("1 \"First\" 2 Second\" 3 \"Third\" 4")]
+        [TestCase("1 \"First\" 2 Second\" 3 \"Third")]
+        [TestCase("1 \"First\", 2 Second\", 3 \"Third")]
+        public void FsmWithErrorTest(string text)
+        {
+            var operation = text.TryParseToDict(out _);
+            Assert.IsFalse(operation);
+        }
+
+        [Test]
+        public void FsmNoSpacesParsedTest()
+        {
+            var text = "1 \"First\" 2 \"Second\" 3 \"Third\"";
+            var operation = text.TryParseToDict(out var dict);
+            var expectedDict = new Dictionary<int, string>()
+            {
+                { 1, "First" },
+                { 2, "Second" },
+                { 3, "Third" }
+            };
+
+            Assert.IsTrue(operation);
+            Assert.AreEqual(expectedDict, dict);
+        }
+
+        [Test]
+        public void FsmWithSpacesParsedTest()
+        {
+            var text = "1 \"First with spaces\" 2 \" Second \" 3 \" T h i r d \"";
+            var operation = text.TryParseToDict(out var dict);
+            var expectedDict = new Dictionary<int, string>()
+            {
+                { 1, "First with spaces" },
+                { 2, " Second " },
+                { 3, " T h i r d " }
+            };
+
+            Assert.IsTrue(operation);
+            Assert.AreEqual(expectedDict, dict);
+        }
+
+        [Test]
+        public void FsmWithEmptyStringParsedTest()
+        {
+            var text = "1 \"\" 2 \" \"";
+            var operation = text.TryParseToDict(out var dict);
+            var expectedDict = new Dictionary<int, string>()
+            {
+                { 1, "" },
+                { 2, " " }
+            };
+
+            Assert.IsTrue(operation);
+            Assert.AreEqual(expectedDict, dict);
+        }
+
+        [Test]
+        public void FsmErrorTest()
+        {
+            var text = "1 \"First with spaces\" 2 \" Second \" 3 T h i r d \"";
+            var operation = text.TryParseToDict(out var dict);
+            var expectedDict = new Dictionary<int, string>()
+            {
+                { 1, "First with spaces" },
+                { 2, " Second " }
+            };
+
+            Assert.IsFalse(operation);
+            Assert.AreEqual(expectedDict, dict);
         }
     }
 }

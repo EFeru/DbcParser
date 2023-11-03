@@ -27,9 +27,10 @@ namespace DbcParserLib.Parsers
             var match = Regex.Match(cleanLine, ValueTableDefinitionParsingRegex);
             if (match.Success)
             {
-                var valueTable = Regex.Replace(match.Groups[2].Value.TrimStart(), ValueTableNewLineRegex, ValueTableNewLineRegexReplace);
-                var valueTableDictionary = valueTable.ToDictionary();
-                builder.AddNamedValueTable(match.Groups[1].Value, valueTableDictionary);
+                if(match.Groups[2].Value.TryParseToDict(out var valueTableDictionary))
+                    builder.AddNamedValueTable(match.Groups[1].Value, valueTableDictionary);
+                else
+                    m_observer.ValueTableDefinitionSyntaxError();
             }
             else
                 m_observer.ValueTableDefinitionSyntaxError();

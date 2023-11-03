@@ -136,7 +136,7 @@ namespace DbcParserLib.Tests
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             dbcBuilderMock.Setup(builder => builder.AddNamedValueTable("DI_aebLockState",
-                new Dictionary<int, string>() { { 3, @"""AEB_LOCK_STATE_SNA""" }, { 2, @"""AEB_LOCK_STATE_UNUSED""" }, { 1, @"""AEB_LOCK_STATE_UNLOCKED""" }, { 0, @"""AEB_LOCK_STATE_LOCKED""" } }));
+                new Dictionary<int, string>() { { 3, "AEB_LOCK_STATE_SNA" }, { 2, "AEB_LOCK_STATE_UNUSED" }, { 1, "AEB_LOCK_STATE_UNLOCKED" }, { 0, "AEB_LOCK_STATE_LOCKED" } }));
             var valueTableLineParsers = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
@@ -168,10 +168,10 @@ namespace DbcParserLib.Tests
                     "channelName",
                     new Dictionary<int, string>
                     {
-                        { 3, @"""AEB_LOCK_STATE_SNA""" }, 
-                        { 2, @"""AEB_LOCK_STATE_UNUSED""" }, 
-                        { 1, @"""AEB_LOCK_STATE_UNLOCKED""" }, 
-                        { 0, @"""AEB_LOCK_STATE_LOCKED""" }
+                        { 3, "AEB_LOCK_STATE_SNA" }, 
+                        { 2, "AEB_LOCK_STATE_UNUSED" }, 
+                        { 1, "AEB_LOCK_STATE_UNLOCKED" }, 
+                        { 0, "AEB_LOCK_STATE_LOCKED" }
                     }
                 ));
             var valueTableLineParsers = CreateParser();
