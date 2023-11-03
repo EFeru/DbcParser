@@ -138,6 +138,7 @@ namespace DbcParserLib.Tests
         [TestCase("1 \"First\" 2 \"Second\" 3 \"Third\"")]
         [TestCase("1 \"First with spaces\" 2 \" Second \" 3 \"T h i r d\"")]
         [TestCase("1 \"First with spaces\" 2 \" \" 3 \"\"")]
+        [TestCase("1 \"1\" 2 \" 2 \" 3 \" 3\"")]
         public void FsmNoErrorTest(string text)
         {
             var operation = text.TryParseToDict(out _);
@@ -198,6 +199,21 @@ namespace DbcParserLib.Tests
             {
                 { 1, "" },
                 { 2, " " }
+            };
+
+            Assert.IsTrue(operation);
+            Assert.AreEqual(expectedDict, dict);
+        }
+
+        [Test]
+        public void FsmWithIntegerStringParsedTest()
+        {
+            var text = "1 \"1\" 2 \"2\"";
+            var operation = text.TryParseToDict(out var dict);
+            var expectedDict = new Dictionary<int, string>()
+            {
+                { 1, "1" },
+                { 2, "2" }
             };
 
             Assert.IsTrue(operation);
