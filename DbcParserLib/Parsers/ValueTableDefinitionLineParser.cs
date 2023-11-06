@@ -7,8 +7,6 @@ namespace DbcParserLib.Parsers
     {
         private const string ValueTableDefinitionLineStarter = "VAL_TABLE_ ";
         private const string ValueTableDefinitionParsingRegex = @"VAL_TABLE_\s+([a-zA-Z_][\w]*)\s+((?:\d+\s+(?:""[^""]*"")\s+)*)\s*;";
-        private const string ValueTableNewLineRegex = @"(""[^""]*""\s+)";
-        private const string ValueTableNewLineRegexReplace = "$1\n";
 
         private readonly IParseFailureObserver m_observer;
 

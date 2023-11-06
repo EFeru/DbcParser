@@ -122,7 +122,6 @@ namespace DbcParserLib
     internal class StringToDictionaryParser
     {
         private IDictionary<int, string> m_dictionary;
-        private int m_currentIndex;
 
         private StringToDictionaryParser(IDictionary<int, string> dict)
         {
@@ -134,7 +133,7 @@ namespace DbcParserLib
             dictionary = null;
             var internalDictionary = new Dictionary<int, string>();
             var parser = new StringToDictionaryParser(internalDictionary);
-            if (parser.ParseKey(text))
+            if (parser.ParseKey(text, 0))
             {
                 dictionary = internalDictionary;
                 return true;
@@ -142,28 +141,28 @@ namespace DbcParserLib
             return false;
         }
         
-        private bool ParseKey(string text)
+        private bool ParseKey(string text, int offset)
         {
-            var index = text.IndexOf("\"", m_currentIndex, StringComparison.InvariantCulture);
+            var index = text.IndexOf("\"", offset, StringComparison.InvariantCulture);
             if(index == -1)
                 return true;
 
-            var key = text.Substring(m_currentIndex, index - m_currentIndex);
-            m_currentIndex = index + 1;
-            return int.TryParse(key, out var intKey) ? ParseValue(text, intKey) : false;
+            var key = text.Substring(offset, index - offset);
+            offset = index + 1;
+            return int.TryParse(key, out var intKey) ? ParseValue(text, offset, intKey) : false;
         }
 
-        private bool ParseValue(string text, int key)
+        private bool ParseValue(string text, int offset, int key)
         {
-            var index = text.IndexOf("\"", m_currentIndex, StringComparison.InvariantCulture);
+            var index = text.IndexOf("\"", offset, StringComparison.InvariantCulture);
             if (index == -1)
                 return false;
 
-            var value = text.Substring(m_currentIndex, index - m_currentIndex);
+            var value = text.Substring(offset, index - offset);
 
             m_dictionary[key] = value;
-            m_currentIndex = index +1;
-            return ParseKey(text);
+            offset = index +1;
+            return ParseKey(text, offset);
         }
     }
 }
