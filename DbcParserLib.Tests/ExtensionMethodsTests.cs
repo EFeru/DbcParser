@@ -225,14 +225,9 @@ namespace DbcParserLib.Tests
         {
             var text = "1 \"First with spaces\" 2 \" Second \" 3 T h i r d \"";
             var operation = text.TryParseToDict(out var dict);
-            var expectedDict = new Dictionary<int, string>()
-            {
-                { 1, "First with spaces" },
-                { 2, " Second " }
-            };
 
             Assert.IsFalse(operation);
-            Assert.AreEqual(expectedDict, dict);
+            Assert.IsNull(dict);
         }
     }
 }

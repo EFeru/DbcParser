@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using DbcParserLib.Model;
+using System.Text;
 
 namespace DbcParserLib
 {
@@ -71,8 +72,7 @@ namespace DbcParserLib
 
         internal static bool TryParseToDict(this string records, out IReadOnlyDictionary<int, string> dict)
         {
-            var stateMachine = new StringToDictionaryStateMachine();
-            return stateMachine.ParseString(records, out dict);
+            return StringToDictionaryParser.ParseString(records, out dict);
         }
 
         public static bool CycleTime(this Message message, out int cycleTime)
@@ -119,77 +119,51 @@ namespace DbcParserLib
 
     }
 
-    internal class StringToDictionaryStateMachine
+    internal class StringToDictionaryParser
     {
-        private readonly Func<string, bool>[,] m_fsm;
-        private Dictionary<int, string> m_dictionary = new Dictionary<int, string>();
-        private int m_currentKey;
+        private IDictionary<int, string> m_dictionary;
+        private int m_currentIndex;
 
-        public StringToDictionaryStateMachine()
+        private StringToDictionaryParser(IDictionary<int, string> dict)
         {
-            m_fsm = new Func<string, bool>[2, 4] { 
-                //Start       //FoundQuotes   //NotFound  //End, 
-                {ParseKey,     ParseValue,    Error,      End       },  //FindingIndex
-                {DoNothing,    ParseKey,      Error,      DoNothing },  //FindingValue
-            };
+            m_dictionary = dict;
         }
-
-        private enum States { FindingIndex, FindingValue };
-        private States State { get; set; }
-        private enum Events { Start, FoundQuotes, NotFound, End};
         
-        public bool ParseString(string text, out IReadOnlyDictionary<int, string> dictionary)
+        public static bool ParseString(string text, out IReadOnlyDictionary<int, string> dictionary)
         {
-            State = States.FindingIndex;
-            dictionary = m_dictionary = new Dictionary<int, string>();
-            return ProcessEvent(text, Events.Start);
+            dictionary = null;
+            var internalDictionary = new Dictionary<int, string>();
+            var parser = new StringToDictionaryParser(internalDictionary);
+            if (parser.ParseKey(text))
+            {
+                dictionary = internalDictionary;
+                return true;
+            }
+            return false;
         }
         
         private bool ParseKey(string text)
         {
-            State = States.FindingIndex;
+            var index = text.IndexOf("\"", m_currentIndex, StringComparison.InvariantCulture);
+            if(index == -1)
+                return true;
 
-            var splitIndex = text.IndexOf("\"", StringComparison.InvariantCulture);
-            if(splitIndex < 0)
-                return ProcessEvent(text, Events.End);
-
-            var index = text.Substring(0, splitIndex);
-            text = text.Substring(splitIndex + 1);
-            return ProcessEvent(text, int.TryParse(index, out m_currentKey) ? Events.FoundQuotes : Events.NotFound);
+            var key = text.Substring(m_currentIndex, index - m_currentIndex);
+            m_currentIndex = index + 1;
+            return int.TryParse(key, out var intKey) ? ParseValue(text, intKey) : false;
         }
 
-        private bool ParseValue(string text)
+        private bool ParseValue(string text, int key)
         {
-            State = States.FindingValue;
-            
-            var splitIndex = text.IndexOf("\"", StringComparison.InvariantCulture);
-            if (splitIndex == -1)
-                return ProcessEvent(text, Events.NotFound);
+            var index = text.IndexOf("\"", m_currentIndex, StringComparison.InvariantCulture);
+            if (index == -1)
+                return false;
 
-            var value = text.Substring(0, splitIndex);
-            text = text.Substring(splitIndex + 1);
-            m_dictionary[m_currentKey] = value;
-            return ProcessEvent(text, Events.FoundQuotes);
-        }
+            var value = text.Substring(m_currentIndex, index - m_currentIndex);
 
-        private bool ProcessEvent(string text, Events theEvent)
-        {
-            return m_fsm[(int)State, (int)theEvent].Invoke(text);
-        }
-
-        private static bool Error(string text)
-        {
-            return false;
-        }
-
-        private static bool End(string text)
-        {
-            return true;
-        }
-
-        private static bool DoNothing(string text)
-        {
-            return true;
+            m_dictionary[key] = value;
+            m_currentIndex = index +1;
+            return ParseKey(text);
         }
     }
 }
