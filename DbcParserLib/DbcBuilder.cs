@@ -8,7 +8,6 @@ namespace DbcParserLib
     internal class ValuesTable
     {
         public IReadOnlyDictionary<int, string> ValueTableMap { get; set; }
-        public string ValueTable { get; set; }
     }
 
     internal class DbcBuilder : IDbcBuilder
@@ -263,7 +262,7 @@ namespace DbcParserLib
                 m_observer.NodeNameNotFound(nodeName);
         }
 
-        public void AddNamedValueTable(string name, IReadOnlyDictionary<int, string> dictValues, string stringValues)
+        public void AddNamedValueTable(string name, IReadOnlyDictionary<int, string> dictValues)
         {
             if(m_namedTablesMap.TryGetValue(name, out _))
                 m_observer.DuplicatedValueTableName(name);
@@ -272,16 +271,15 @@ namespace DbcParserLib
                 m_namedTablesMap[name] = new ValuesTable()
                 {
                     ValueTableMap = dictValues,
-                    ValueTable = stringValues
                 };
             }
         }
 
-        public void LinkTableValuesToSignal(uint messageId, string signalName, IReadOnlyDictionary<int, string> dictValues, string stringValues)
+        public void LinkTableValuesToSignal(uint messageId, string signalName, IReadOnlyDictionary<int, string> dictValues)
         {
             if (TryGetValueMessageSignal(messageId, signalName, out var signal))
             {
-                signal.SetValueTable(dictValues, stringValues);
+                signal.ValueTableMap = dictValues;
             }
             else
                 m_observer.SignalNameNotFound(messageId, signalName);
@@ -301,7 +299,7 @@ namespace DbcParserLib
         {
             if (m_namedTablesMap.TryGetValue(tableName, out var valuesTable))
             {
-                LinkTableValuesToSignal(messageId, signalName, valuesTable.ValueTableMap, valuesTable.ValueTable);
+                LinkTableValuesToSignal(messageId, signalName, valuesTable.ValueTableMap);
             }
             else
                 m_observer.TableMapNameNotFound(tableName);

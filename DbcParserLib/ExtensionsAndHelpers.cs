@@ -1,8 +1,8 @@
-using System.IO;
+using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using DbcParserLib.Model;
+using System.Text;
 
 namespace DbcParserLib
 {
@@ -70,29 +70,9 @@ namespace DbcParserLib
             }
         }
 
-        internal static IReadOnlyDictionary<int, string> ToDictionary(this string records)
+        internal static bool TryParseToDict(this string records, out IReadOnlyDictionary<int, string> dict)
         {
-            const string valueTableValueRegex = @"(-?\d+)\s+(""[^""]*"")";
-            var dict = new Dictionary<int, string>();
-
-            if (string.IsNullOrWhiteSpace(records))
-                return dict;
-
-            using (var reader = new StringReader(records))
-            {
-                while (reader.Peek() > -1)
-                {
-                    var line = reader.ReadLine();
-                    
-                    if (string.IsNullOrWhiteSpace(line))
-                        continue;
-                    
-                    var match = Regex.Match(line, valueTableValueRegex);
-                    if (match.Success)
-                        dict[int.Parse(match.Groups[1].Value)] = match.Groups[2].Value;
-                }
-            }
-            return dict;
+            return StringToDictionaryParser.ParseString(records, out dict);
         }
 
         public static bool CycleTime(this Message message, out int cycleTime)
@@ -135,6 +115,54 @@ namespace DbcParserLib
             }
             else
                 return false;
+        }
+
+    }
+
+    internal class StringToDictionaryParser
+    {
+        private IDictionary<int, string> m_dictionary;
+
+        private StringToDictionaryParser(IDictionary<int, string> dict)
+        {
+            m_dictionary = dict;
+        }
+        
+        public static bool ParseString(string text, out IReadOnlyDictionary<int, string> dictionary)
+        {
+            dictionary = null;
+            var internalDictionary = new Dictionary<int, string>();
+            var parser = new StringToDictionaryParser(internalDictionary);
+            if (parser.ParseKey(text, 0))
+            {
+                dictionary = internalDictionary;
+                return true;
+            }
+            return false;
+        }
+        
+        private bool ParseKey(string text, int offset)
+        {
+            var index = text.IndexOf("\"", offset, StringComparison.InvariantCulture);
+            if(index == -1)
+                return true;
+
+            var key = text.Substring(offset, index - offset);
+            offset = index + 1;
+            return int.TryParse(key, out var intKey) ? ParseValue(text, offset, intKey) : false;
+        }
+
+        private bool ParseValue(string text, int offset, int key)
+        {
+            var index = text.IndexOf("\"", offset, StringComparison.InvariantCulture);
+            if (index == -1)
+                return false;
+
+            var value = text.Substring(offset, index - offset);
+
+            m_dictionary[key] = value;
+            offset = index +1;
+            return ParseKey(text, offset);
         }
     }
 }

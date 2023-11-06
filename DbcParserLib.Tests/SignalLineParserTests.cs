@@ -70,7 +70,7 @@ namespace DbcParserLib.Tests
                     Assert.AreEqual(28, signal.StartBit);
                     Assert.AreEqual(29, signal.Length);
                     Assert.AreEqual(1, signal.ByteOrder);
-                    Assert.AreEqual(1, signal.IsSigned);
+                    Assert.AreEqual(DbcValueType.Signed, signal.ValueType);
                     Assert.AreEqual(1E-006, signal.Factor);
                     Assert.AreEqual(0, signal.Offset);
                     Assert.AreEqual(-10, signal.Minimum);
@@ -98,7 +98,7 @@ namespace DbcParserLib.Tests
                     Assert.AreEqual(28, signal.StartBit);
                     Assert.AreEqual(29, signal.Length);
                     Assert.AreEqual(1, signal.ByteOrder);
-                    Assert.AreEqual(1, signal.IsSigned);
+                    Assert.AreEqual(DbcValueType.Signed, signal.ValueType);
                     Assert.AreEqual(1E-006, signal.Factor);
                     Assert.AreEqual(0, signal.Offset);
                     Assert.AreEqual(-10, signal.Minimum);
@@ -126,7 +126,7 @@ namespace DbcParserLib.Tests
                     Assert.AreEqual(28, signal.StartBit);
                     Assert.AreEqual(29, signal.Length);
                     Assert.AreEqual(1, signal.ByteOrder);
-                    Assert.AreEqual(1, signal.IsSigned);
+                    Assert.AreEqual(DbcValueType.Signed, signal.ValueType);
                     Assert.AreEqual(1E-006, signal.Factor);
                     Assert.AreEqual(0, signal.Offset);
                     Assert.AreEqual(-10, signal.Minimum);
@@ -155,7 +155,7 @@ namespace DbcParserLib.Tests
                     Assert.AreEqual(28, signal.StartBit);
                     Assert.AreEqual(29, signal.Length);
                     Assert.AreEqual(1, signal.ByteOrder);
-                    Assert.AreEqual(1, signal.IsSigned);
+                    Assert.AreEqual(DbcValueType.Signed, signal.ValueType);
                     Assert.AreEqual(1E-006, signal.Factor);
                     Assert.AreEqual(0, signal.Offset);
                     Assert.AreEqual(-10, signal.Minimum);
