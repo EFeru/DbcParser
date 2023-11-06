@@ -136,10 +136,10 @@ Below you can find a list of obsolete stuff that are going to be removed in the 
 
 | Class       | Property/Method     | Obsolete      | Removed               | Replaced by      | Comment       |
 | --------    | -------             | -------       | -------               | -------          | -------       |
-| Signal      | IsSigned            | v1.3.0        | **v1.4.3**            | `ValueType`      | Byte property replaced by `DbcValueType` property which provides <br> more informations about signal type |
-| Signal      | ValueTable          | v1.3.0        | **v1.4.3**            | `ValueTableMap`  | String property replaced by a `IDictionary<int,string>` property |
+| Signal      | IsSigned            | v1.3.0        | **v1.5.0**            | `ValueType`      | Byte property replaced by `DbcValueType` property which provides <br> more informations about signal type |
+| Signal      | ValueTable          | v1.3.0        | **v1.5.0**            | `ValueTableMap`  | String property replaced by a `IDictionary<int,string>` property |
 | Signal      | ToPairs()           | v1.3.0        | **v1.4.2**            | -                | Extension method used to convert ValueTable into ValueTableMap |
-| Message     | CycleTime           | v1.4.2        | planned in **1.4.4**  | `bool CycleTime(out int cycleTime)`    | CycleTime is no more a message property (replaced by an extension method) |
+| Message     | CycleTime           | v1.4.2        | planned in **1.6.0**  | `bool CycleTime(out int cycleTime)`    | CycleTime is no more a message property (replaced by an extension method) |
 
 <br>
 
