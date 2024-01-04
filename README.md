@@ -12,24 +12,27 @@ Below is a quick preview of the extracted data using a [Tesla dbc file](https://
 
 ![Preview](https://raw.githubusercontent.com/EFeru/DbcParser/main/Docs/pics/dbcparser_preview.png)
 
+<br>
 
 ## Quickstart
-
 
 Install the library via [Nuget Packages](https://www.nuget.org/packages/DbcParserLib/) and add at the top of your file:
 ```cs
 using DbcParserLib;
 using DbcParserLib.Model;
 ```
-### Parsing
+<br>
+
+### **Parsing**
 Then to parse a dbc file use the static class `Parser`, using one oth the parsing flavours:
 ```cs
 Dbc dbc = Parser.ParseFromPath("C:\\your_dbc_file.dbc");
 Dbc dbc = Parser.ParseFromStream(File.OpenRead("C:\\your_dbc_file.dbc")); // Or a stream from network
 Dbc dbc = Parser.Parse("a dbc as string");
 ```
+<br>
 
-### Handling `Dbc` object
+### **Handling `Dbc` object**
 The ``Dbc`` object contains two collections, `Messages` and `Nodes`, both are `IEnumerable<T>` so can be accessed, iterated and queried using standard LINQ.
 
 As an example, take all messages with id > 100 and more than 2 signals:
@@ -39,8 +42,9 @@ var filteredSelection = dbc
 			.Where(m => m.ID > 100 && m.Signals.Count > 2)
 			.ToArray();
 ```
+<br>
 
-### Parsing errors management
+### **Parsing `errors` management**
 From **v1.4.0** parsing errors management has been introduced to inform users about syntax errors occurred during parsing procedure.
 The `IParseFailureObserver` interface provides all methods to handle syntax errors, like:
 - Generic syntax error (eg. `;`, `'`, `,` missing)
@@ -50,7 +54,15 @@ The `IParseFailureObserver` interface provides all methods to handle syntax erro
 
 The library comes with two different implementations:
 1. `SilentFailureObserver`: the default one. It silently swallow errors when parsing
-2. `SimpleFailureObserver`: simple observer that logs any error. Errors list can be retrieve through `GetErrorList()` method, like in the example below
+2. `SimpleFailureObserver`: simple observer that logs any error. SimpleFailureObserver errors list:
+    - `Unknown sintax`: there is no corresponding **TAG<sup>1</sup>** [sintax](http://mcu.so/Microcontroller/Automotive/dbc-file-format-documentation_compress.pdf)
+    - [TAG] `Syntax error`: [syntax](http://mcu.so/Microcontroller/Automotive/dbc-file-format-documentation_compress.pdf) error for a specific TAG
+    - `Duplicated` **object<sup>2</sup>**: the parser found (and ignores) a dulicated object
+    - Object `Not found`: an object is declared or referenced before its definition
+    - Property value `out of bound`: the value assigned to a property is lower/greater with respect to the minimum/maximum value declared in the property definition
+    - Property value `out of index`: the declared index is an unacceptable value (for properties that support access to the value via index, e.g. enum value)
+
+Errors list can be retrieve through `GetErrorList()` method, like in the example below
 
 ```cs
 // Comment this two lines to remove errors parsing management (errors will be silent)
@@ -64,9 +76,15 @@ var errors = failureObserver.GetErrorList();
 
 The user is free to create its own implementation to customize error management.
 
+**<sup>1</sup>TAG**: `BA_`, `BA_DEF_`, `BA_DEF_DEF_`, `BO_`, `BU_`, `CM_`, `EV_`, `ENVVAR_DATA_`, `SIG_VALTYPE_` `SG_`, `VAL_`, `VAL_TABLE_`
+<br>
+**<sup>2</sup>Object**: `Node`, `Message`, `Signal`, `Property`, `Environment variable`, `Value table`
+
+<br>
+
 ## Packing/Unpacking signals
 
-### Simple scenario
+### **Simple scenario**
 To pack and unpack signals you can use static class `Packer`
 Example for packing/unpacking a signal: `14 bits`, Min: `-61.92`, Max: `101.91`
 ```cs
@@ -98,7 +116,7 @@ TxMsg |= Packer.TxSignalPack(value3, sig3);
 ```
 The user needs to make sure that the signals do not overlap with each other by properly specifying the `Length` and `StartBit`.
 
-### Multiplexing
+### **Multiplexing**
 A message can contain multiplexed data, i.e. layout can change depending on a multiplexor value. The `Packer` class is unaware of multiplexing, so it's up to the user to check that the given message actually contains the signal.
 As an example, consider the following dbc lines:
 ```
