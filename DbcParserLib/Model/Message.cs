@@ -17,14 +17,17 @@ namespace DbcParserLib.Model
 
         internal ImmutableMessage(Message message, IReadOnlyList<ImmutableSignal> signals)
         {
+            message.CycleTime(out var cycleTime);
+
             ID = message.ID;
             IsExtID = message.IsExtID;
             Name = message.Name;
             DLC = message.DLC;
             Transmitter = message.Transmitter;
             Comment = message.Comment;
-            CycleTime= message.CycleTime;
+            CycleTime = cycleTime;
             Signals = signals;
+
             //TODO: remove explicit cast (CustomProperty in Message class should be Dictionary instead IDictionary)
             CustomProperties = (IReadOnlyDictionary<string, CustomProperty>)message.CustomProperties;
         }
@@ -38,16 +41,7 @@ namespace DbcParserLib.Model
         public ushort DLC;
         public string Transmitter;
         public string Comment;
-        [Obsolete("Please use CycleTime(out int cycleTime) instead. CycleTime property will be removed and will be accessible only through extension method")]
-        public int CycleTime
-        {
-            get
-            {
-                this.CycleTime(out var cycleTime);
-                return cycleTime;
-            }
-        }
-
+        
         public List<Signal> Signals = new List<Signal>();
         public IDictionary<string, CustomProperty> CustomProperties = new Dictionary<string, CustomProperty>();
 
