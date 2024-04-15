@@ -171,7 +171,6 @@ namespace DbcParserLib.Tests
 
             var dbc = builder.Build();
             Assert.AreEqual(true, dbc.Messages.First().CycleTime(out var cycleTime));
-            Assert.AreEqual(100, dbc.Messages.First().CycleTime);
             Assert.AreEqual(100, cycleTime);
         }
 

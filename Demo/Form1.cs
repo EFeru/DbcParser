@@ -126,7 +126,8 @@ namespace Demo
             dtMessages.Columns.Add("CycleTime");
             foreach (var msg in dbc.Messages)
             {
-                dtMessages.Rows.Add("0x" + msg.ID.ToString("X"), msg.Name, msg.DLC, msg.Transmitter, msg.CycleTime);
+                msg.CycleTime(out var cycleTime);
+                dtMessages.Rows.Add("0x" + msg.ID.ToString("X"), msg.Name, msg.DLC, msg.Transmitter, cycleTime);
             }
 
             // Signals
