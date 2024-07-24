@@ -72,6 +72,9 @@ namespace DbcParserLib.Model
                 return false;
             }
 
+            if (CanAcceptAllValue(CustomPropertyDataType.Integer))
+                return true;
+
             if (integerValue < IntegerCustomProperty.Minimum || integerValue > IntegerCustomProperty.Maximum)
             {
                 m_observer.PropertyValueOutOfBound(Name, value);
@@ -97,6 +100,9 @@ namespace DbcParserLib.Model
                 return false;
             }
 
+            if (CanAcceptAllValue(CustomPropertyDataType.Hex))
+                return true;
+
             if (hexValue < HexCustomProperty.Minimum || hexValue > HexCustomProperty.Maximum)
             {
                 m_observer.PropertyValueOutOfBound(Name, value);
@@ -121,6 +127,9 @@ namespace DbcParserLib.Model
                 m_observer.PropertySyntaxError();
                 return false;
             }
+            
+            if (CanAcceptAllValue(CustomPropertyDataType.Float))
+                return true;
 
             if (floatValue < FloatCustomProperty.Minimum || floatValue > FloatCustomProperty.Maximum)
             {
@@ -182,6 +191,23 @@ namespace DbcParserLib.Model
             
             enumValue = EnumCustomProperty.Values[index];
             return true;
+        }
+
+        private bool CanAcceptAllValue(CustomPropertyDataType dataType)
+        {
+            switch (dataType)
+            {
+                case CustomPropertyDataType.Integer:
+                    return IntegerCustomProperty.Minimum == 0 && IntegerCustomProperty.Maximum == 0;
+                case CustomPropertyDataType.Hex:
+                    return HexCustomProperty.Minimum == 0 && HexCustomProperty.Maximum == 0;
+                case CustomPropertyDataType.Float:
+                    return FloatCustomProperty.Minimum == 0 && FloatCustomProperty.Maximum == 0;
+                case CustomPropertyDataType.String:
+                case CustomPropertyDataType.Enum:
+                default:
+                    return false;
+            }
         }
     }
 

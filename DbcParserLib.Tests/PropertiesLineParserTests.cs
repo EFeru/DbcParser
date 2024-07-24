@@ -56,6 +56,52 @@ namespace DbcParserLib.Tests
         }
 
         [Test]
+        public void IntDefinitionCustomPropertyNoBoundariesIsParsedTest()
+        {
+            var builder = new DbcBuilder(new SilentFailureObserver());
+            var message = new Message { ID = 2394947585 };
+            builder.AddMessage(message);
+
+            var msgCycleTimeLineParser = CreateParser();
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            Assert.IsTrue(ParseLine(@"BA_DEF_ BO_ ""AttributeName"" INT 0 0;", msgCycleTimeLineParser, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 150;", msgCycleTimeLineParser, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_ ""AttributeName"" BO_ 2394947585 100;", msgCycleTimeLineParser, builder, nextLineProvider));
+
+            var dbc = builder.Build();
+            Assert.AreEqual(true, dbc.Messages.First().CustomProperties.TryGetValue("AttributeName", out var customProperty));
+            Assert.AreEqual(100, customProperty!.IntegerCustomProperty.Value);
+        }
+
+        [Test]
+        public void HexDefinitionCustomPropertyIsParsedTest()
+        {
+            var builder = new DbcBuilder(new SilentFailureObserver());
+
+            var customPropertyLineParsers = CreateParser();
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" HEX 5 10;", customPropertyLineParsers, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 7;", customPropertyLineParsers, builder, nextLineProvider));
+        }
+
+        [Test]
+        public void HexDefinitionCustomPropertyNoBoundariesIsParsedTest()
+        {
+            var builder = new DbcBuilder(new SilentFailureObserver());
+            var message = new Message { ID = 2394947585 };
+            builder.AddMessage(message);
+
+            var msgCycleTimeLineParser = CreateParser();
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            Assert.IsTrue(ParseLine(@"BA_DEF_ BO_ ""AttributeName"" HEX 0 0;", msgCycleTimeLineParser, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 150;", msgCycleTimeLineParser, builder, nextLineProvider));
+
+            var dbc = builder.Build();
+            Assert.AreEqual(true, dbc.Messages.First().CustomProperties.TryGetValue("AttributeName", out var customProperty));
+            Assert.AreEqual(150, customProperty!.HexCustomProperty.Value);
+        }
+
+        [Test]
         public void FloatDefinitionCustomPropertyIsParsedTest()
         {
             var builder = new DbcBuilder(new SilentFailureObserver());
@@ -64,6 +110,23 @@ namespace DbcParserLib.Tests
             var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
             Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" FLOAT 5 10.5;", customPropertyLineParsers, builder, nextLineProvider));
             Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 7.5;", customPropertyLineParsers, builder, nextLineProvider));
+        }
+
+        [Test]
+        public void FloatDefinitionCustomPropertyNoBoundariesIsParsedTest()
+        {
+            var builder = new DbcBuilder(new SilentFailureObserver());
+            var message = new Message { ID = 2394947585 };
+            builder.AddMessage(message);
+
+            var msgCycleTimeLineParser = CreateParser();
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            Assert.IsTrue(ParseLine(@"BA_DEF_ BO_ ""AttributeName"" FLOAT 0 0;", msgCycleTimeLineParser, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 150.0;", msgCycleTimeLineParser, builder, nextLineProvider));
+
+            var dbc = builder.Build();
+            Assert.AreEqual(true, dbc.Messages.First().CustomProperties.TryGetValue("AttributeName", out var customProperty));
+            Assert.AreEqual(150, customProperty!.FloatCustomProperty.Value);
         }
 
         [Test]
@@ -165,7 +228,7 @@ namespace DbcParserLib.Tests
 
             var msgCycleTimeLineParser = CreateParser();
             var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
-            Assert.IsTrue(ParseLine(@"BA_DEF_ BO_ ""GenMsgCycleTime"" INT 0 200;", msgCycleTimeLineParser, builder, nextLineProvider));
+            Assert.IsTrue(ParseLine(@"BA_DEF_ BO_ ""GenMsgCycleTime"" INT 0 0;", msgCycleTimeLineParser, builder, nextLineProvider));
             Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""GenMsgCycleTime"" 150;", msgCycleTimeLineParser, builder, nextLineProvider));
             Assert.IsTrue(ParseLine(@"BA_ ""GenMsgCycleTime"" BO_ 2394947585 100;", msgCycleTimeLineParser, builder, nextLineProvider));
 
