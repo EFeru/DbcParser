@@ -1,9 +1,4 @@
-using int8_T = System.SByte;
 using uint8_T = System.Byte;
-using int16_T = System.Int16;
-using uint16_T = System.UInt16;
-using int32_T = System.Int32;
-using uint32_T = System.UInt32;
 using int64_T = System.Int64;
 using uint64_T = System.UInt64;
 using System;
