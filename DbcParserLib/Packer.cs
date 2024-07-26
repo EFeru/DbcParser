@@ -4,6 +4,7 @@ using uint64_T = System.UInt64;
 using System;
 using System.Runtime.InteropServices;
 using DbcParserLib.Model;
+using System.Linq;
 
 namespace DbcParserLib
 {
@@ -85,22 +86,7 @@ namespace DbcParserLib
             else // Big endian (Motorola)
                 iVal = (int64_T)((MirrorMsg(RxMsg64) >> GetStartBitLE(signal)) & bitMask);
 
-            // Manage sign bit (if signed)
-            if (signal.ValueType == DbcValueType.Signed)
-            {
-                iVal -= ((iVal >> (signal.Length - 1)) != 0) ? (1L << signal.Length) : 0L;
-            }
-            else if (signal.ValueType == DbcValueType.IEEEFloat)
-            {
-                return (FloatConverter.AsFloatingPoint((int)iVal) * signal.Factor + signal.Offset);
-            }
-            else if (signal.ValueType == DbcValueType.IEEEDouble)
-            {
-                return (DoubleConverter.AsFloatingPoint(iVal) * signal.Factor + signal.Offset);
-            }
-
-            // Apply scaling
-            return ((double)(iVal * (decimal)signal.Factor + (decimal)signal.Offset));
+            return ApplySignAndScale(signal, iVal);
         }
 
         /// <summary>
@@ -120,8 +106,54 @@ namespace DbcParserLib
             else // Big endian (Motorola)
                 iVal = (MirrorMsg(RxMsg64) >> GetStartBitLE(signal)) & bitMask;
 
-            // Apply scaling
             return iVal;
+        }
+
+        /// <summary>
+        /// Function to unpack a signal from a CAN data message
+        /// </summary>
+        /// <param name="receiveMessage">The message data</param>
+        /// <param name="signal">Signal containing dbc information</param>
+        /// <returns>Returns a double value representing the unpacked signal</returns>
+        public static double RxSignalUnpack(byte[] receiveMessage, Signal signal)
+        {
+            var bitMask = signal.BitMask();
+            var startBit = signal.StartBit;
+
+            if (!signal.Intel())
+            {
+                receiveMessage = receiveMessage.Reverse().ToArray();
+                startBit = GetStartBitLE(signal, receiveMessage.Length);
+            }
+
+            var iVal = ExtractBits(receiveMessage, startBit, signal.Length);
+
+            return ApplySignAndScale(signal, iVal);
+        }
+
+        public static double ApplyLimit(double value, Signal signal)
+        {
+            return Math.Max(signal.Minimum, Math.Min(value, signal.Maximum));
+        }
+
+        private static double ApplySignAndScale(Signal signal, long iVal)
+        {
+            // Manage sign bit (if signed)
+            if (signal.ValueType == DbcValueType.Signed)
+            {
+                iVal -= ((iVal >> (signal.Length - 1)) != 0) ? (1L << signal.Length) : 0L;
+            }
+            else if (signal.ValueType == DbcValueType.IEEEFloat)
+            {
+                return (FloatConverter.AsFloatingPoint((int)iVal) * signal.Factor + signal.Offset);
+            }
+            else if (signal.ValueType == DbcValueType.IEEEDouble)
+            {
+                return (DoubleConverter.AsFloatingPoint(iVal) * signal.Factor + signal.Offset);
+            }
+
+            // Apply scaling
+            return ((double)(iVal * (decimal)signal.Factor + (decimal)signal.Offset));
         }
 
         private static int64_T CLAMP(int64_T x, int64_T low, int64_T high)
@@ -163,10 +195,35 @@ namespace DbcParserLib
         /// <summary>
         /// Get start bit Little Endian
         /// </summary>
-        private static uint8_T GetStartBitLE(Signal signal)
+        private static uint8_T GetStartBitLE(Signal signal, int messageByteCount = 8)
         {
             uint8_T startByte = (uint8_T)(signal.StartBit / 8);
-            return (uint8_T)(64 - (signal.Length + 8 * startByte + (8 * (startByte + 1) - (signal.StartBit + 1)) % 8));
+            return (uint8_T)(8 * messageByteCount - (signal.Length + 8 * startByte + (8 * (startByte + 1) - (signal.StartBit + 1)) % 8));
+        }
+
+        private static long ExtractBits(byte[] data, int startBit, int length)
+        {
+            long result = 0;
+            int bitIndex = 0;
+
+            for (int bitPos = startBit; bitPos < startBit + length; bitPos++)
+            {
+                int bytePos = bitPos / 8;
+                int bitInByte = bitPos % 8;
+
+                if (bytePos >= data.Length)
+                    break;
+
+                bool bit = (data[bytePos] & (1 << bitInByte)) != 0;
+                if (bit)
+                {
+                    result |= 1L << bitIndex;
+                }
+
+                bitIndex++;
+            }
+
+            return result;
         }
     }
 
