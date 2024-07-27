@@ -77,14 +77,14 @@ namespace DbcParserLib
         /// <returns>Returns a double value representing the unpacked signal</returns>
         public static double RxSignalUnpack(uint64_T RxMsg64, Signal signal)
         {
-            int64_T iVal;
+            uint64_T iVal;
             uint64_T bitMask = signal.BitMask();
 
             // Unpack signal
             if (signal.Intel()) // Little endian (Intel)
-                iVal = (int64_T)((RxMsg64 >> signal.StartBit) & bitMask);
+                iVal = ((RxMsg64 >> signal.StartBit) & bitMask);
             else // Big endian (Motorola)
-                iVal = (int64_T)((MirrorMsg(RxMsg64) >> GetStartBitLE(signal)) & bitMask);
+                iVal = ((MirrorMsg(RxMsg64) >> GetStartBitLE(signal)) & bitMask);
 
             return ApplySignAndScale(signal, iVal);
         }
@@ -136,24 +136,32 @@ namespace DbcParserLib
             return Math.Max(signal.Minimum, Math.Min(value, signal.Maximum));
         }
 
-        private static double ApplySignAndScale(Signal signal, long iVal)
+        private static double ApplySignAndScale(Signal signal, ulong value)
         {
-            // Manage sign bit (if signed)
-            if (signal.ValueType == DbcValueType.Signed)
+            switch (signal.ValueType)
             {
-                iVal -= ((iVal >> (signal.Length - 1)) != 0) ? (1L << signal.Length) : 0L;
-            }
-            else if (signal.ValueType == DbcValueType.IEEEFloat)
-            {
-                return (FloatConverter.AsFloatingPoint((int)iVal) * signal.Factor + signal.Offset);
-            }
-            else if (signal.ValueType == DbcValueType.IEEEDouble)
-            {
-                return (DoubleConverter.AsFloatingPoint(iVal) * signal.Factor + signal.Offset);
-            }
-
-            // Apply scaling
-            return ((double)(iVal * (decimal)signal.Factor + (decimal)signal.Offset));
+                case DbcValueType.Signed:
+                    int64_T signedValue;
+                    if (signal.Length == 64)
+                    {
+                        signedValue = unchecked((long)value);
+                    }
+                    else
+                    {
+                        signedValue = Convert.ToInt64(value);
+                        if ((value >> (signal.Length - 1)) != 0)
+                        {
+                            signedValue -= (1L << signal.Length);
+                        }
+                    }
+                    return (double)(signedValue * (decimal)signal.Factor + (decimal)signal.Offset);
+                case DbcValueType.IEEEFloat:
+                    return FloatConverter.AsFloatingPoint((int)value) * signal.Factor + signal.Offset;
+                case DbcValueType.IEEEDouble:
+                    return DoubleConverter.AsFloatingPoint(unchecked((long)value)) * signal.Factor + signal.Offset;
+                default:
+                    return (double)(value * (decimal)signal.Factor + (decimal)signal.Offset);
+            }            
         }
 
         private static int64_T CLAMP(int64_T x, int64_T low, int64_T high)
@@ -201,9 +209,9 @@ namespace DbcParserLib
             return (uint8_T)(8 * messageByteCount - (signal.Length + 8 * startByte + (8 * (startByte + 1) - (signal.StartBit + 1)) % 8));
         }
 
-        private static long ExtractBits(byte[] data, int startBit, int length)
+        private static ulong ExtractBits(byte[] data, int startBit, int length)
         {
-            long result = 0;
+            ulong result = 0;
             int bitIndex = 0;
 
             for (int bitPos = startBit; bitPos < startBit + length; bitPos++)
@@ -217,7 +225,7 @@ namespace DbcParserLib
                 bool bit = (data[bytePos] & (1 << bitInByte)) != 0;
                 if (bit)
                 {
-                    result |= 1L << bitIndex;
+                    result |= 1UL << bitIndex;
                 }
 
                 bitIndex++;
