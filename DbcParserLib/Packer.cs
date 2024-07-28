@@ -4,7 +4,6 @@ using uint64_T = System.UInt64;
 using System;
 using System.Runtime.InteropServices;
 using DbcParserLib.Model;
-using System.Linq;
 
 namespace DbcParserLib
 {
@@ -117,16 +116,20 @@ namespace DbcParserLib
         /// <returns>Returns a double value representing the unpacked signal</returns>
         public static double RxSignalUnpack(byte[] receiveMessage, Signal signal)
         {
-            var bitMask = signal.BitMask();
             var startBit = signal.StartBit;
+            var message = receiveMessage;
 
             if (!signal.Intel())
             {
-                receiveMessage = receiveMessage.Reverse().ToArray();
-                startBit = GetStartBitLE(signal, receiveMessage.Length);
+                var copyArray = new byte[message.Length];
+                Array.Copy(message, copyArray, message.Length);
+                Array.Reverse(copyArray);
+
+                message = copyArray;
+                startBit = GetStartBitLE(signal, message.Length);
             }
 
-            var iVal = ExtractBits(receiveMessage, startBit, signal.Length);
+            var iVal = ExtractBits(message, startBit, signal.Length);
 
             return ApplySignAndScale(signal, iVal);
         }
