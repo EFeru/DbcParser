@@ -134,11 +134,6 @@ namespace DbcParserLib
             return ApplySignAndScale(signal, iVal);
         }
 
-        public static double ApplyLimit(double value, Signal signal)
-        {
-            return Math.Max(signal.Minimum, Math.Min(value, signal.Maximum));
-        }
-
         private static double ApplySignAndScale(Signal signal, ulong value)
         {
             switch (signal.ValueType)
