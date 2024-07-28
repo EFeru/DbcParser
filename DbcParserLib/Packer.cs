@@ -207,6 +207,22 @@ namespace DbcParserLib
             return (uint8_T)(8 * messageByteCount - (signal.Length + 8 * startByte + (8 * (startByte + 1) - (signal.StartBit + 1)) % 8));
         }
 
+        private static void WriteBits(byte[] data, ulong value, int startBit, int length)
+        {
+            for (int bitIndex = 0; bitIndex < length; bitIndex++)
+            {
+                int bitPosition = startBit + bitIndex;
+                int byteIndex = bitPosition / 8;
+                int bitInBytePosition = bitPosition % 8;
+
+                // Extract the bit from the signal value
+                ulong bitValue = (value >> bitIndex) & 1;
+
+                // Set the bit in the message
+                data[byteIndex] |= (byte)(bitValue << bitInBytePosition);
+            }
+        }
+
         private static ulong ExtractBits(byte[] data, int startBit, int length)
         {
             ulong result = 0;
