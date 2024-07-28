@@ -1,6 +1,3 @@
-using uint8_T = System.Byte;
-using int64_T = System.Int64;
-using uint64_T = System.UInt64;
 using System;
 using System.Runtime.InteropServices;
 using DbcParserLib.Model;
@@ -15,37 +12,45 @@ namespace DbcParserLib
         /// <param name="value">Value to be packed</param>
         /// <param name="signal">Signal containing dbc information</param>
         /// <returns>Returns a 64 bit unsigned data message</returns>
-        public static uint64_T TxSignalPack(double value, Signal signal)
+        public static ulong TxSignalPack(double value, Signal signal)
         {
-            int64_T iVal;
-            uint64_T bitMask = signal.BitMask();
-
-            // Apply scaling
-            var rawValue = (value - signal.Offset) / signal.Factor;
-            if (signal.ValueType == DbcValueType.IEEEFloat)
-                iVal = (long)FloatConverter.AsInteger((float)rawValue);
-            else if(signal.ValueType == DbcValueType.IEEEDouble)
-                iVal = DoubleConverter.AsInteger(rawValue);
-            else
-                iVal = (int64_T)Math.Round(rawValue);
-
-            // Apply overflow protection
-            if (signal.ValueType == DbcValueType.Signed)
-                iVal = CLAMP(iVal, -(int64_T)(bitMask >> 1) - 1, (int64_T)(bitMask >> 1));
-            else if(signal.ValueType == DbcValueType.Unsigned)
-                iVal = CLAMP(iVal, 0L, (int64_T)bitMask);
-
-            // Manage sign bit (if signed)
-            if (signal.ValueType == DbcValueType.Signed && iVal < 0)
-            {
-                iVal += (int64_T)(1UL << signal.Length);
-            }
+            long iVal = TxPackApplySignAndScale(value, signal);
+            ulong bitMask = signal.BitMask();
 
             // Pack signal
             if (signal.Intel()) // Little endian (Intel)
-                return (((uint64_T)iVal & bitMask) << signal.StartBit);
+                return (((ulong)iVal & bitMask) << signal.StartBit);
             else // Big endian (Motorola)
-                return MirrorMsg(((uint64_T)iVal & bitMask) << GetStartBitLE(signal));
+                return MirrorMsg(((ulong)iVal & bitMask) << GetStartBitLE(signal));
+        }
+
+        /// <summary>
+        /// Function to pack a signal into a CAN data message
+        /// </summary>
+        /// <param name="message">A ref to the byte array containing the message</param>
+        /// <param name="value">Value to be packed</param>
+        /// <param name="signal">Signal containing dbc information</param>
+        /// <remarks>Due to needing to reverse the byte array when handling BigEndian(Motorola) format this method can not be called in parallel for multiple signals in one message.
+        /// To make this obvios the message is a ref and is actually reassigned after handling BigEndian format.</remarks>
+        public static void TxSignalPack(ref byte[] message, double value, Signal signal)
+        {
+            long iVal = TxPackApplySignAndScale(value, signal);
+
+            // Pack signal
+            if (!signal.Intel())
+            {
+                var tempArray = new byte[message.Length];
+                Array.Copy(message, tempArray, message.Length);
+                Array.Reverse(tempArray);
+
+                WriteBits(tempArray, unchecked((ulong)iVal), GetStartBitLE(signal, message.Length), signal.Length);
+
+                Array.Reverse(tempArray);
+
+                message = tempArray;
+                return;
+            }
+            WriteBits(message, unchecked((ulong)iVal), signal.StartBit, signal.Length);
         }
 
         /// <summary>
@@ -54,9 +59,9 @@ namespace DbcParserLib
         /// <param name="value">Value to be packed</param>
         /// <param name="signal">Signal containing dbc information</param>
         /// <returns>Returns a 64 bit unsigned data message</returns>
-        public static uint64_T TxStatePack(uint64_T value, Signal signal)
+        public static ulong TxStatePack(ulong value, Signal signal)
         {
-            uint64_T bitMask = signal.BitMask();
+            ulong bitMask = signal.BitMask();
 
             // Apply overflow protection
             value = CLAMP(value, 0UL, bitMask);
@@ -74,10 +79,10 @@ namespace DbcParserLib
         /// <param name="RxMsg64">The 64 bit unsigned data message</param>
         /// <param name="signal">Signal containing dbc information</param>
         /// <returns>Returns a double value representing the unpacked signal</returns>
-        public static double RxSignalUnpack(uint64_T RxMsg64, Signal signal)
+        public static double RxSignalUnpack(ulong RxMsg64, Signal signal)
         {
-            uint64_T iVal;
-            uint64_T bitMask = signal.BitMask();
+            ulong iVal;
+            ulong bitMask = signal.BitMask();
 
             // Unpack signal
             if (signal.Intel()) // Little endian (Intel)
@@ -85,27 +90,7 @@ namespace DbcParserLib
             else // Big endian (Motorola)
                 iVal = ((MirrorMsg(RxMsg64) >> GetStartBitLE(signal)) & bitMask);
 
-            return ApplySignAndScale(signal, iVal);
-        }
-
-        /// <summary>
-        /// Function to unpack a state (unsigned integer) from a CAN data message
-        /// </summary>
-        /// <param name="RxMsg64">The 64 bit unsigned data message</param>
-        /// <param name="signal">Signal containing dbc information</param>
-        /// <returns>Returns an unsigned integer representing the unpacked state</returns>
-        public static uint64_T RxStateUnpack(uint64_T RxMsg64, Signal signal)
-        {
-            uint64_T iVal;
-            uint64_T bitMask = signal.BitMask();
-
-            // Unpack signal
-            if (signal.Intel()) // Little endian (Intel)
-                iVal = (RxMsg64 >> signal.StartBit) & bitMask;
-            else // Big endian (Motorola)
-                iVal = (MirrorMsg(RxMsg64) >> GetStartBitLE(signal)) & bitMask;
-
-            return iVal;
+            return RxUnpackApplySignAndScale(signal, iVal);
         }
 
         /// <summary>
@@ -121,25 +106,74 @@ namespace DbcParserLib
 
             if (!signal.Intel())
             {
-                var copyArray = new byte[message.Length];
-                Array.Copy(message, copyArray, message.Length);
-                Array.Reverse(copyArray);
+                var tempArray = new byte[message.Length];
+                Array.Copy(message, tempArray, message.Length);
+                Array.Reverse(tempArray);
 
-                message = copyArray;
+                message = tempArray;
                 startBit = GetStartBitLE(signal, message.Length);
             }
 
             var iVal = ExtractBits(message, startBit, signal.Length);
 
-            return ApplySignAndScale(signal, iVal);
+            return RxUnpackApplySignAndScale(signal, iVal);
         }
 
-        private static double ApplySignAndScale(Signal signal, ulong value)
+        /// <summary>
+        /// Function to unpack a state (unsigned integer) from a CAN data message
+        /// </summary>
+        /// <param name="RxMsg64">The 64 bit unsigned data message</param>
+        /// <param name="signal">Signal containing dbc information</param>
+        /// <returns>Returns an unsigned integer representing the unpacked state</returns>
+        public static ulong RxStateUnpack(ulong RxMsg64, Signal signal)
+        {
+            ulong iVal;
+            ulong bitMask = signal.BitMask();
+
+            // Unpack signal
+            if (signal.Intel()) // Little endian (Intel)
+                iVal = (RxMsg64 >> signal.StartBit) & bitMask;
+            else // Big endian (Motorola)
+                iVal = (MirrorMsg(RxMsg64) >> GetStartBitLE(signal)) & bitMask;
+
+            return iVal;
+        }
+
+        private static long TxPackApplySignAndScale(double value, Signal signal)
+        {
+            long iVal;
+            ulong bitMask = signal.BitMask();
+
+            // Apply scaling
+            var rawValue = (value - signal.Offset) / signal.Factor;
+            if (signal.ValueType == DbcValueType.IEEEFloat)
+                iVal = FloatConverter.AsInteger((float)rawValue);
+            else if (signal.ValueType == DbcValueType.IEEEDouble)
+                iVal = DoubleConverter.AsInteger(rawValue);
+            else
+                iVal = (long)Math.Round(rawValue);
+
+            // Apply overflow protection
+            if (signal.ValueType == DbcValueType.Signed)
+                iVal = CLAMP(iVal, -(long)(bitMask >> 1) - 1, (long)(bitMask >> 1));
+            else if (signal.ValueType == DbcValueType.Unsigned)
+                iVal = CLAMP(iVal, 0L, (long)bitMask);
+
+            // Manage sign bit (if signed)
+            if (signal.ValueType == DbcValueType.Signed && iVal < 0)
+            {
+                iVal += (long)(1UL << signal.Length);
+            }
+
+            return iVal;
+        }
+
+        private static double RxUnpackApplySignAndScale(Signal signal, ulong value)
         {
             switch (signal.ValueType)
             {
                 case DbcValueType.Signed:
-                    int64_T signedValue;
+                    long signedValue;
                     if (signal.Length == 64)
                     {
                         signedValue = unchecked((long)value);
@@ -162,12 +196,12 @@ namespace DbcParserLib
             }            
         }
 
-        private static int64_T CLAMP(int64_T x, int64_T low, int64_T high)
+        private static long CLAMP(long x, long low, long high)
         {
             return Math.Max(low, Math.Min(x, high));
         }
 
-        private static uint64_T CLAMP(uint64_T x, uint64_T low, uint64_T high)
+        private static ulong CLAMP(ulong x, ulong low, ulong high)
         {
             return Math.Max(low, Math.Min(x, high));
         }
@@ -175,36 +209,36 @@ namespace DbcParserLib
         /// <summary>
         /// Mirror data message. It is used to convert Big endian to Little endian and vice-versa
         /// </summary>
-        private static uint64_T MirrorMsg(uint64_T msg)
+        private static ulong MirrorMsg(ulong msg)
         {
-            uint8_T[] v =
+            byte[] v =
             {
-                (uint8_T)msg,
-                (uint8_T)(msg >> 8),
-                (uint8_T)(msg >> 16),
-                (uint8_T)(msg >> 24),
-                (uint8_T)(msg >> 32),
-                (uint8_T)(msg >> 40),
-                (uint8_T)(msg >> 48),
-                (uint8_T)(msg >> 56)
+                (byte)msg,
+                (byte)(msg >> 8),
+                (byte)(msg >> 16),
+                (byte)(msg >> 24),
+                (byte)(msg >> 32),
+                (byte)(msg >> 40),
+                (byte)(msg >> 48),
+                (byte)(msg >> 56)
             };
-            return (((uint64_T)v[0] << 56)
-                    | ((uint64_T)v[1] << 48)
-                    | ((uint64_T)v[2] << 40)
-                    | ((uint64_T)v[3] << 32)
-                    | ((uint64_T)v[4] << 24)
-                    | ((uint64_T)v[5] << 16)
-                    | ((uint64_T)v[6] << 8)
-                    | (uint64_T)v[7]);
+            return (((ulong)v[0] << 56)
+                    | ((ulong)v[1] << 48)
+                    | ((ulong)v[2] << 40)
+                    | ((ulong)v[3] << 32)
+                    | ((ulong)v[4] << 24)
+                    | ((ulong)v[5] << 16)
+                    | ((ulong)v[6] << 8)
+                    | (ulong)v[7]);
         }
 
         /// <summary>
         /// Get start bit Little Endian
         /// </summary>
-        private static uint8_T GetStartBitLE(Signal signal, int messageByteCount = 8)
+        private static byte GetStartBitLE(Signal signal, int messageByteCount = 8)
         {
-            uint8_T startByte = (uint8_T)(signal.StartBit / 8);
-            return (uint8_T)(8 * messageByteCount - (signal.Length + 8 * startByte + (8 * (startByte + 1) - (signal.StartBit + 1)) % 8));
+            byte startByte = (byte)(signal.StartBit / 8);
+            return (byte)(8 * messageByteCount - (signal.Length + 8 * startByte + (8 * (startByte + 1) - (signal.StartBit + 1)) % 8));
         }
 
         private static void WriteBits(byte[] data, ulong value, int startBit, int length)
