@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using DbcParserLib.Model;
+using System;
 
 namespace DbcParserLib.Tests
 {
@@ -136,6 +137,66 @@ namespace DbcParserLib.Tests
 
             val = Packer.RxSignalUnpack(9655716608953581040, sig);
             Assert.AreEqual(800, val);
+        }
+
+        [Test]
+        public void SimplePackingMultiPackBigEndian()
+        {
+            var sig1 = new Signal
+            {
+                StartBit = 7,
+                Length = 10,
+                ValueType = DbcValueType.Unsigned,
+                ByteOrder = 0,
+                Factor = 1,
+                Offset = 0
+            };
+
+            var sig2 = new Signal
+            {
+                StartBit = 13,
+                Length = 6,
+                ValueType = DbcValueType.Unsigned,
+                ByteOrder = 0,
+                Factor = 1,
+                Offset = 0
+            };
+
+            var sig3 = new Signal
+            {
+                StartBit = 23,
+                Length = 32,
+                ValueType = DbcValueType.Unsigned,
+                ByteOrder = 0,
+                Factor = 1,
+                Offset = 0
+            };
+
+            var sig4 = new Signal
+            {
+                StartBit = 55,
+                Length = 16,
+                ValueType = DbcValueType.Unsigned,
+                ByteOrder = 0,
+                Factor = 1,
+                Offset = 0
+            };
+
+            ulong TxMsg = 0;
+            TxMsg |= Packer.TxSignalPack(0, sig1);
+            TxMsg |= Packer.TxSignalPack(63, sig2);
+            TxMsg |= Packer.TxSignalPack(0, sig3);
+            TxMsg |= Packer.TxSignalPack(ushort.MaxValue, sig4);
+
+            Assert.AreEqual(18446462598732857088, TxMsg);
+
+            byte[] txMsg = new byte[8];
+            Packer.TxSignalPack(ref txMsg, 0, sig1);
+            Packer.TxSignalPack(ref txMsg, 63, sig2);
+            Packer.TxSignalPack(ref txMsg, 0, sig3);
+            Packer.TxSignalPack(ref txMsg, ushort.MaxValue, sig4);
+
+            Assert.AreEqual(18446462598732857088, BitConverter.ToUInt64(txMsg));
         }
 
         [Test]

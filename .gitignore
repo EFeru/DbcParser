@@ -10,6 +10,8 @@ DbcParserLib/obj/
 DbcParserLib/bin/
 DbcParserLib.Tests/obj/
 DbcParserLib.Tests/bin/
+DbcParserLib.Benchmarks/obj/
+DbcParserLib.Benchmarks/bin/
 Demo/obj/
 Demo/bin/
 
