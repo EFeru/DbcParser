@@ -17,6 +17,9 @@ namespace DbcParserLib.Tests
 
         private Signal LittleEndian_Unsigned_NoScale;
 
+        private ulong RxMsg = ulong.MaxValue;
+        private byte[] RxBytes = new byte[] { byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue };
+
         [GlobalSetup]
         public void SetupSignals()
         {
@@ -112,70 +115,57 @@ namespace DbcParserLib.Tests
         }
 
         [Benchmark]
-        public ulong Pack_8Byte_BigEndian_Uint64()
+        public void Unpack_8Byte_BigEndian_Uint64()
         {
-            ulong TxMsg = 0;
-            TxMsg |= Packer.TxSignalPack(0, EightByte_BigEndian_Signal1);
-            TxMsg |= Packer.TxSignalPack(63, EightByte_BigEndian_Signal2);
-            TxMsg |= Packer.TxSignalPack(0, EightByte_BigEndian_Signal3);
-            TxMsg |= Packer.TxSignalPack(ushort.MaxValue, EightByte_BigEndian_Signal4);
-            return TxMsg;   
+            var signal1 = Packer.RxSignalUnpack(RxMsg, EightByte_BigEndian_Signal1);
+            var signal2 = Packer.RxSignalUnpack(RxMsg, EightByte_BigEndian_Signal2);
+            var signal3 = Packer.RxSignalUnpack(RxMsg, EightByte_BigEndian_Signal3);
+            var signal4 = Packer.RxSignalUnpack(RxMsg, EightByte_BigEndian_Signal4);  
         }
 
         [Benchmark]
-        public byte[] Pack_8Byte_BigEndian_ByteArray()
+        public void Unpack_8Byte_BigEndian_ByteArray()
         {
-            byte[] TxMsg = new byte[8];
-            Packer.TxSignalPack(ref TxMsg, 0, EightByte_BigEndian_Signal1);
-            Packer.TxSignalPack(ref TxMsg, 63, EightByte_BigEndian_Signal2);
-            Packer.TxSignalPack(ref TxMsg, 0, EightByte_BigEndian_Signal3);
-            Packer.TxSignalPack(ref TxMsg, ushort.MaxValue, EightByte_BigEndian_Signal4);
-            return TxMsg;
+            var signal1 = Packer.RxSignalUnpack(RxBytes, EightByte_BigEndian_Signal1);
+            var signal2 = Packer.RxSignalUnpack(RxBytes, EightByte_BigEndian_Signal2);
+            var signal3 = Packer.RxSignalUnpack(RxBytes, EightByte_BigEndian_Signal3);
+            var signal4 = Packer.RxSignalUnpack(RxBytes, EightByte_BigEndian_Signal4);
         }
 
         [Benchmark]
-        public ulong Pack_8Byte_LittleEndian_Uint64()
+        public void Unpack_8Byte_LittleEndian_Uint64()
         {
-            ulong TxMsg = 0;
-            TxMsg |= Packer.TxSignalPack(0, EightByte_LittleEndian_Signal1);
-            TxMsg |= Packer.TxSignalPack(63, EightByte_LittleEndian_Signal2);
-            TxMsg |= Packer.TxSignalPack(0, EightByte_LittleEndian_Signal3);
-            TxMsg |= Packer.TxSignalPack(ushort.MaxValue, EightByte_LittleEndian_Signal4);
-            return TxMsg;
+            var signal1 = Packer.RxSignalUnpack(RxMsg, EightByte_LittleEndian_Signal1);
+            var signal2 = Packer.RxSignalUnpack(RxMsg, EightByte_LittleEndian_Signal2);
+            var signal3 = Packer.RxSignalUnpack(RxMsg, EightByte_LittleEndian_Signal3);
+            var signal4 = Packer.RxSignalUnpack(RxMsg, EightByte_LittleEndian_Signal4);
         }
 
         [Benchmark]
-        public byte[] Pack_8Byte_LittleEndian_ByteArray()
+        public void Unpack_8Byte_LittleEndian_ByteArray()
         {
-            byte[] TxMsg = new byte[8];
-            Packer.TxSignalPack(ref TxMsg, 0, EightByte_LittleEndian_Signal1);
-            Packer.TxSignalPack(ref TxMsg, 63, EightByte_LittleEndian_Signal2);
-            Packer.TxSignalPack(ref TxMsg, 0, EightByte_LittleEndian_Signal3);
-            Packer.TxSignalPack(ref TxMsg, ushort.MaxValue, EightByte_LittleEndian_Signal4);
-            return TxMsg;
+            var signal1 = Packer.RxSignalUnpack(RxBytes, EightByte_LittleEndian_Signal1);
+            var signal2 = Packer.RxSignalUnpack(RxBytes, EightByte_LittleEndian_Signal2);
+            var signal3 = Packer.RxSignalUnpack(RxBytes, EightByte_LittleEndian_Signal3);
+            var signal4 = Packer.RxSignalUnpack(RxBytes, EightByte_LittleEndian_Signal4);
         }
 
         [Benchmark]
-        public ulong Pack_1Signal_Unsigned_NoScale_StatePack()
+        public ulong Unpack_1Signal_Unsigned_NoScale_State()
         {
-            ulong TxMsg = 0;
-            TxMsg |= Packer.TxStatePack(123, LittleEndian_Unsigned_NoScale);
-            return TxMsg;
+            return Packer.RxStateUnpack(RxMsg, LittleEndian_Unsigned_NoScale);
         }
 
         [Benchmark]
-        public ulong Pack_1Signal_Unsigned_NoScale_SignalPack()
+        public double Unpack_1Signal_Unsigned_NoScale_Signal()
         {
-            ulong TxMsg = 0;
-            TxMsg |= Packer.TxSignalPack(123, LittleEndian_Unsigned_NoScale);
-            return TxMsg;
+            return Packer.RxSignalUnpack(RxMsg, LittleEndian_Unsigned_NoScale);
         }
 
         [Benchmark]
-        public void Pack_1Signal_Unsigned_NoScale_SignalPackByteArray()
+        public double Unpack_1Signal_Unsigned_NoScale_SignalByteArray()
         {
-            byte[] TxMsg = new byte[8];
-            Packer.TxSignalPack(ref TxMsg, 123, LittleEndian_Unsigned_NoScale);
+            return Packer.RxSignalUnpack(RxBytes, LittleEndian_Unsigned_NoScale);
         }
     }
 }

@@ -172,10 +172,11 @@ namespace DbcParserLib.Tests
         }
 
         [Benchmark]
-        public void Pack_1Signal_Unsigned_NoScale_SignalPackByteArray()
+        public byte[] Pack_1Signal_Unsigned_NoScale_SignalPackByteArray()
         {
             byte[] TxMsg = new byte[8];
             Packer.TxSignalPack(ref TxMsg, 123, LittleEndian_Unsigned_NoScale);
+            return TxMsg;
         }
     }
 }
