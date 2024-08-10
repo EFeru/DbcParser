@@ -3,7 +3,7 @@ using BenchmarkDotNet.Attributes;
 
 namespace DbcParserLib.Tests
 {
-    public class PackerBenchmark
+    public class UnpackBenchmark
     {
         private Signal EightByte_BigEndian_Signal1;
         private Signal EightByte_BigEndian_Signal2;
