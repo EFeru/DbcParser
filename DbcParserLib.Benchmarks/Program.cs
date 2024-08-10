@@ -15,7 +15,7 @@ AMD Ryzen 9 5900X, 1 CPU, 24 logical and 12 physical cores
 | Method                                            | Mean        | Error     | StdDev    |
 |-------------------------------------------------- |------------:| ----------:| ----------:|
 | Pack_8Byte_BigEndian_Uint64                       | 40.5778 ns | 0.3100 ns | 0.2420 ns |
-| Pack_8Byte_BigEndian_ByteArray                    | 167.4555 ns | 2.3924 ns | 2.2379 ns |
+| Pack_8Byte_BigEndian_ByteArray                    | 126.9214 ns | 2.5612 ns | 2.3958 ns |
 | Pack_8Byte_LittleEndian_Uint64                    | 12.1883 ns | 0.1173 ns | 0.0980 ns |
 | Pack_8Byte_LittleEndian_ByteArray                 | 100.1948 ns | 0.6864 ns | 0.5359 ns |
 | Pack_1Signal_Unsigned_NoScale_StatePack           | 0.8825 ns | 0.0081 ns | 0.0068 ns |

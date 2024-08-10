@@ -34,24 +34,16 @@ namespace DbcParserLib
         /// <param name="message">A ref to the byte array containing the message</param>
         /// <param name="value">Value to be packed</param>
         /// <param name="signal">Signal containing dbc information</param>
-        /// <remarks>Due to needing to reverse the byte array when handling BigEndian(Motorola) format this method can not be called in parallel for multiple signals in one message.
-        /// To make this obvios the message is a ref and is actually reassigned after handling BigEndian format.</remarks>
-        public static void TxSignalPack(ref uint8_T[] message, double value, Signal signal)
+        public static void TxSignalPack(uint8_T[] message, double value, Signal signal)
         {
             int64_T iVal = TxPackApplySignAndScale(value, signal);
 
             // Pack signal
             if (!signal.Intel())
             {
-                var tempArray = new uint8_T[message.Length];
-                Array.Copy(message, tempArray, message.Length);
-                Array.Reverse(tempArray);
-
-                WriteBits(tempArray, unchecked((uint64_T)iVal), GetStartBitLE(signal, message.Length), signal.Length);
-
-                Array.Reverse(tempArray);
-
-                message = tempArray;
+                Array.Reverse(message);
+                WriteBits(message, unchecked((uint64_T)iVal), GetStartBitLE(signal, message.Length), signal.Length);
+                Array.Reverse(message);
                 return;
             }
             WriteBits(message, unchecked((uint64_T)iVal), signal.StartBit, signal.Length);

@@ -191,10 +191,10 @@ namespace DbcParserLib.Tests
             Assert.AreEqual(18446462598732857088, TxMsg);
 
             byte[] txMsg = new byte[8];
-            Packer.TxSignalPack(ref txMsg, 0, sig1);
-            Packer.TxSignalPack(ref txMsg, 63, sig2);
-            Packer.TxSignalPack(ref txMsg, 0, sig3);
-            Packer.TxSignalPack(ref txMsg, ushort.MaxValue, sig4);
+            Packer.TxSignalPack(txMsg, 0, sig1);
+            Packer.TxSignalPack(txMsg, 63, sig2);
+            Packer.TxSignalPack(txMsg, 0, sig3);
+            Packer.TxSignalPack(txMsg, ushort.MaxValue, sig4);
 
             Assert.AreEqual(18446462598732857088, BitConverter.ToUInt64(txMsg));
         }

@@ -126,10 +126,10 @@ namespace DbcParserLib.Tests
         public byte[] Pack_8Byte_BigEndian_ByteArray()
         {
             byte[] TxMsg = new byte[8];
-            Packer.TxSignalPack(ref TxMsg, 0, EightByte_BigEndian_Signal1);
-            Packer.TxSignalPack(ref TxMsg, 63, EightByte_BigEndian_Signal2);
-            Packer.TxSignalPack(ref TxMsg, 0, EightByte_BigEndian_Signal3);
-            Packer.TxSignalPack(ref TxMsg, ushort.MaxValue, EightByte_BigEndian_Signal4);
+            Packer.TxSignalPack(TxMsg, 0, EightByte_BigEndian_Signal1);
+            Packer.TxSignalPack(TxMsg, 63, EightByte_BigEndian_Signal2);
+            Packer.TxSignalPack(TxMsg, 0, EightByte_BigEndian_Signal3);
+            Packer.TxSignalPack(TxMsg, ushort.MaxValue, EightByte_BigEndian_Signal4);
             return TxMsg;
         }
 
@@ -148,10 +148,10 @@ namespace DbcParserLib.Tests
         public byte[] Pack_8Byte_LittleEndian_ByteArray()
         {
             byte[] TxMsg = new byte[8];
-            Packer.TxSignalPack(ref TxMsg, 0, EightByte_LittleEndian_Signal1);
-            Packer.TxSignalPack(ref TxMsg, 63, EightByte_LittleEndian_Signal2);
-            Packer.TxSignalPack(ref TxMsg, 0, EightByte_LittleEndian_Signal3);
-            Packer.TxSignalPack(ref TxMsg, ushort.MaxValue, EightByte_LittleEndian_Signal4);
+            Packer.TxSignalPack(TxMsg, 0, EightByte_LittleEndian_Signal1);
+            Packer.TxSignalPack(TxMsg, 63, EightByte_LittleEndian_Signal2);
+            Packer.TxSignalPack(TxMsg, 0, EightByte_LittleEndian_Signal3);
+            Packer.TxSignalPack(TxMsg, ushort.MaxValue, EightByte_LittleEndian_Signal4);
             return TxMsg;
         }
 
@@ -175,7 +175,7 @@ namespace DbcParserLib.Tests
         public byte[] Pack_1Signal_Unsigned_NoScale_SignalPackByteArray()
         {
             byte[] TxMsg = new byte[8];
-            Packer.TxSignalPack(ref TxMsg, 123, LittleEndian_Unsigned_NoScale);
+            Packer.TxSignalPack(TxMsg, 123, LittleEndian_Unsigned_NoScale);
             return TxMsg;
         }
     }
