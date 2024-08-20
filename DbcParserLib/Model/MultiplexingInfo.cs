@@ -1,24 +1,50 @@
-namespace DbcParserLib.Model
+namespace DbcParserLib.Model;
+
+public class MultiplexingInfo
 {
-    public struct MultiplexingInfo
+    private const string MultiplexorLabel = "M";
+    private const string MultiplexedLabel = "m";
+
+    public MultiplexingRole Role { get; }
+    public int Group { get; }
+
+    public MultiplexingInfo(Signal signal)
     {
-        public MultiplexingInfo(MultiplexingRole role)
-            : this(role, 0)
-        {
-        }
-
-        public MultiplexingInfo(MultiplexingRole role, int group)
-        {
-            Role = role;
-            Group = group;
-        }
-
-        public MultiplexingRole Role {get;}
-        public int Group {get;}
+        Role = ParseMultiplexingInfo(signal, out var group);
+        Group = group;
     }
 
-    public enum MultiplexingRole
+    private static MultiplexingRole ParseMultiplexingInfo(Signal signal, out int multiplexingGroup)
     {
-        None, Unknown, Multiplexed, Multiplexor
+        multiplexingGroup = 0;
+        if (string.IsNullOrWhiteSpace(signal.multiplexing))
+        {
+            return MultiplexingRole.None;
+        }
+
+        if (signal.multiplexing.Equals(MultiplexorLabel))
+        {
+            return MultiplexingRole.Multiplexor;
+        }
+
+        if (signal.multiplexing.StartsWith(MultiplexedLabel))
+        {
+            var substringLength = signal.multiplexing.Length - (signal.multiplexing.EndsWith(MultiplexorLabel) ? 2 : 1);
+
+            if (int.TryParse(signal.multiplexing.Substring(1, substringLength), out multiplexingGroup))
+            {
+                return MultiplexingRole.Multiplexed;
+            }
+        }
+
+        return MultiplexingRole.Unknown;
     }
+}
+
+public enum MultiplexingRole
+{
+    None,
+    Unknown,
+    Multiplexed,
+    Multiplexor
 }

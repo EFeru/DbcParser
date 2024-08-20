@@ -1,87 +1,87 @@
 ﻿using System.Collections.Generic;
 
-namespace DbcParserLib.Model
+namespace DbcParserLib.Model;
+
+public class Signal
 {
-    internal class ImmutableSignal
-    {
-        public uint ID { get; }
-        public string Name { get; }
-        public ushort StartBit { get; }
-        public ushort Length { get; }
-        public byte ByteOrder { get; }
-        public DbcValueType ValueType { get; }
-        public double InitialValue { get; }
-        public double Factor { get; }
-        public bool IsInteger { get; }
-        public double Offset { get; }
-        public double Minimum { get; }
-        public double Maximum { get; }
-        public string Unit { get; }
-        public string[] Receiver { get; }
-        public IReadOnlyDictionary<int, string> ValueTableMap { get; }
-        public string Comment { get; }
-        public string Multiplexing { get; }
-        public IReadOnlyDictionary<string, CustomProperty> CustomProperties { get; }
+    public uint MessageID { get; internal set; }
+    public string Name { get; internal set; }
+    public ushort StartBit { get; internal set; }
+    public ushort Length { get; internal set; }
+    public byte ByteOrder { get; internal set; } = 1;
+    public DbcValueType ValueType { get; internal set; } = DbcValueType.Signed;
+    public bool IsInteger { get; private set; } 
+    public double Factor { get; internal set; } = 1;
+    public double Offset { get; internal set; }
+    public bool HasScaling { get; private set; } 
+    public double Minimum { get; internal set; }
+    public double Maximum { get; internal set; }
+    public bool HasLimits { get; private set; } 
+    public string Unit { get; internal set; }
+    public string[] Receiver { get; internal set; }
+    public IReadOnlyDictionary<int, string> ValueTableMap { get; internal set; } = new Dictionary<int, string>();
+    public string Comment { get; internal set; }
+    public MultiplexingInfo Multiplexing { get; private set; }
+    internal string multiplexing;
+    public IReadOnlyDictionary<string, CustomProperty> CustomProperties => customProperties;
+    internal readonly Dictionary<string, CustomProperty> customProperties = new();
+    public double? InitialValue { get; private set; }
 
-        internal ImmutableSignal(Signal signal) 
-        {
-            ID = signal.ID;
-            Name = signal.Name;
-            StartBit = signal.StartBit;
-            Length = signal.Length;
-            ByteOrder = signal.ByteOrder;
-            ValueType = signal.ValueType;
-            InitialValue = signal.InitialValue;
-            Factor = signal.Factor;
-            IsInteger = signal.IsInteger;
-            Offset = signal.Offset;
-            Minimum = signal.Minimum;
-            Maximum = signal.Maximum;
-            Unit = signal.Unit;
-            Receiver = signal.Receiver;
-            ValueTableMap = signal.ValueTableMap;
-            Comment = signal.Comment;
-            Multiplexing = signal.Multiplexing;
-            CustomProperties = signal.CustomProperties;
-        }
+    internal void FinishUp()
+    {
+        InitialValue = null;
+        var hasInitialValue = TryGetInitialValue(out var initialValue);
+        InitialValue = hasInitialValue ? initialValue : null;
+        Multiplexing = new MultiplexingInfo(this);
+        HasScaling = ExtensionsAndHelpers.IsDoubleZero(Offset) && ExtensionsAndHelpers.AreDoublesEqual(Factor, 1.0);
+        HasLimits = !ExtensionsAndHelpers.IsDoubleZero(Minimum) || !ExtensionsAndHelpers.IsDoubleZero(Maximum);
+        IsInteger = CheckIsInteger();
     }
 
-    public class Signal
+    private bool TryGetInitialValue(out double? initialValue)
     {
-        public uint ID;
-        public string Name;
-        public ushort StartBit;
-        public ushort Length;
-        public byte ByteOrder = 1;
-        public DbcValueType ValueType = DbcValueType.Signed;
-        public double Factor = 1;
-        public bool IsInteger = false;
-        public double Offset;
-        public double Minimum;
-        public double Maximum;
-        public string Unit;
-        public string[] Receiver;
-        public IReadOnlyDictionary<int, string> ValueTableMap = new Dictionary<int, string>();
-        public string Comment;
-        public string Multiplexing;
-        public readonly Dictionary<string, CustomProperty> CustomProperties = new Dictionary<string, CustomProperty>();
-        public double InitialValue
+        initialValue = null;
+
+        if (!customProperties.TryGetValue("GenSigStartValue", out var property))
         {
-            get
-            {
-                this.InitialValue(out var initialValue);
-                return initialValue;
-            }
+            return false;
         }
 
-        internal ImmutableSignal CreateSignal()
+        double value;
+        switch (property.CustomPropertyDefinition.DataType)
         {
-            return new ImmutableSignal(this);
+            case CustomPropertyDataType.Float:
+                value = property.FloatCustomProperty.Value;
+                break;
+            case CustomPropertyDataType.Hex:
+                value = property.HexCustomProperty.Value;
+                break;
+            case CustomPropertyDataType.Integer:
+                value = property.IntegerCustomProperty.Value;
+                break;
+            default:
+                return false;
         }
-    }
 
-    public enum DbcValueType
-    {
-        Signed, Unsigned, IEEEFloat, IEEEDouble
+        initialValue = value * Factor + Offset;
+        return true;
     }
+    
+    private bool CheckIsInteger()
+    {
+        if (ValueType is not (DbcValueType.Signed or DbcValueType.Unsigned))
+        {
+            return false;
+        }
+
+        return ExtensionsAndHelpers.IsWholeNumber(Factor) && ExtensionsAndHelpers.IsWholeNumber(Offset);
+    }
+}
+
+public enum DbcValueType
+{
+    Signed,
+    Unsigned,
+    IEEEFloat,
+    IEEEDouble
 }

@@ -69,7 +69,7 @@ namespace DbcParserLib.Tests
             Assert.IsTrue(ParseLine(@"BA_ ""AttributeName"" BO_ 2394947585 100;", msgCycleTimeLineParser, builder, nextLineProvider));
 
             var dbc = builder.Build();
-            Assert.AreEqual(true, dbc.Messages.First().CustomProperties.TryGetValue("AttributeName", out var customProperty));
+            Assert.AreEqual(true, dbc.Messages.First().Value.CustomProperties.TryGetValue("AttributeName", out var customProperty));
             Assert.AreEqual(100, customProperty!.IntegerCustomProperty.Value);
         }
 
@@ -97,7 +97,7 @@ namespace DbcParserLib.Tests
             Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 150;", msgCycleTimeLineParser, builder, nextLineProvider));
 
             var dbc = builder.Build();
-            Assert.AreEqual(true, dbc.Messages.First().CustomProperties.TryGetValue("AttributeName", out var customProperty));
+            Assert.AreEqual(true, dbc.Messages.First().Value.CustomProperties.TryGetValue("AttributeName", out var customProperty));
             Assert.AreEqual(150, customProperty!.HexCustomProperty.Value);
         }
 
@@ -125,7 +125,7 @@ namespace DbcParserLib.Tests
             Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 150.0;", msgCycleTimeLineParser, builder, nextLineProvider));
 
             var dbc = builder.Build();
-            Assert.AreEqual(true, dbc.Messages.First().CustomProperties.TryGetValue("AttributeName", out var customProperty));
+            Assert.AreEqual(true, dbc.Messages.First().Value.CustomProperties.TryGetValue("AttributeName", out var customProperty));
             Assert.AreEqual(150, customProperty!.FloatCustomProperty.Value);
         }
 
@@ -233,8 +233,8 @@ namespace DbcParserLib.Tests
             Assert.IsTrue(ParseLine(@"BA_ ""GenMsgCycleTime"" BO_ 2394947585 100;", msgCycleTimeLineParser, builder, nextLineProvider));
 
             var dbc = builder.Build();
-            Assert.AreEqual(true, dbc.Messages.First().CycleTime(out var cycleTime));
-            Assert.AreEqual(100, cycleTime);
+            Assert.IsNotNull(dbc.Messages.First().Value.CycleTime);
+            Assert.AreEqual(100, dbc.Messages.First().Value.CycleTime);
         }
 
         [Test]
@@ -253,9 +253,8 @@ namespace DbcParserLib.Tests
             Assert.IsTrue(ParseLine(@"BA_ ""GenSigStartValue"" SG_ 2394947585 sig_name 40;", sigInitialValueLineParser, builder, nextLineProvider));
 
             var dbc = builder.Build();
-            Assert.AreEqual(true, dbc.Messages.First().Signals.First().InitialValue(out var initialValue));
-            Assert.AreEqual(40, dbc.Messages.First().Signals.First().InitialValue);
-            Assert.AreEqual(40, initialValue);
+            Assert.NotNull(dbc.Messages.First().Value.Signals.First().Value.InitialValue);
+            Assert.AreEqual(40, dbc.Messages.First().Value.Signals.First().Value.InitialValue);
         }
 
         [Test]
@@ -274,9 +273,8 @@ namespace DbcParserLib.Tests
             Assert.IsTrue(ParseLine(@"BA_ ""GenSigStartValue"" SG_ 2394947585 sig_name 40;", sigInitialValueLineParser, builder, nextLineProvider));
 
             var dbc = builder.Build();
-            Assert.AreEqual(true, dbc.Messages.First().Signals.First().InitialValue(out var initialValue));
-            Assert.AreEqual(40, dbc.Messages.First().Signals.First().InitialValue);
-            Assert.AreEqual(40, initialValue);
+            Assert.NotNull(dbc.Messages.First().Value.Signals.First().Value.InitialValue);
+            Assert.AreEqual(40, dbc.Messages.First().Value.Signals.First().Value.InitialValue);
         }
 
         [Test]

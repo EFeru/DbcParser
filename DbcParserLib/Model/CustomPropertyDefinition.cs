@@ -2,240 +2,269 @@
 using System.Linq;
 using DbcParserLib.Observers;
 
-namespace DbcParserLib.Model
+namespace DbcParserLib.Model;
+
+public class CustomPropertyDefinition
 {
-    public class CustomPropertyDefinition
+    private readonly IParseFailureObserver observer;
+    public string Name { get; internal set; }
+    public CustomPropertyDataType DataType { get; internal set; }
+    public NumericCustomPropertyDefinition<int> IntegerCustomProperty { get; internal set; }
+    public NumericCustomPropertyDefinition<int> HexCustomProperty { get; internal set; }
+    public NumericCustomPropertyDefinition<double> FloatCustomProperty { get; internal set; }
+    public StringCustomPropertyDefinition StringCustomProperty { get; internal set; }
+    public EnumCustomPropertyDefinition EnumCustomProperty { get; internal set; }
+
+    public CustomPropertyDefinition(IParseFailureObserver observer)
     {
-        private readonly IParseFailureObserver m_observer;
-        public string Name { get; set; }
-        public CustomPropertyDataType DataType { get; set; }
-        public NumericCustomPropertyDefinition<int> IntegerCustomProperty { get; set; }
-        public NumericCustomPropertyDefinition<int> HexCustomProperty { get; set; }
-        public NumericCustomPropertyDefinition<double> FloatCustomProperty { get; set; }
-        public StringCustomPropertyDefinition StringCustomProperty { get; set; }
-        public EnumCustomPropertyDefinition EnumCustomProperty { get; set; }
+        this.observer = observer;
+    }
 
-        public CustomPropertyDefinition(IParseFailureObserver observer)
+    public void SetCustomPropertyDefaultValue(string value, bool isNumeric)
+    {
+        switch (DataType)
         {
-            m_observer = observer;
-        }
-
-        public void SetCustomPropertyDefaultValue(string value, bool isNumeric)
-        {
-            switch (DataType)
-            {
-                case CustomPropertyDataType.Integer:
-                    if(!TryGetIntegerValue(value, isNumeric, out var integerValue))
-                        return;
-                    IntegerCustomProperty.Default = integerValue;
-                    break;
-
-                case CustomPropertyDataType.Hex:
-                    if(!TryGetHexValue(value, isNumeric, out var hexValue))
-                        return;
-                    HexCustomProperty.Default = hexValue;
-                    break;
-
-                case CustomPropertyDataType.Float:
-                    if(!TryGetFloatValue(value, isNumeric, out var floatValue))
-                        return;
-                    FloatCustomProperty.Default = floatValue;
-                    break;
-
-                case CustomPropertyDataType.String:
-                    if(!IsString(isNumeric))
-                        return;
-                    StringCustomProperty.Default = value;
-                    break;
-
-                case CustomPropertyDataType.Enum:
-                    if(!TryGetEnumValue(value, isNumeric, out var enumValue))
-                        return;
-                    EnumCustomProperty.Default = enumValue;
-                    break;
-            }
-        }
-
-        internal bool TryGetIntegerValue(string value, bool isNumeric, out int integerValue)
-        {
-            integerValue = 0;
-            if (!isNumeric)
-            {
-                m_observer.PropertySyntaxError();
-                return false;
-            }
-
-            if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture,
-                    out integerValue))
-            {
-                m_observer.PropertySyntaxError();
-                return false;
-            }
-
-            if (CanAcceptAllValue(CustomPropertyDataType.Integer))
-                return true;
-
-            if (integerValue < IntegerCustomProperty.Minimum || integerValue > IntegerCustomProperty.Maximum)
-            {
-                m_observer.PropertyValueOutOfBound(Name, value);
-                return false;
-            }
-
-            return true;
-        }
-
-        internal bool TryGetHexValue(string value, bool isNumeric, out int hexValue)
-        {
-            hexValue = 0;
-            if (!isNumeric)
-            {
-                m_observer.PropertySyntaxError();
-                return false;
-            }
-
-            if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture,
-                    out hexValue))
-            {
-                m_observer.PropertySyntaxError();
-                return false;
-            }
-
-            if (CanAcceptAllValue(CustomPropertyDataType.Hex))
-                return true;
-
-            if (hexValue < HexCustomProperty.Minimum || hexValue > HexCustomProperty.Maximum)
-            {
-                m_observer.PropertyValueOutOfBound(Name, value);
-                return false;
-            }
-
-            return true;
-        }
-
-        internal bool TryGetFloatValue(string value, bool isNumeric, out float floatValue)
-        {
-            floatValue = 0;
-            if (!isNumeric)
-            {
-                m_observer.PropertySyntaxError();
-                return false;
-            }
-
-            if (!float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture,
-                    out floatValue))
-            {
-                m_observer.PropertySyntaxError();
-                return false;
-            }
-            
-            if (CanAcceptAllValue(CustomPropertyDataType.Float))
-                return true;
-
-            if (floatValue < FloatCustomProperty.Minimum || floatValue > FloatCustomProperty.Maximum)
-            {
-                m_observer.PropertyValueOutOfBound(Name, value);
-                return false;
-            }
-
-            return true;
-        }
-
-        internal bool IsString(bool isNumeric)
-        {
-            if (isNumeric)
-            {
-                m_observer.PropertySyntaxError();
-                return false;
-            }
-
-            return true;
-        }
-
-        internal bool TryGetEnumValue(string value, bool isNumeric, out string enumValue)
-        {
-            enumValue = null;
-            if (isNumeric)
-            {
-                if (!TryGetEnumValueFromIndex(value, out enumValue))
+            case CustomPropertyDataType.Integer:
+                if (!TryGetIntegerValue(value, isNumeric, out var integerValue))
                 {
-                    return false;
+                    return;
                 }
-            }
-            else
-            {
-                if (!EnumCustomProperty.Values.Contains(value))
+
+                IntegerCustomProperty.Default = integerValue;
+                break;
+
+            case CustomPropertyDataType.Hex:
+                if (!TryGetHexValue(value, isNumeric, out var hexValue))
                 {
-                    m_observer.PropertyValueOutOfBound(Name, value);
-                    return false;
+                    return;
                 }
-                enumValue = value;
-            }
+
+                HexCustomProperty.Default = hexValue;
+                break;
+
+            case CustomPropertyDataType.Float:
+                if (!TryGetFloatValue(value, isNumeric, out var floatValue))
+                {
+                    return;
+                }
+
+                FloatCustomProperty.Default = floatValue;
+                break;
+
+            case CustomPropertyDataType.String:
+                if (!IsString(isNumeric))
+                {
+                    return;
+                }
+
+                StringCustomProperty.Default = value;
+                break;
+
+            case CustomPropertyDataType.Enum:
+                if (!TryGetEnumValue(value, isNumeric, out var enumValue))
+                {
+                    return;
+                }
+
+                EnumCustomProperty.Default = enumValue;
+                break;
+        }
+    }
+
+    internal bool TryGetIntegerValue(string value, bool isNumeric, out int integerValue)
+    {
+        integerValue = 0;
+        if (!isNumeric)
+        {
+            observer.PropertySyntaxError();
+            return false;
+        }
+
+        if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture,
+                out integerValue))
+        {
+            observer.PropertySyntaxError();
+            return false;
+        }
+
+        if (CanAcceptAllValue(CustomPropertyDataType.Integer))
+        {
             return true;
         }
 
-        private bool TryGetEnumValueFromIndex(string value, out string enumValue)
+        if (integerValue < IntegerCustomProperty.Minimum || integerValue > IntegerCustomProperty.Maximum)
         {
-            enumValue = null;
+            observer.PropertyValueOutOfBound(Name, value);
+            return false;
+        }
 
-            if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var index))
-            {
-                m_observer.PropertySyntaxError();
-                return false;
-            }
+        return true;
+    }
 
-            if (index < 0 || index >= EnumCustomProperty.Values.Length)
-            {
-                m_observer.PropertyValueOutOfIndex(Name, value);
-                return false;
-            }
-            
-            enumValue = EnumCustomProperty.Values[index];
+    internal bool TryGetHexValue(string value, bool isNumeric, out int hexValue)
+    {
+        hexValue = 0;
+        if (!isNumeric)
+        {
+            observer.PropertySyntaxError();
+            return false;
+        }
+
+        if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture,
+                out hexValue))
+        {
+            observer.PropertySyntaxError();
+            return false;
+        }
+
+        if (CanAcceptAllValue(CustomPropertyDataType.Hex))
+        {
             return true;
         }
 
-        private bool CanAcceptAllValue(CustomPropertyDataType dataType)
+        if (hexValue < HexCustomProperty.Minimum || hexValue > HexCustomProperty.Maximum)
         {
-            switch (dataType)
+            observer.PropertyValueOutOfBound(Name, value);
+            return false;
+        }
+
+        return true;
+    }
+
+    internal bool TryGetFloatValue(string value, bool isNumeric, out float floatValue)
+    {
+        floatValue = 0;
+        if (!isNumeric)
+        {
+            observer.PropertySyntaxError();
+            return false;
+        }
+
+        if (!float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture,
+                out floatValue))
+        {
+            observer.PropertySyntaxError();
+            return false;
+        }
+
+        if (CanAcceptAllValue(CustomPropertyDataType.Float))
+        {
+            return true;
+        }
+
+        if (floatValue < FloatCustomProperty.Minimum || floatValue > FloatCustomProperty.Maximum)
+        {
+            observer.PropertyValueOutOfBound(Name, value);
+            return false;
+        }
+
+        return true;
+    }
+
+    internal bool IsString(bool isNumeric)
+    {
+        if (isNumeric)
+        {
+            observer.PropertySyntaxError();
+            return false;
+        }
+
+        return true;
+    }
+
+    internal bool TryGetEnumValue(string value, bool isNumeric, out string enumValue)
+    {
+        enumValue = null;
+        if (isNumeric)
+        {
+            if (!TryGetEnumValueFromIndex(value, out enumValue))
             {
-                case CustomPropertyDataType.Integer:
-                    return IntegerCustomProperty.Minimum == 0 && IntegerCustomProperty.Maximum == 0;
-                case CustomPropertyDataType.Hex:
-                    return HexCustomProperty.Minimum == 0 && HexCustomProperty.Maximum == 0;
-                case CustomPropertyDataType.Float:
-                    return FloatCustomProperty.Minimum == 0 && FloatCustomProperty.Maximum == 0;
-                case CustomPropertyDataType.String:
-                case CustomPropertyDataType.Enum:
-                default:
-                    return false;
+                return false;
             }
         }
+        else
+        {
+            if (!EnumCustomProperty.Values.Contains(value))
+            {
+                observer.PropertyValueOutOfBound(Name, value);
+                return false;
+            }
+
+            enumValue = value;
+        }
+
+        return true;
     }
 
-    public class NumericCustomPropertyDefinition<T>
+    private bool TryGetEnumValueFromIndex(string value, out string enumValue)
     {
-        public T Maximum { get; set; }
-        public T Minimum { get; set; }
-        public T Default { get; set; }
+        enumValue = null;
+
+        if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var index))
+        {
+            observer.PropertySyntaxError();
+            return false;
+        }
+
+        if (index < 0 || index >= EnumCustomProperty.Values.Length)
+        {
+            observer.PropertyValueOutOfIndex(Name, value);
+            return false;
+        }
+
+        enumValue = EnumCustomProperty.Values[index];
+        return true;
     }
 
-    public class StringCustomPropertyDefinition
+    private bool CanAcceptAllValue(CustomPropertyDataType dataType)
     {
-        public string Default { get; set; }
+        switch (dataType)
+        {
+            case CustomPropertyDataType.Integer:
+                return IntegerCustomProperty.Minimum == 0 && IntegerCustomProperty.Maximum == 0;
+            case CustomPropertyDataType.Hex:
+                return HexCustomProperty.Minimum == 0 && HexCustomProperty.Maximum == 0;
+            case CustomPropertyDataType.Float:
+                return ExtensionsAndHelpers.AreDoublesEqual(FloatCustomProperty.Minimum, 0) && ExtensionsAndHelpers.AreDoublesEqual(FloatCustomProperty.Maximum, 0);
+            case CustomPropertyDataType.String:
+            case CustomPropertyDataType.Enum:
+            default:
+                return false;
+        }
     }
+}
 
-    public class EnumCustomPropertyDefinition
-    {
-        public string Default { get; set; }
-        public string[] Values { get; set; }
-    }
+public class NumericCustomPropertyDefinition<T>
+{
+    public T Maximum { get; internal set; }
+    public T Minimum { get; internal set; }
+    public T Default { get; internal set; }
+}
 
-    public enum CustomPropertyObjectType
-    {
-        Node, Message, Signal, Environment
-    }
+public class StringCustomPropertyDefinition
+{
+    public string Default { get; internal set; }
+}
 
-    public enum CustomPropertyDataType
-    {
-        Integer, Hex, Float, String, Enum
-    }
+public class EnumCustomPropertyDefinition
+{
+    public string Default { get; internal set; }
+    public string[] Values { get; internal set; }
+}
+
+public enum CustomPropertyObjectType
+{
+    Node,
+    Message,
+    Signal,
+    Environment
+}
+
+public enum CustomPropertyDataType
+{
+    Integer,
+    Hex,
+    Float,
+    String,
+    Enum
 }

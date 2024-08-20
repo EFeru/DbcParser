@@ -75,7 +75,7 @@ namespace DbcParserLib.Tests
                     Assert.AreEqual(0, signal.Offset);
                     Assert.AreEqual(-10, signal.Minimum);
                     Assert.AreEqual(35.6, signal.Maximum);
-                    Assert.IsTrue(string.IsNullOrWhiteSpace(signal.Multiplexing));
+                    Assert.IsTrue(string.IsNullOrWhiteSpace(signal.multiplexing));
                     Assert.AreEqual("deg", signal.Unit);
                     Assert.AreEqual("NEO", signal.Receiver.FirstOrDefault());
                 });
@@ -103,7 +103,7 @@ namespace DbcParserLib.Tests
                     Assert.AreEqual(0, signal.Offset);
                     Assert.AreEqual(-10, signal.Minimum);
                     Assert.AreEqual(35.6, signal.Maximum);
-                    Assert.AreEqual("m7", signal.Multiplexing);
+                    Assert.AreEqual("m7", signal.multiplexing);
                     Assert.AreEqual("deg", signal.Unit);
                     Assert.AreEqual("NEO", signal.Receiver.FirstOrDefault());
                 });
@@ -131,7 +131,7 @@ namespace DbcParserLib.Tests
                     Assert.AreEqual(0, signal.Offset);
                     Assert.AreEqual(-10, signal.Minimum);
                     Assert.AreEqual(35.6, signal.Maximum);
-                    Assert.AreEqual("m7", signal.Multiplexing);
+                    Assert.AreEqual("m7", signal.multiplexing);
                     Assert.AreEqual("deg", signal.Unit);
                     CollectionAssert.AreEqual(new[] { "NEO", "WHEEL", "TOP" }, signal.Receiver);
 
@@ -160,7 +160,7 @@ namespace DbcParserLib.Tests
                     Assert.AreEqual(0, signal.Offset);
                     Assert.AreEqual(-10, signal.Minimum);
                     Assert.AreEqual(35.6, signal.Maximum);
-                    Assert.AreEqual("m7", signal.Multiplexing);
+                    Assert.AreEqual("m7", signal.multiplexing);
                     Assert.AreEqual("deg", signal.Unit);
                     CollectionAssert.AreEqual(new[] { "NEO", "WHEEL", "TOP" }, signal.Receiver);
 
@@ -185,7 +185,7 @@ BO_ 200 SENSOR: 39 SENSOR
             var dbc = Parser.Parse(dbcString);
 
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(3, dbc.Messages.SelectMany(m => m.Signals).Count());
+            Assert.AreEqual(3, dbc.Messages.SelectMany(m => m.Value.Signals).Count());
         }
 
         [TestCase("SG_ qGearboxOilMin : 0|16@1+ (0.1,0) [0|6553.5] \"l/min\" \"NATEC\"")]

@@ -16,7 +16,7 @@ namespace DbcParserLib.Tests
             var dbc = Parser.ParseFromPath(MainDbcFilePath);
 
             Assert.AreEqual(38, dbc.Messages.Count());
-            Assert.AreEqual(485, dbc.Messages.SelectMany(m => m.Signals).Count());
+            Assert.AreEqual(485, dbc.Messages.SelectMany(m => m.Value.Signals).Count());
             Assert.AreEqual(15, dbc.Nodes.Count());
         }
         [Test]
@@ -31,7 +31,7 @@ BO_ 200 SENSOR: 39 SENSOR
             var dbc = Parser.Parse(dbcString);
 
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(2, dbc.Messages.SelectMany(m => m.Signals).Count());
+            Assert.AreEqual(2, dbc.Messages.SelectMany(m => m.Value.Signals).Count());
         }
 
         [Test]
@@ -41,7 +41,7 @@ BO_ 200 SENSOR: 39 SENSOR
             var dbc = Parser.ParseFromPath(MainDbcFilePath);
             dbc = Parser.ParseFromPath(MainDbcFilePath);
             Assert.AreEqual(38, dbc.Messages.Count());
-            Assert.AreEqual(485, dbc.Messages.SelectMany(m => m.Signals).Count());
+            Assert.AreEqual(485, dbc.Messages.SelectMany(m => m.Value.Signals).Count());
             Assert.AreEqual(15, dbc.Nodes.Count());
         }
 
@@ -50,13 +50,13 @@ BO_ 200 SENSOR: 39 SENSOR
         {
             var dbc = Parser.ParseFromPath(MainDbcFilePath);
 
-            var targetMessage = dbc.Messages.FirstOrDefault(x => x.ID == 309);
+            var targetMessage = dbc.Messages.FirstOrDefault(x => x.Value.ID == 309);
             Assert.IsNotNull(targetMessage);
 
-            Assert.AreEqual("ESP_135h", targetMessage.Name);
-            Assert.AreEqual("ESP", targetMessage.Transmitter);
-            Assert.AreEqual(5, targetMessage.DLC);
-            Assert.AreEqual(19, targetMessage.Signals.Count);
+            Assert.AreEqual("ESP_135h", targetMessage.Value.Name);
+            Assert.AreEqual("ESP", targetMessage.Value.Transmitter);
+            Assert.AreEqual(5, targetMessage.Value.DLC);
+            Assert.AreEqual(19, targetMessage.Value.Signals.Count);
         }
 
         [Test]
@@ -64,12 +64,12 @@ BO_ 200 SENSOR: 39 SENSOR
         {
             var dbc = Parser.ParseFromPath(MainDbcFilePath);
 
-            var targetMessage = dbc.Messages.FirstOrDefault(x => x.ID == 1006);
+            var targetMessage = dbc.Messages.FirstOrDefault(x => x.Value.ID == 1006);
             Assert.IsNotNull(targetMessage);
 
-            Assert.AreEqual(24, targetMessage.Signals.Count);
+            Assert.AreEqual(24, targetMessage.Value.Signals.Count);
 
-            var signal = targetMessage.Signals.FirstOrDefault(x => x.Name.Equals("UI_camBlockBlurThreshold"));
+            var signal = targetMessage.Value.Signals.FirstOrDefault(x => x.Value.Name.Equals("UI_camBlockBlurThreshold")).Value;
             Assert.IsNotNull(signal);
             Assert.AreEqual(DbcValueType.Unsigned, signal.ValueType);
             Assert.AreEqual(11, signal.StartBit);
@@ -86,12 +86,12 @@ BO_ 200 SENSOR: 39 SENSOR
         {
             var dbc = Parser.ParseFromPath(MainDbcFilePath);
 
-            var targetMessage = dbc.Messages.FirstOrDefault(x => x.ID == 264);
+            var targetMessage = dbc.Messages.FirstOrDefault(x => x.Value.ID == 264);
             Assert.IsNotNull(targetMessage);
 
-            Assert.AreEqual(7, targetMessage.Signals.Count);
+            Assert.AreEqual(7, targetMessage.Value.Signals.Count);
 
-            var signal = targetMessage.Signals.FirstOrDefault(x => x.Name.Equals("DI_torqueMotor"));
+            var signal = targetMessage.Value.Signals.FirstOrDefault(x => x.Value.Name.Equals("DI_torqueMotor")).Value;
             Assert.IsNotNull(signal);
             Assert.AreEqual(DbcValueType.Signed, signal.ValueType);
             Assert.AreEqual("Nm", signal.Unit);
@@ -142,12 +142,12 @@ CM_ SG_ 1043 COUNTER_ALT ""only increments on change""; ";
 
             for (var i = 0; i < messageIds.Length; ++i)
             {
-                var targetMessage = dbc.Messages.FirstOrDefault(x => x.ID == messageIds[i]);
+                var targetMessage = dbc.Messages.FirstOrDefault(x => x.Value.ID == messageIds[i]);
                 Assert.IsNotNull(targetMessage);
 
-                Assert.AreEqual(signalCount[i], targetMessage.Signals.Count);
+                Assert.AreEqual(signalCount[i], targetMessage.Value.Signals.Count);
 
-                var signal = targetMessage.Signals.FirstOrDefault(x => x.Name.Equals("COUNTER_ALT"));
+                var signal = targetMessage.Value.Signals.FirstOrDefault(x => x.Value.Name.Equals("COUNTER_ALT")).Value;
                 Assert.IsNotNull(signal);
                 Assert.AreEqual("only increments on change", signal.Comment);
             }
@@ -174,10 +174,10 @@ CM_ SG_ 1043 COUNTER_ALT ""only increments on change""; ";
             Assert.AreEqual(1, dbc.Messages.Count());
             Assert.AreEqual(1, dbc.Nodes.Count());
 
-            Assert.AreEqual("Message comment", dbc.Messages.First().Comment);
+            Assert.AreEqual("Message comment", dbc.Messages.First().Value.Comment);
             Assert.AreEqual("Node comment", dbc.Nodes.First().Comment);
 
-            var signal = dbc.Messages.Single().Signals.FirstOrDefault(x => x.Name.Equals("COUNTER_ALT"));
+            var signal = dbc.Messages.Single().Value.Signals.FirstOrDefault(x => x.Value.Name.Equals("COUNTER_ALT")).Value;
             Assert.IsNotNull(signal);
             Assert.AreEqual("only increments on change", signal.Comment);
         }
@@ -205,10 +205,10 @@ CM_ SG_ 1043 COUNTER_ALT ""only increments on change""; ";
             Assert.AreEqual(1, dbc.Messages.Count());
             Assert.AreEqual(1, dbc.Nodes.Count());
 
-            Assert.AreEqual($"Message comment first line{Environment.NewLine}second line{Environment.NewLine}third line", dbc.Messages.First().Comment);
+            Assert.AreEqual($"Message comment first line{Environment.NewLine}second line{Environment.NewLine}third line", dbc.Messages.First().Value.Comment);
             Assert.AreEqual("Node comment", dbc.Nodes.First().Comment);
 
-            var signal = dbc.Messages.Single().Signals.FirstOrDefault(x => x.Name.Equals("COUNTER_ALT"));
+            var signal = dbc.Messages.Single().Value.Signals.FirstOrDefault(x => x.Value.Name.Equals("COUNTER_ALT")).Value;
             Assert.IsNotNull(signal);
             Assert.AreEqual("only increments on change", signal.Comment);
         }
@@ -238,7 +238,7 @@ VAL_ 1043 withNamedTable DI_aebLockState ; ";
             Assert.AreEqual(1, dbc.Messages.Count());
             Assert.AreEqual(0, dbc.Nodes.Count());
 
-            var signal = dbc.Messages.Single().Signals.Single();
+            var signal = dbc.Messages.Single().Value.Signals.Single().Value;
             Assert.IsNotNull(signal);
             Assert.AreEqual(expectedValueTableMap, signal.ValueTableMap);
         }
@@ -266,7 +266,7 @@ VAL_ 1043 withNamedTable 3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 
             Assert.AreEqual(1, dbc.Messages.Count());
             Assert.AreEqual(0, dbc.Nodes.Count());
 
-            var signal = dbc.Messages.Single().Signals.Single();
+            var signal = dbc.Messages.Single().Value.Signals.Single().Value;
             Assert.IsNotNull(signal);
             Assert.AreEqual(expectedValueTableMap, signal.ValueTableMap);
         }
@@ -307,11 +307,11 @@ BA_ ""EnumAttributeName"" SG_ 1043 COUNTER_ALT ""ThirdVal""; ";
             Assert.AreEqual(70, node.CustomProperties["HexAttribute"].HexCustomProperty.Value);
 
             var message = dbc.Messages.First();
-            Assert.AreEqual(2, message.CustomProperties.Count());
-            Assert.AreEqual(7, message.CustomProperties["IntegerAttribute"].IntegerCustomProperty.Value);
-            Assert.AreEqual(0.5, message.CustomProperties["FloatAttribute"].FloatCustomProperty.Value);
+            Assert.AreEqual(2, message.Value.CustomProperties.Count());
+            Assert.AreEqual(7, message.Value.CustomProperties["IntegerAttribute"].IntegerCustomProperty.Value);
+            Assert.AreEqual(0.5, message.Value.CustomProperties["FloatAttribute"].FloatCustomProperty.Value);
 
-            var signal = dbc.Messages.Single().Signals.FirstOrDefault(x => x.Name.Equals("COUNTER_ALT"));
+            var signal = dbc.Messages.Single().Value.Signals.FirstOrDefault(x => x.Value.Name.Equals("COUNTER_ALT")).Value;
             Assert.IsNotNull(signal);
             Assert.AreEqual(2, signal.CustomProperties.Count());
             Assert.AreEqual("ThirdVal", signal.CustomProperties["EnumAttributeName"].EnumCustomProperty.Value);

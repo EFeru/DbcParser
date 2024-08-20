@@ -339,7 +339,7 @@ BO_ 200 SENSOR: 39 SENSOR
             var dbc = Parser.Parse(dbcString);
 
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual("3", dbc.Messages.First().CustomProperties.Values.First().EnumCustomProperty.Value);
+            Assert.AreEqual("3", dbc.Messages.First().Value.CustomProperties.Values.First().EnumCustomProperty.Value);
         }
 
         [Test]
@@ -353,7 +353,7 @@ BO_ 200 SENSOR: 39 SENSOR
             var dbc = Parser.Parse(dbcString);
 
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual("3", dbc.Messages.First().CustomProperties.Values.First().EnumCustomProperty.Value);
+            Assert.AreEqual("3", dbc.Messages.First().Value.CustomProperties.Values.First().EnumCustomProperty.Value);
         }
     }
 }

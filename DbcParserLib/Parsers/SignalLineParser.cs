@@ -31,13 +31,12 @@ namespace DbcParserLib.Parsers
                 var factorStr = match.Groups[7].Value;
                 var sig = new Signal
                 {
-                    Multiplexing = match.Groups[2].Value,
+                    multiplexing = match.Groups[2].Value,
                     Name = match.Groups[1].Value,
                     StartBit = ushort.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture),
                     Length = ushort.Parse(match.Groups[4].Value, CultureInfo.InvariantCulture),
                     ByteOrder = byte.Parse(match.Groups[5].Value, CultureInfo.InvariantCulture),   // 0 = MSB (Motorola), 1 = LSB (Intel)
                     ValueType = (match.Groups[6].Value == SignedSymbol ? DbcValueType.Signed : DbcValueType.Unsigned),
-                    IsInteger = IsInteger(factorStr),
                     Factor = double.Parse(match.Groups[7].Value, CultureInfo.InvariantCulture),
                     Offset = double.Parse(match.Groups[8].Value, CultureInfo.InvariantCulture),
                     Minimum = double.Parse(match.Groups[9].Value, CultureInfo.InvariantCulture),
@@ -52,11 +51,6 @@ namespace DbcParserLib.Parsers
                 m_observer.SignalSyntaxError();
 
             return true;
-        }
-
-        private static bool IsInteger(string str)
-        {
-            return int.TryParse(str, out _);
         }
     }
 }

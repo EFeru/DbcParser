@@ -1,57 +1,57 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
-namespace DbcParserLib.Model
+namespace DbcParserLib.Model;
+
+public class Message
 {
-    internal class ImmutableMessage
+    public uint ID { get; internal set; }
+    public bool IsExtID { get; internal set; }
+    public string Name { get; internal set; }
+    public ushort DLC { get; internal set; }
+    public string Transmitter { get; internal set; }
+    public string Comment { get; internal set; }
+    public bool IsMultiplexed { get; private set; }
+    public int? CycleTime { get; private set; }
+    public IReadOnlyDictionary<string, Signal> Signals => signals;
+    internal Dictionary<string, Signal> signals = new ();
+    public IReadOnlyDictionary<string, CustomProperty> CustomProperties => customProperties;
+    internal readonly Dictionary<string, CustomProperty> customProperties = new ();
+
+    internal void FinishUp()
     {
-        public uint ID { get; }
-        public bool IsExtID { get; }
-        public string Name { get; }
-        public ushort DLC { get; }
-        public string Transmitter { get; }
-        public string Comment { get; }
-        public int CycleTime { get; }
-        public IReadOnlyList<ImmutableSignal> Signals { get; }
-        public IReadOnlyDictionary<string, CustomProperty> CustomProperties { get; }
-
-        internal ImmutableMessage(Message message, IReadOnlyList<ImmutableSignal> signals)
+        AdjustExtendedId();
+        var hasCycleTime = TryGetCycleTime(out var cycleTime);
+        CycleTime = hasCycleTime ? cycleTime : null;
+        
+        foreach (var signal in signals.Values)
         {
-            message.CycleTime(out var cycleTime);
-
-            ID = message.ID;
-            IsExtID = message.IsExtID;
-            Name = message.Name;
-            DLC = message.DLC;
-            Transmitter = message.Transmitter;
-            Comment = message.Comment;
-            CycleTime = cycleTime;
-            Signals = signals;
-
-            //TODO: remove explicit cast (CustomProperty in Message class should be Dictionary instead IDictionary)
-            CustomProperties = (IReadOnlyDictionary<string, CustomProperty>)message.CustomProperties;
+            signal.FinishUp();
+            signal.MessageID = ID;
         }
+        IsMultiplexed = signals.Values.Any(s => s.Multiplexing.Role == MultiplexingRole.Multiplexor);
+    }
+    
+    private bool TryGetCycleTime(out int cycleTime)
+    {
+        cycleTime = 0;
+
+        if (customProperties.TryGetValue("GenMsgCycleTime", out var property))
+        {
+            cycleTime = property.IntegerCustomProperty.Value;
+            return true;
+        }
+
+        return false;
     }
 
-    public class Message
+    private void AdjustExtendedId()
     {
-        public uint ID;
-        public bool IsExtID;
-        public string Name;
-        public ushort DLC;
-        public string Transmitter;
-        public string Comment;
-        
-        public List<Signal> Signals = new List<Signal>();
-        public IDictionary<string, CustomProperty> CustomProperties = new Dictionary<string, CustomProperty>();
-
-        internal ImmutableMessage CreateMessage()
+        // For extended ID bit 31 is always 1
+        if (ID >= 0x80000000)
         {
-            var signals = new List<ImmutableSignal>();
-            foreach(var signal in Signals)
-            {
-                signals.Add(signal.CreateSignal());
-            }
-            return new ImmutableMessage(this, signals);
+            IsExtID = true;
+            ID -= 0x80000000;
         }
     }
 }

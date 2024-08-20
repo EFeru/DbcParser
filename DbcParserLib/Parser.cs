@@ -1,5 +1,6 @@
 using System.IO;
 using System.Collections.Generic;
+using DbcParserLib.Model;
 using DbcParserLib.Parsers;
 using DbcParserLib.Observers;
 

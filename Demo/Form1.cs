@@ -5,6 +5,7 @@ using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 using DbcParserLib;
+using DbcParserLib.Model;
 using DbcParserLib.Observers;
 
 /* 
@@ -124,9 +125,10 @@ namespace Demo
             dtMessages.Columns.Add("DLC");
             dtMessages.Columns.Add("Transmitter");
             dtMessages.Columns.Add("CycleTime");
-            foreach (var msg in dbc.Messages)
+            foreach (var msg in dbc.Messages.Values)
             {
-                msg.CycleTime(out var cycleTime);
+                var messageCycleTime = msg.CycleTime;
+                var cycleTime = messageCycleTime ?? -1 ;
                 dtMessages.Rows.Add("0x" + msg.ID.ToString("X"), msg.Name, msg.DLC, msg.Transmitter, cycleTime);
             }
 
@@ -149,12 +151,12 @@ namespace Demo
             {
                 dtSignals.Columns.Add(node.Name);
             }
-            foreach (var msg in dbc.Messages)
+            foreach (var msg in dbc.Messages.Values)
             {
-                foreach (var sig in msg.Signals)
+                foreach (var sig in msg.Signals.Values)
                 {
                     var valueTableString = string.Join("\n", sig.ValueTableMap);
-                    dtSignals.Rows.Add("0x" + sig.ID.ToString("X"), sig.Name, sig.StartBit, sig.Length, sig.ByteOrder, sig.ValueType, sig.InitialValue, sig.Factor, sig.Offset, sig.Minimum, sig.Maximum, sig.Unit, valueTableString, sig.Comment);
+                    dtSignals.Rows.Add("0x" + sig.MessageID.ToString("X"), sig.Name, sig.StartBit, sig.Length, sig.ByteOrder, sig.ValueType, sig.InitialValue, sig.Factor, sig.Offset, sig.Minimum, sig.Maximum, sig.Unit, valueTableString, sig.Comment);
 
                     int rowIdx = dtSignals.Rows.Count - 1;
                     int colIdx = dtSignals.Columns.IndexOf(msg.Transmitter);
