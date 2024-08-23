@@ -120,18 +120,18 @@ internal class DbcBuilder : IDbcBuilder
             var node = m_nodes.FirstOrDefault(n => n.Name.Equals(nodeName));
             if (node != null)
             {
-                if (!customProperty.SetCustomPropertyValue(value, isNumeric))
+                var clonedProperty = customProperty.Clone();
+                if (!clonedProperty.SetCustomPropertyValue(value, isNumeric))
                 {
                     return;
                 }
-
                 if (node.customProperties.TryGetValue(propertyName, out _))
                 {
                     m_observer.DuplicatedPropertyInNode(propertyName, node.Name);
                 }
                 else
                 {
-                    node.customProperties[propertyName] = customProperty.Clone();
+                    node.customProperties[propertyName] = clonedProperty;
                 }
             }
             else
@@ -151,7 +151,8 @@ internal class DbcBuilder : IDbcBuilder
         {
             if (m_environmentVariables.TryGetValue(variableName, out var envVariable))
             {
-                if (!customProperty.SetCustomPropertyValue(value, isNumeric))
+                var clonedProperty = customProperty.Clone();
+                if (!clonedProperty.SetCustomPropertyValue(value, isNumeric))
                 {
                     return;
                 }
@@ -162,7 +163,7 @@ internal class DbcBuilder : IDbcBuilder
                 }
                 else
                 {
-                    envVariable.customProperties[propertyName] = customProperty.Clone();
+                    envVariable.customProperties[propertyName] = clonedProperty;
                 }
             }
             else
@@ -182,7 +183,8 @@ internal class DbcBuilder : IDbcBuilder
         {
             if (m_messages.TryGetValue(messageId, out var message))
             {
-                if (!customProperty.SetCustomPropertyValue(value, isNumeric))
+                var clonedProperty = customProperty.Clone();
+                if (!clonedProperty.SetCustomPropertyValue(value, isNumeric))
                 {
                     return;
                 }
@@ -193,7 +195,7 @@ internal class DbcBuilder : IDbcBuilder
                 }
                 else
                 {
-                    message.customProperties[propertyName] = customProperty.Clone();
+                    message.customProperties[propertyName] = clonedProperty;
                 }
             }
             else
@@ -213,7 +215,8 @@ internal class DbcBuilder : IDbcBuilder
         {
             if (TryGetValueMessageSignal(messageId, signalName, out var signal))
             {
-                if (!customProperty.SetCustomPropertyValue(value, isNumeric))
+                var clonedProperty = customProperty.Clone();
+                if (!clonedProperty.SetCustomPropertyValue(value, isNumeric))
                 {
                     return;
                 }
@@ -224,7 +227,7 @@ internal class DbcBuilder : IDbcBuilder
                 }
                 else
                 {
-                    signal.customProperties[propertyName] = customProperty.Clone();
+                    signal.customProperties[propertyName] = clonedProperty;
                 }
             }
             else
@@ -432,12 +435,13 @@ internal class DbcBuilder : IDbcBuilder
         var nodeCustomProperties = m_customProperties[CustomPropertyObjectType.Node];
         foreach (var customProperty in nodeCustomProperties)
         {
+            // See comment in "AddSignalCustomProperty"
+            customProperty.Value.SetDefaultIfNotSet(); 
             foreach (var node in m_nodes)
             {
                 if (!node.customProperties.TryGetValue(customProperty.Key, out _))
                 {
                     node.customProperties[customProperty.Key] = customProperty.Value;
-                    node.customProperties[customProperty.Key].SetDefaultIfNotSet();
                 }
             }
         }
@@ -448,13 +452,14 @@ internal class DbcBuilder : IDbcBuilder
         var messageCustomProperties = m_customProperties[CustomPropertyObjectType.Message];
         foreach (var customProperty in messageCustomProperties)
         {
+            // See comment in "AddSignalCustomProperty"
+            customProperty.Value.SetDefaultIfNotSet(); 
             foreach (var message in m_messages.Values)
             {
                 FillSignalsNotSetCustomPropertyWithDefault(message.ID);
                 if (!message.customProperties.TryGetValue(customProperty.Key, out _))
                 {
                     message.customProperties[customProperty.Key] = customProperty.Value;
-                    message.customProperties[customProperty.Key].SetDefaultIfNotSet();
                 }
             }
         }
@@ -465,12 +470,15 @@ internal class DbcBuilder : IDbcBuilder
         var signalCustomProperties = m_customProperties[CustomPropertyObjectType.Signal];
         foreach (var customProperty in signalCustomProperties)
         {
+            // If a value gets set via "AddSignalCustomProperty" it always only gets set in a copy assigned to a specific signal.
+            // Because of that by definition the default value from the definition doesn't get set in the originally created customProperty
+            // It is enough to set it one now as all other signals will just get a ref to this base property (to not create unnecessary copies)
+            customProperty.Value.SetDefaultIfNotSet(); 
             foreach (var signal in m_signals[messageId].Values)
             {
                 if (!signal.customProperties.TryGetValue(customProperty.Key, out _))
                 {
                     signal.customProperties[customProperty.Key] = customProperty.Value;
-                    signal.customProperties[customProperty.Key].SetDefaultIfNotSet();
                 }
             }
         }

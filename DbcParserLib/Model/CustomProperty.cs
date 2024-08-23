@@ -25,6 +25,7 @@ public class CustomProperty
     internal CustomProperty Clone()
     {
         // The only thing that actually needs to be cloned is the value as it can differ between different if the same property is used multiple times (e.g. at different nodes)
+        // As the clone is always called before the value is set you could just not clone the value as its is PropertyValueUndefined anyway
         var clone = new CustomProperty(Name, DataType, PropertyDefinition, observer);
         switch (PropertyValue)
         {
