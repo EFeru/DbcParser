@@ -2,6 +2,7 @@
 using DbcParserLib.Parsers;
 using Moq;
 using System.Linq;
+using DbcParserLib.Model;
 using DbcParserLib.Observers;
 
 namespace DbcParserLib.Tests
@@ -232,7 +233,8 @@ BO_ 200 SENSOR: 39 SENSOR
             var dbc = Parser.Parse(dbcString);
 
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual("3", dbc.Messages.First().Value.CustomProperties.Values.First().EnumCustomProperty.Value);
+            Assert.That(dbc.Messages.First().Value.CustomProperties.Values.First().PropertyValue is EnumPropertyValue);
+            Assert.AreEqual("3", ((EnumPropertyValue)dbc.Messages.First().Value.CustomProperties.Values.First().PropertyValue).Value);
         }
 
         [Test]
@@ -246,7 +248,8 @@ BO_ 200 SENSOR: 39 SENSOR
             var dbc = Parser.Parse(dbcString);
 
             Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual("3", dbc.Messages.First().Value.CustomProperties.Values.First().EnumCustomProperty.Value);
+            Assert.That(dbc.Messages.First().Value.CustomProperties.Values.First().PropertyValue is EnumPropertyValue);
+            Assert.AreEqual("3", ((EnumPropertyValue)dbc.Messages.First().Value.CustomProperties.Values.First().PropertyValue).Value);
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using DbcParserLib.Model;
+﻿using System.Collections.Generic;
+using System.Linq;
+using DbcParserLib.Model;
 using NUnit.Framework;
 
 namespace DbcParserLib.Tests;
@@ -10,13 +12,16 @@ internal class MultiplexingInfoTests
     {
         var sig = new Signal
         {
-            multiplexing = null,
-            Name = "Test"
+            multiplexing = string.Empty,
+            Name = "Test",
+            extendedMultiplex = null
         };
 
         var multiplexing = new MultiplexingInfo(sig);
         Assert.AreEqual(MultiplexingRole.None, multiplexing.Role);
-        Assert.AreEqual(0, multiplexing.Group);
+        Assert.AreEqual(MultiplexingMode.None, multiplexing.Mode);
+        Assert.IsNull(multiplexing.ExtendedMultiplex);
+        Assert.IsNull(multiplexing.SimpleMultiplex);
     }
 
     [Test]
@@ -25,12 +30,15 @@ internal class MultiplexingInfoTests
         var sig = new Signal
         {
             multiplexing = "M",
-            Name = "Test"
+            Name = "Test",
+            extendedMultiplex = null
         };
 
         var multiplexing = new MultiplexingInfo(sig);
         Assert.AreEqual(MultiplexingRole.Multiplexor, multiplexing.Role);
-        Assert.AreEqual(0, multiplexing.Group);
+        Assert.AreEqual(MultiplexingMode.Simple, multiplexing.Mode);
+        Assert.IsNull(multiplexing.ExtendedMultiplex);
+        Assert.IsNull(multiplexing.SimpleMultiplex);
     }
 
     [Test]
@@ -39,26 +47,33 @@ internal class MultiplexingInfoTests
         var sig = new Signal
         {
             multiplexing = "m3",
-            Name = "Test"
+            Name = "Test",
+            extendedMultiplex = null
         };
 
         var multiplexing = new MultiplexingInfo(sig);
         Assert.AreEqual(MultiplexingRole.Multiplexed, multiplexing.Role);
-        Assert.AreEqual(3, multiplexing.Group);
+        Assert.AreEqual(MultiplexingMode.Simple, multiplexing.Mode);
+        Assert.IsNull(multiplexing.ExtendedMultiplex);
+        Assert.AreEqual(3, multiplexing.SimpleMultiplex!.MultiplexorValue);
     }
 
     [Test]
-    public void ExtendedMultiplexingIsPartiallySupportedTest()
+    public void ExtendedMultiplexingUsedInvalid()
     {
         var sig = new Signal
         {
             multiplexing = "m3M",
-            Name = "Test"
+            Name = "Test",
+            extendedMultiplex = null
         };
 
         var multiplexing = new MultiplexingInfo(sig);
-        Assert.AreEqual(MultiplexingRole.Multiplexed, multiplexing.Role);
-        Assert.AreEqual(3, multiplexing.Group);
+        
+        Assert.AreEqual(MultiplexingRole.Unknown, multiplexing.Role);
+        Assert.AreEqual(MultiplexingMode.Simple, multiplexing.Mode);
+        Assert.IsNull(multiplexing.ExtendedMultiplex);
+        Assert.IsNull(multiplexing.SimpleMultiplex);
     }
 
     [Test]
@@ -67,11 +82,40 @@ internal class MultiplexingInfoTests
         var sig = new Signal
         {
             multiplexing = "m12",
-            Name = "Test"
+            Name = "Test",
+            extendedMultiplex = null
         };
 
         var multiplexing = new MultiplexingInfo(sig);
+        
         Assert.AreEqual(MultiplexingRole.Multiplexed, multiplexing.Role);
-        Assert.AreEqual(12, multiplexing.Group);
+        Assert.AreEqual(MultiplexingMode.Simple, multiplexing.Mode);
+        Assert.IsNull(multiplexing.ExtendedMultiplex);
+        Assert.AreEqual(12, multiplexing.SimpleMultiplex!.MultiplexorValue);
+    }
+    
+    [Test]
+    public void ExtendedMultiplexing()
+    {
+        var sig = new Signal
+        {
+            multiplexing = "m3M",
+            Name = "Test",
+            extendedMultiplex = new ExtendedMultiplex
+            {
+                MultiplexorSignal = "Multiplexor",
+                MultiplexorRanges = new List<MultiplexorRange> { new MultiplexorRange{ Lower = 3, Upper = 3} }
+            }
+        };
+
+        var multiplexing = new MultiplexingInfo(sig);
+        
+        Assert.AreEqual(MultiplexingRole.MultiplexedMultiplexor, multiplexing.Role);
+        Assert.AreEqual(MultiplexingMode.Extended, multiplexing.Mode);
+        Assert.IsNull(multiplexing.SimpleMultiplex);
+        Assert.AreEqual("Multiplexor", multiplexing.ExtendedMultiplex!.MultiplexorSignal);
+        Assert.AreEqual(1, multiplexing.ExtendedMultiplex!.MultiplexorRanges.Count);
+        Assert.AreEqual(3, multiplexing.ExtendedMultiplex!.MultiplexorRanges.First().Lower);
+        Assert.AreEqual(3, multiplexing.ExtendedMultiplex!.MultiplexorRanges.First().Upper);
     }
 }

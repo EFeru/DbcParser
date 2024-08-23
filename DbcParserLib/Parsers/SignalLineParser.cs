@@ -22,13 +22,14 @@ namespace DbcParserLib.Parsers
 
         public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
-            if (line.TrimStart().StartsWith(SignalLineStarter) == false)
+            if (!line.TrimStart().StartsWith(SignalLineStarter))
+            {
                 return false;
+            }
 
             var match = Regex.Match(line, SignalRegex);
             if (match.Success)
             {
-                var factorStr = match.Groups[7].Value;
                 var sig = new Signal
                 {
                     multiplexing = match.Groups[2].Value,
@@ -48,7 +49,9 @@ namespace DbcParserLib.Parsers
                 builder.AddSignal(sig);
             }
             else
+            {
                 m_observer.SignalSyntaxError();
+            }
 
             return true;
         }

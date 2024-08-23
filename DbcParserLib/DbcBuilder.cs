@@ -21,12 +21,12 @@ internal class DbcBuilder : IDbcBuilder
 
     private readonly IDictionary<string, ValuesTable> m_namedTablesMap = new Dictionary<string, ValuesTable>();
 
-    private readonly IDictionary<CustomPropertyObjectType, IDictionary<string, CustomPropertyDefinition>> m_customProperties =
-        new Dictionary<CustomPropertyObjectType, IDictionary<string, CustomPropertyDefinition>>()
+    private readonly IDictionary<CustomPropertyObjectType, IDictionary<string, CustomProperty>> m_customProperties =
+        new Dictionary<CustomPropertyObjectType, IDictionary<string, CustomProperty>>()
         {
-            { CustomPropertyObjectType.Node, new Dictionary<string, CustomPropertyDefinition>() },
-            { CustomPropertyObjectType.Message, new Dictionary<string, CustomPropertyDefinition>() },
-            { CustomPropertyObjectType.Signal, new Dictionary<string, CustomPropertyDefinition>() },
+            { CustomPropertyObjectType.Node, new Dictionary<string, CustomProperty>() },
+            { CustomPropertyObjectType.Message, new Dictionary<string, CustomProperty>() },
+            { CustomPropertyObjectType.Signal, new Dictionary<string, CustomProperty>() },
         };
 
     private Message m_currentMessage;
@@ -83,7 +83,7 @@ internal class DbcBuilder : IDbcBuilder
         }
     }
 
-    public void AddCustomProperty(CustomPropertyObjectType objectType, CustomPropertyDefinition customProperty)
+    public void AddCustomProperty(CustomPropertyObjectType objectType, CustomProperty customProperty)
     {
         if (m_customProperties[objectType].TryGetValue(customProperty.Name, out _))
         {
@@ -120,8 +120,7 @@ internal class DbcBuilder : IDbcBuilder
             var node = m_nodes.FirstOrDefault(n => n.Name.Equals(nodeName));
             if (node != null)
             {
-                var property = new CustomProperty(customProperty);
-                if (!property.SetCustomPropertyValue(value, isNumeric))
+                if (!customProperty.SetCustomPropertyValue(value, isNumeric))
                 {
                     return;
                 }
@@ -132,7 +131,7 @@ internal class DbcBuilder : IDbcBuilder
                 }
                 else
                 {
-                    node.customProperties[propertyName] = property;
+                    node.customProperties[propertyName] = customProperty.Clone();
                 }
             }
             else
@@ -152,8 +151,7 @@ internal class DbcBuilder : IDbcBuilder
         {
             if (m_environmentVariables.TryGetValue(variableName, out var envVariable))
             {
-                var property = new CustomProperty(customProperty);
-                if (!property.SetCustomPropertyValue(value, isNumeric))
+                if (!customProperty.SetCustomPropertyValue(value, isNumeric))
                 {
                     return;
                 }
@@ -164,7 +162,7 @@ internal class DbcBuilder : IDbcBuilder
                 }
                 else
                 {
-                    envVariable.customProperties[propertyName] = property;
+                    envVariable.customProperties[propertyName] = customProperty.Clone();
                 }
             }
             else
@@ -184,8 +182,7 @@ internal class DbcBuilder : IDbcBuilder
         {
             if (m_messages.TryGetValue(messageId, out var message))
             {
-                var property = new CustomProperty(customProperty);
-                if (!property.SetCustomPropertyValue(value, isNumeric))
+                if (!customProperty.SetCustomPropertyValue(value, isNumeric))
                 {
                     return;
                 }
@@ -196,7 +193,7 @@ internal class DbcBuilder : IDbcBuilder
                 }
                 else
                 {
-                    message.customProperties[propertyName] = property;
+                    message.customProperties[propertyName] = customProperty.Clone();
                 }
             }
             else
@@ -216,8 +213,7 @@ internal class DbcBuilder : IDbcBuilder
         {
             if (TryGetValueMessageSignal(messageId, signalName, out var signal))
             {
-                var property = new CustomProperty(customProperty);
-                if (!property.SetCustomPropertyValue(value, isNumeric))
+                if (!customProperty.SetCustomPropertyValue(value, isNumeric))
                 {
                     return;
                 }
@@ -228,7 +224,7 @@ internal class DbcBuilder : IDbcBuilder
                 }
                 else
                 {
-                    signal.customProperties[propertyName] = property;
+                    signal.customProperties[propertyName] = customProperty.Clone();
                 }
             }
             else
@@ -259,6 +255,24 @@ internal class DbcBuilder : IDbcBuilder
         if (TryGetValueMessageSignal(messageId, signalName, out var signal))
         {
             signal.ValueType = valueType;
+        }
+        else
+        {
+            m_observer.SignalNameNotFound(messageId, signalName);
+        }
+    }
+
+    public void AddSignalExtendedMultiplexingInfo(uint messageId, string signalName, string multiplexorName, List<MultiplexorRange> multiplexorRanges)
+    {
+        if (TryGetValueMessageSignal(messageId, signalName, out var signal))
+        {
+            var extendedMultiplex = new ExtendedMultiplex
+            {
+                MultiplexorSignal = multiplexorName,
+                MultiplexorRanges = multiplexorRanges
+            };
+
+            signal.extendedMultiplex = extendedMultiplex;
         }
         else
         {
@@ -422,8 +436,8 @@ internal class DbcBuilder : IDbcBuilder
             {
                 if (!node.customProperties.TryGetValue(customProperty.Key, out _))
                 {
-                    node.customProperties[customProperty.Key] = new CustomProperty(customProperty.Value);
-                    node.customProperties[customProperty.Key].SetCustomPropertyValueFromDefault();
+                    node.customProperties[customProperty.Key] = customProperty.Value;
+                    node.customProperties[customProperty.Key].SetDefaultIfNotSet();
                 }
             }
         }
@@ -439,8 +453,8 @@ internal class DbcBuilder : IDbcBuilder
                 FillSignalsNotSetCustomPropertyWithDefault(message.ID);
                 if (!message.customProperties.TryGetValue(customProperty.Key, out _))
                 {
-                    message.customProperties[customProperty.Key] = new CustomProperty(customProperty.Value);
-                    message.customProperties[customProperty.Key].SetCustomPropertyValueFromDefault();
+                    message.customProperties[customProperty.Key] = customProperty.Value;
+                    message.customProperties[customProperty.Key].SetDefaultIfNotSet();
                 }
             }
         }
@@ -455,8 +469,8 @@ internal class DbcBuilder : IDbcBuilder
             {
                 if (!signal.customProperties.TryGetValue(customProperty.Key, out _))
                 {
-                    signal.customProperties[customProperty.Key] = new CustomProperty(customProperty.Value);
-                    signal.customProperties[customProperty.Key].SetCustomPropertyValueFromDefault();
+                    signal.customProperties[customProperty.Key] = customProperty.Value;
+                    signal.customProperties[customProperty.Key].SetDefaultIfNotSet();
                 }
             }
         }
@@ -475,7 +489,7 @@ internal class DbcBuilder : IDbcBuilder
             }
         }
 
-        return new Dbc(m_nodes.ToArray(), m_messages, m_environmentVariables.Values.ToArray());
+        return new Dbc(m_nodes.ToList(), m_messages, m_environmentVariables.Values.ToList());
     }
 }
 

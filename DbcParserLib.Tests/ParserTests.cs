@@ -304,18 +304,23 @@ BA_ ""EnumAttributeName"" SG_ 1043 COUNTER_ALT ""ThirdVal""; ";
 
             var node = dbc.Nodes.First();
             Assert.AreEqual(1, node.CustomProperties.Count());
-            Assert.AreEqual(70, node.CustomProperties["HexAttribute"].HexCustomProperty.Value);
+            Assert.That(node.CustomProperties["HexAttribute"].PropertyValue is HexPropertyValue);
+            Assert.AreEqual(70, ((HexPropertyValue)node.CustomProperties["HexAttribute"].PropertyValue).Value);
 
             var message = dbc.Messages.First();
-            Assert.AreEqual(2, message.Value.CustomProperties.Count());
-            Assert.AreEqual(7, message.Value.CustomProperties["IntegerAttribute"].IntegerCustomProperty.Value);
-            Assert.AreEqual(0.5, message.Value.CustomProperties["FloatAttribute"].FloatCustomProperty.Value);
+            Assert.AreEqual(2, message.Value.CustomProperties.Count);
+            Assert.That(message.Value.CustomProperties["IntegerAttribute"].PropertyValue is IntegerPropertyValue);
+            Assert.AreEqual(7, ((IntegerPropertyValue)message.Value.CustomProperties["IntegerAttribute"].PropertyValue).Value);
+            Assert.That(message.Value.CustomProperties["FloatAttribute"].PropertyValue is FloatPropertyValue);
+            Assert.AreEqual(0.5, ((FloatPropertyValue)message.Value.CustomProperties["FloatAttribute"].PropertyValue).Value);
 
             var signal = dbc.Messages.Single().Value.Signals.FirstOrDefault(x => x.Value.Name.Equals("COUNTER_ALT")).Value;
             Assert.IsNotNull(signal);
             Assert.AreEqual(2, signal.CustomProperties.Count());
-            Assert.AreEqual("ThirdVal", signal.CustomProperties["EnumAttributeName"].EnumCustomProperty.Value);
-            Assert.AreEqual("DefaultString", signal.CustomProperties["StringAttribute"].StringCustomProperty.Value);
+            Assert.That(signal.CustomProperties["EnumAttributeName"].PropertyValue is EnumPropertyValue);
+            Assert.AreEqual("ThirdVal", ((EnumPropertyValue)signal.CustomProperties["EnumAttributeName"].PropertyValue).Value);
+            Assert.That(signal.CustomProperties["StringAttribute"].PropertyValue is StringPropertyValue);
+            Assert.AreEqual("DefaultString", ((StringPropertyValue)signal.CustomProperties["StringAttribute"].PropertyValue).Value);
         }
 
         [Test]

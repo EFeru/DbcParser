@@ -23,17 +23,23 @@ namespace DbcParserLib.Parsers
         {
             var cleanLine = line.Trim(' ');
 
-            if (cleanLine.StartsWith(PropertiesDefinitionLineStarter) == false
-                && cleanLine.StartsWith(PropertiesDefinitionDefaultLineStarter) == false)
+            if (!cleanLine.StartsWith(PropertiesDefinitionLineStarter) && !cleanLine.StartsWith(PropertiesDefinitionDefaultLineStarter))
+            {
                 return false;
+            }
 
             if (cleanLine.StartsWith(PropertiesDefinitionDefaultLineStarter))
             {
                 var match = Regex.Match(cleanLine, PropertyDefinitionDefaultParsingRegex);
                 if (match.Success)
+                {
                     builder.AddCustomPropertyDefaultValue(match.Groups[1].Value, match.Groups[2].Value.Replace("\"", ""), !match.Groups[2].Value.StartsWith("\""));
+                }
                 else
+                {
                     m_observer.PropertyDefaultSyntaxError();
+                }
+
                 return true;
             }
 
@@ -42,12 +48,8 @@ namespace DbcParserLib.Parsers
                 var match = Regex.Match(cleanLine, PropertyDefinitionParsingRegex);
                 if (match.Success)
                 {
-                    var customProperty = new CustomPropertyDefinition(m_observer)
-                    {
-                        Name = match.Groups[2].Value,
-                    };
-
-                    CustomPropertyObjectType objectType = CustomPropertyObjectType.Node;
+                    CustomProperty? customPropertyDefinition = null;
+                    var objectType = CustomPropertyObjectType.Node;
                     switch (match.Groups[1].Value)
                     {
                         case "BO_":
@@ -57,53 +59,65 @@ namespace DbcParserLib.Parsers
                         case "EV_":
                             objectType = CustomPropertyObjectType.Environment; break;
                     }
-
-                    CustomPropertyDataType dataType = CustomPropertyDataType.Integer;
+                    
                     if (match.Groups[3].Value == "INT")
                     {
-                        customProperty.IntegerCustomProperty = new NumericCustomPropertyDefinition<int>
-                        {
-                            Minimum = int.Parse(match.Groups[4].Value, CultureInfo.InvariantCulture),
-                            Maximum = int.Parse(match.Groups[5].Value, CultureInfo.InvariantCulture),
-                        };
+                        var integerCustomProperty = new IntegerCustomPropertyDefinition
+                        (
+                            minimum : int.Parse(match.Groups[4].Value, CultureInfo.InvariantCulture),
+                            maximum : int.Parse(match.Groups[5].Value, CultureInfo.InvariantCulture)
+                        );
+                        
+                        customPropertyDefinition = new CustomProperty(match.Groups[2].Value, CustomPropertyDataType.Integer, integerCustomProperty, m_observer);
                     }
                     else if (match.Groups[3].Value == "HEX")
                     {
-                        dataType = CustomPropertyDataType.Hex;
-                        customProperty.HexCustomProperty = new NumericCustomPropertyDefinition<int>
-                        {
-                            Minimum = int.Parse(match.Groups[4].Value, CultureInfo.InvariantCulture),
-                            Maximum = int.Parse(match.Groups[5].Value, CultureInfo.InvariantCulture),
-                        };
+                        var hexCustomProperty = new HexCustomPropertyDefinition
+                        (
+                            minimum : int.Parse(match.Groups[4].Value, CultureInfo.InvariantCulture),
+                            maximum : int.Parse(match.Groups[5].Value, CultureInfo.InvariantCulture)
+                        );
+                        
+                        customPropertyDefinition = new CustomProperty(match.Groups[2].Value, CustomPropertyDataType.Hex, hexCustomProperty, m_observer);
                     }
                     else if (match.Groups[6].Value == "FLOAT")
                     {
-                        dataType = CustomPropertyDataType.Float;
-                        customProperty.FloatCustomProperty = new NumericCustomPropertyDefinition<double>
-                        {
-                            Minimum = double.Parse(match.Groups[7].Value, CultureInfo.InvariantCulture),
-                            Maximum = double.Parse(match.Groups[8].Value, CultureInfo.InvariantCulture),
-                        };
+                        var floatCustomProperty = new FloatCustomPropertyDefinition
+                        (
+                            minimum : double.Parse(match.Groups[7].Value, CultureInfo.InvariantCulture),
+                            maximum : double.Parse(match.Groups[8].Value, CultureInfo.InvariantCulture)
+                        );
+                        
+                        customPropertyDefinition = new CustomProperty(match.Groups[2].Value, CustomPropertyDataType.Float, floatCustomProperty, m_observer);
                     }
                     else if (match.Groups[9].Value == "STRING")
                     {
-                        dataType = CustomPropertyDataType.String;
-                        customProperty.StringCustomProperty = new StringCustomPropertyDefinition();
+                        var stringCustomProperty = new StringCustomPropertyDefinition();
+                        
+                        customPropertyDefinition = new CustomProperty(match.Groups[2].Value, CustomPropertyDataType.String, stringCustomProperty, m_observer);
                     }
                     else if (match.Groups[10].Value.StartsWith("ENUM"))
                     {
-                        dataType = CustomPropertyDataType.Enum;
-                        customProperty.EnumCustomProperty = new EnumCustomPropertyDefinition
-                        {
-                            Values = match.Groups[11].Value.Replace("\"", "").Split(',')
-                        };
+                        var enumCustomProperty = new EnumCustomPropertyDefinition
+                        (
+                            values : match.Groups[11].Value.Replace("\"", "").Split(',')
+                        );
+                        
+                        customPropertyDefinition = new CustomProperty(match.Groups[2].Value, CustomPropertyDataType.Enum, enumCustomProperty, m_observer);
                     }
-                    customProperty.DataType = dataType;
-                    builder.AddCustomProperty(objectType, customProperty);
+
+                    if (customPropertyDefinition is not null)
+                    {
+                        builder.AddCustomProperty(objectType, customPropertyDefinition);
+                        return true;
+                    }
+                    m_observer.PropertyDefinitionSyntaxError();
                 }
                 else
+                {
                     m_observer.PropertyDefinitionSyntaxError();
-                    
+                }
+
                 return true;
             }
 

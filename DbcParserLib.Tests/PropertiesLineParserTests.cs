@@ -69,8 +69,9 @@ namespace DbcParserLib.Tests
             Assert.IsTrue(ParseLine(@"BA_ ""AttributeName"" BO_ 2394947585 100;", msgCycleTimeLineParser, builder, nextLineProvider));
 
             var dbc = builder.Build();
-            Assert.AreEqual(true, dbc.Messages.First().Value.CustomProperties.TryGetValue("AttributeName", out var customProperty));
-            Assert.AreEqual(100, customProperty!.IntegerCustomProperty.Value);
+            Assert.That(dbc.Messages.First().Value.CustomProperties.TryGetValue("AttributeName", out var customProperty));
+            Assert.That(customProperty.PropertyValue is IntegerPropertyValue);
+            Assert.AreEqual(100, ((IntegerPropertyValue)customProperty.PropertyValue).Value);
         }
 
         [Test]
@@ -97,8 +98,9 @@ namespace DbcParserLib.Tests
             Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 150;", msgCycleTimeLineParser, builder, nextLineProvider));
 
             var dbc = builder.Build();
-            Assert.AreEqual(true, dbc.Messages.First().Value.CustomProperties.TryGetValue("AttributeName", out var customProperty));
-            Assert.AreEqual(150, customProperty!.HexCustomProperty.Value);
+            Assert.That(dbc.Messages.First().Value.CustomProperties.TryGetValue("AttributeName", out var customProperty));
+            Assert.That(customProperty.PropertyValue is HexPropertyValue);
+            Assert.AreEqual(150, ((HexPropertyValue)customProperty.PropertyValue).Value);
         }
 
         [Test]
@@ -125,8 +127,9 @@ namespace DbcParserLib.Tests
             Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 150.0;", msgCycleTimeLineParser, builder, nextLineProvider));
 
             var dbc = builder.Build();
-            Assert.AreEqual(true, dbc.Messages.First().Value.CustomProperties.TryGetValue("AttributeName", out var customProperty));
-            Assert.AreEqual(150, customProperty!.FloatCustomProperty.Value);
+            Assert.That(dbc.Messages.First().Value.CustomProperties.TryGetValue("AttributeName", out var customProperty));
+            Assert.That(customProperty.PropertyValue is FloatPropertyValue);
+            Assert.AreEqual(150, ((FloatPropertyValue)customProperty.PropertyValue).Value);
         }
 
         [Test]
@@ -135,13 +138,15 @@ namespace DbcParserLib.Tests
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            dbcBuilderMock.Setup(mock => mock.AddCustomProperty(It.IsAny<CustomPropertyObjectType>(), It.IsAny<CustomPropertyDefinition>()))
-                .Callback<CustomPropertyObjectType, CustomPropertyDefinition>((_, customProperty) =>
+            dbcBuilderMock.Setup(mock => mock.AddCustomProperty(It.IsAny<CustomPropertyObjectType>(), It.IsAny<CustomProperty>()))
+                .Callback<CustomPropertyObjectType, CustomProperty>((_, customProperty) =>
                 {
                     Assert.AreEqual("AttributeName", customProperty.Name);
                     Assert.AreEqual(CustomPropertyDataType.Float, customProperty.DataType);
-                    Assert.AreEqual(0, customProperty.FloatCustomProperty.Minimum);
-                    Assert.AreEqual(0.1, customProperty.FloatCustomProperty.Maximum);
+                    Assert.That(customProperty.PropertyDefinition is FloatCustomPropertyDefinition);
+                    var floatCustomProperty = (FloatCustomPropertyDefinition)customProperty.PropertyDefinition;
+                    Assert.AreEqual(0, floatCustomProperty.Minimum);
+                    Assert.AreEqual(0.1, floatCustomProperty.Maximum);
                 });
 
             var customPropertyLineParsers = CreateParser();
@@ -165,15 +170,17 @@ namespace DbcParserLib.Tests
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            dbcBuilderMock.Setup(mock => mock.AddCustomProperty(It.IsAny<CustomPropertyObjectType>(), It.IsAny<CustomPropertyDefinition>()))
-                .Callback<CustomPropertyObjectType, CustomPropertyDefinition>((objectType, customProperty) =>
+            dbcBuilderMock.Setup(mock => mock.AddCustomProperty(It.IsAny<CustomPropertyObjectType>(), It.IsAny<CustomProperty>()))
+                .Callback<CustomPropertyObjectType, CustomProperty>((objectType, customProperty) =>
                 {
                     Assert.AreEqual("AttributeName", customProperty.Name);
                     Assert.AreEqual(CustomPropertyDataType.Enum, customProperty.DataType);
-                    Assert.AreEqual(3, customProperty.EnumCustomProperty.Values.Length);
-                    Assert.AreEqual("Val1", customProperty.EnumCustomProperty.Values[0]);
-                    Assert.AreEqual("Val2", customProperty.EnumCustomProperty.Values[1]);
-                    Assert.AreEqual("Val3", customProperty.EnumCustomProperty.Values[2]);
+                    Assert.That(customProperty.PropertyDefinition is EnumCustomPropertyDefinition);
+                    var enumCustomProperty = (EnumCustomPropertyDefinition)customProperty.PropertyDefinition;
+                    Assert.AreEqual(3, enumCustomProperty.Values.Count);
+                    Assert.AreEqual("Val1", enumCustomProperty.Values.ElementAt(0));
+                    Assert.AreEqual("Val2", enumCustomProperty.Values.ElementAt(1));
+                    Assert.AreEqual("Val3", enumCustomProperty.Values.ElementAt(2));
                 });
 
             dbcBuilderMock.Setup(mock => mock.AddCustomPropertyDefaultValue(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
@@ -195,15 +202,17 @@ namespace DbcParserLib.Tests
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            dbcBuilderMock.Setup(mock => mock.AddCustomProperty(It.IsAny<CustomPropertyObjectType>(), It.IsAny<CustomPropertyDefinition>()))
-                .Callback<CustomPropertyObjectType, CustomPropertyDefinition>((_, customProperty) =>
+            dbcBuilderMock.Setup(mock => mock.AddCustomProperty(It.IsAny<CustomPropertyObjectType>(), It.IsAny<CustomProperty>()))
+                .Callback<CustomPropertyObjectType, CustomProperty>((_, customProperty) =>
                 {
                     Assert.AreEqual("AttributeName", customProperty.Name);
                     Assert.AreEqual(CustomPropertyDataType.Enum, customProperty.DataType);
-                    Assert.AreEqual(3, customProperty.EnumCustomProperty.Values.Length);
-                    Assert.AreEqual("Val1", customProperty.EnumCustomProperty.Values[0]);
-                    Assert.AreEqual("Val2", customProperty.EnumCustomProperty.Values[1]);
-                    Assert.AreEqual("Val3", customProperty.EnumCustomProperty.Values[2]);
+                    Assert.That(customProperty.PropertyDefinition is EnumCustomPropertyDefinition);
+                    var enumCustomProperty = (EnumCustomPropertyDefinition)customProperty.PropertyDefinition;
+                    Assert.AreEqual(3, enumCustomProperty.Values.Count);
+                    Assert.AreEqual("Val1", enumCustomProperty.Values.ElementAt(0));
+                    Assert.AreEqual("Val2", enumCustomProperty.Values.ElementAt(1));
+                    Assert.AreEqual("Val3", enumCustomProperty.Values.ElementAt(2));
                 });
 
             dbcBuilderMock.Setup(mock => mock.AddCustomPropertyDefaultValue(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
@@ -291,8 +300,11 @@ namespace DbcParserLib.Tests
             Assert.IsTrue(ParseLine(@"BA_ ""AttributeName"" BU_ Node1 40;", customPropertyLineParsers, builder, nextLineProvider));
 
             var dbc = builder.Build();
-            Assert.AreEqual(dbc.Nodes.First().CustomProperties.First().Value.CustomPropertyDefinition.HexCustomProperty.Default, 150);
-            Assert.AreEqual(dbc.Nodes.First().CustomProperties.First().Value.HexCustomProperty.Value, 40);
+            Assert.That(dbc.Nodes.First().CustomProperties.First().Value.PropertyDefinition is HexCustomPropertyDefinition);
+            var hexCustomPropertyDefinition = (HexCustomPropertyDefinition)dbc.Nodes.First().CustomProperties.First().Value.PropertyDefinition;
+            Assert.AreEqual(150, hexCustomPropertyDefinition.Default);
+            Assert.That(dbc.Nodes.First().CustomProperties.First().Value.PropertyValue is HexPropertyValue);
+            Assert.AreEqual(40, ((HexPropertyValue)dbc.Nodes.First().CustomProperties.First().Value.PropertyValue).Value);
         }
 
         [Test]
@@ -308,7 +320,8 @@ namespace DbcParserLib.Tests
             Assert.IsTrue(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" FLOAT 0 10;", customPropertyLineParsers, builder, nextLineProvider));
             Assert.IsTrue(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 5;", customPropertyLineParsers, builder, nextLineProvider));
             Assert.IsTrue(ParseLine(@"BA_ ""AttributeName"" BU_ Node1 0.7e1;", customPropertyLineParsers, builder, nextLineProvider));
-            Assert.AreEqual(dbc.Nodes.First().CustomProperties.First().Value.FloatCustomProperty.Value, 7);
+            Assert.That(dbc.Nodes.First().CustomProperties.First().Value.PropertyValue is FloatPropertyValue);
+            Assert.AreEqual(7, ((FloatPropertyValue)dbc.Nodes.First().CustomProperties.First().Value.PropertyValue).Value);
         }
 
         [Test]
@@ -330,7 +343,8 @@ namespace DbcParserLib.Tests
 
             var dbc = builder.Build();
             Assert.AreEqual(2, dbc.Nodes.First().CustomProperties.Count);
-            Assert.AreEqual(5.5, dbc.Nodes.First().CustomProperties["AttributeName2"].FloatCustomProperty.Value);
+            Assert.That(dbc.Nodes.First().CustomProperties["AttributeName2"].PropertyValue is FloatPropertyValue);
+            Assert.AreEqual(5.5, ((FloatPropertyValue)dbc.Nodes.First().CustomProperties["AttributeName2"].PropertyValue).Value);
         }
 
         [Test]
@@ -351,8 +365,10 @@ namespace DbcParserLib.Tests
             Assert.IsTrue(ParseLine(@"BA_ ""AttributeName"" BU_ Node2 70;", customPropertyLineParsers, builder, nextLineProvider));
 
             var dbc = builder.Build();
-            Assert.AreEqual(40, dbc.Nodes.First().CustomProperties["AttributeName"].IntegerCustomProperty.Value);
-            Assert.AreEqual(70, dbc.Nodes.ElementAt(1).CustomProperties["AttributeName"].IntegerCustomProperty.Value);
+            Assert.That(dbc.Nodes.First().CustomProperties["AttributeName"].PropertyValue is IntegerPropertyValue);
+            Assert.AreEqual(40, ((IntegerPropertyValue)dbc.Nodes.First().CustomProperties["AttributeName"].PropertyValue).Value);
+            Assert.That(dbc.Nodes.ElementAt(1).CustomProperties["AttributeName"].PropertyValue is IntegerPropertyValue);
+            Assert.AreEqual(70, ((IntegerPropertyValue)dbc.Nodes.ElementAt(1).CustomProperties["AttributeName"].PropertyValue).Value);
         }
     }
 }

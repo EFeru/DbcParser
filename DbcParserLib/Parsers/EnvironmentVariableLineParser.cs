@@ -58,21 +58,21 @@ namespace DbcParserLib.Parsers
                     {
                         case 0:
                             environmentVariable.Type = EnvDataType.Integer;
-                            environmentVariable.IntegerEnvironmentVariable = new NumericEnvironmentVariable<int>()
-                            {
-                                Minimum = int.Parse(match.Groups[3].Value),
-                                Maximum = int.Parse(match.Groups[4].Value),
-                                Default = int.Parse(match.Groups[6].Value)
-                            };
+                            environmentVariable.IntegerEnvironmentVariable = new NumericEnvironmentVariable<int>
+                            (
+                                minimum : int.Parse(match.Groups[3].Value),
+                                maximum : int.Parse(match.Groups[4].Value),
+                                defaultValue : int.Parse(match.Groups[6].Value)
+                            );
                             break;
                         case 1:
                             environmentVariable.Type = EnvDataType.Float;
-                            environmentVariable.FloatEnvironmentVariable = new NumericEnvironmentVariable<double>()
-                            {
-                                Minimum = double.Parse(match.Groups[3].Value),
-                                Maximum = double.Parse(match.Groups[4].Value),
-                                Default = double.Parse(match.Groups[6].Value)
-                            };
+                            environmentVariable.FloatEnvironmentVariable = new NumericEnvironmentVariable<double>
+                            (
+                                minimum : double.Parse(match.Groups[3].Value),
+                                maximum : double.Parse(match.Groups[4].Value),
+                                defaultValue : double.Parse(match.Groups[6].Value)
+                            );
                             break;
                         case 2:
                             environmentVariable.Type = EnvDataType.String;

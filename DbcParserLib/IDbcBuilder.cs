@@ -13,10 +13,11 @@ namespace DbcParserLib
         void AddSignal(Signal signal);
         void AddSignalComment(uint messageId, string signalName, string comment);
         void AddSignalValueType(uint messageId, string signalName, DbcValueType valueType);
+        void AddSignalExtendedMultiplexingInfo(uint messageId, string signalName, string multiplexorName, List<MultiplexorRange> multiplexorRanges);
         void LinkNamedTableToSignal(uint messageId, string signalName, string tableName);
         void LinkTableValuesToSignal(uint messageId, string signalName, IReadOnlyDictionary<int, string> dictValues);
         void LinkTableValuesToEnvironmentVariable(string variableName, IReadOnlyDictionary<int, string> dictValues);
-        void AddCustomProperty(CustomPropertyObjectType objectType, CustomPropertyDefinition customProperty);
+        void AddCustomProperty(CustomPropertyObjectType objectType, CustomProperty customProperty);
         void AddCustomPropertyDefaultValue(string propertyName, string value, bool isNumeric);
         void AddNodeCustomProperty(string propertyName, string nodeName, string value, bool isNumeric);
         void AddEnvironmentVariableCustomProperty(string propertyName, string variableName, string value, bool isNumeric);

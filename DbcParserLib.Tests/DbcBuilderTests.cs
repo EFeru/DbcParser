@@ -92,7 +92,7 @@ namespace DbcParserLib.Tests
 
             Assert.AreEqual(1, dbc.Nodes.Count());
             Assert.AreEqual("nodeName", dbc.Nodes.First().Name);
-            Assert.IsNull(dbc.Nodes.First().Comment);
+            Assert.AreEqual(string.Empty, dbc.Nodes.First().Comment);
         }
 
         [Test]
@@ -150,7 +150,7 @@ namespace DbcParserLib.Tests
             Assert.IsEmpty(dbc.Nodes);
             Assert.AreEqual(1, dbc.Messages.Count());
             Assert.AreEqual(234, dbc.Messages.First().Value.ID);
-            Assert.IsNull(dbc.Messages.First().Value.Comment);
+            Assert.AreEqual(string.Empty, dbc.Messages.First().Value.Comment);
         }
 
         [Test]
@@ -234,7 +234,7 @@ namespace DbcParserLib.Tests
             Assert.AreEqual(1, dbc.Messages.Count());
             Assert.AreEqual(234, dbc.Messages.First().Value.ID);
             Assert.AreEqual("name1", dbc.Messages.First().Value.Signals.First().Value.Name);
-            Assert.IsNull(dbc.Messages.First().Value.Signals.First().Value.Comment);
+            Assert.AreEqual(string.Empty, dbc.Messages.First().Value.Signals.First().Value.Comment);
         }
 
         [Test]
@@ -253,7 +253,7 @@ namespace DbcParserLib.Tests
             Assert.AreEqual(1, dbc.Messages.Count());
             Assert.AreEqual(234, dbc.Messages.First().Value.ID);
             Assert.AreEqual("name1", dbc.Messages.First().Value.Signals.First().Value.Name);
-            Assert.IsNull(dbc.Messages.First().Value.Signals.First().Value.Comment);
+            Assert.AreEqual(string.Empty, dbc.Messages.First().Value.Signals.First().Value.Comment);
         }
 
         [Test]

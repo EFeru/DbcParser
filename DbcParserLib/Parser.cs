@@ -27,6 +27,7 @@ namespace DbcParserLib
                 new PropertiesLineParser(m_parseObserver),
                 new EnvironmentVariableLineParser(m_parseObserver),
                 new EnvironmentDataVariableLineParser(m_parseObserver),
+                new ExtendedMultiplexorLineParser(m_parseObserver),
                 new UnknownLineParser(m_parseObserver) // Used as a catch all 
             };
         }

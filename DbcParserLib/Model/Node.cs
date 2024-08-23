@@ -4,8 +4,8 @@ namespace DbcParserLib.Model;
 
 public class Node
 {
-    public string Name { get; internal set; }
-    public string Comment { get; internal set;  }
+    public string Name { get; internal set; } = string.Empty;
+    public string Comment { get; internal set;  } = string.Empty;
     
     public IReadOnlyDictionary<string, CustomProperty> CustomProperties => customProperties;
     internal readonly Dictionary<string, CustomProperty> customProperties = new ();

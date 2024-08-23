@@ -5,7 +5,7 @@ namespace DbcParserLib.Model;
 public class Signal
 {
     public uint MessageID { get; internal set; }
-    public string Name { get; internal set; }
+    public string Name { get; internal set; } = string.Empty;
     public ushort StartBit { get; internal set; }
     public ushort Length { get; internal set; }
     public byte ByteOrder { get; internal set; } = 1;
@@ -16,13 +16,14 @@ public class Signal
     public bool HasScaling { get; private set; } 
     public double Minimum { get; internal set; }
     public double Maximum { get; internal set; }
-    public bool HasLimits { get; private set; } 
-    public string Unit { get; internal set; }
-    public string[] Receiver { get; internal set; }
+    public bool HasLimits { get; private set; }
+    public string Unit { get; internal set; } = string.Empty;
+    public string[] Receiver { get; internal set; } = [];
     public IReadOnlyDictionary<int, string> ValueTableMap { get; internal set; } = new Dictionary<int, string>();
-    public string Comment { get; internal set; }
-    public MultiplexingInfo Multiplexing { get; private set; }
-    internal string multiplexing;
+    public string Comment { get; internal set; } = string.Empty;
+    public MultiplexingInfo Multiplexing { get; private set; } = new();
+    internal string multiplexing = string.Empty;
+    internal ExtendedMultiplex? extendedMultiplex;
     public IReadOnlyDictionary<string, CustomProperty> CustomProperties => customProperties;
     internal readonly Dictionary<string, CustomProperty> customProperties = new();
     public double? InitialValue { get; private set; }
@@ -48,16 +49,16 @@ public class Signal
         }
 
         double value;
-        switch (property.CustomPropertyDefinition.DataType)
+        switch (property.PropertyValue)
         {
-            case CustomPropertyDataType.Float:
-                value = property.FloatCustomProperty.Value;
+            case FloatPropertyValue floatPropertyValue:
+                value = floatPropertyValue.Value;
                 break;
-            case CustomPropertyDataType.Hex:
-                value = property.HexCustomProperty.Value;
+            case HexPropertyValue hexPropertyValue:
+                value = hexPropertyValue.Value;
                 break;
-            case CustomPropertyDataType.Integer:
-                value = property.IntegerCustomProperty.Value;
+            case IntegerPropertyValue integerPropertyValue:
+                value = integerPropertyValue.Value;
                 break;
             default:
                 return false;

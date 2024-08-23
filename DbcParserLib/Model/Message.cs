@@ -7,10 +7,10 @@ public class Message
 {
     public uint ID { get; internal set; }
     public bool IsExtID { get; internal set; }
-    public string Name { get; internal set; }
+    public string Name { get; internal set; } = string.Empty;
     public ushort DLC { get; internal set; }
-    public string Transmitter { get; internal set; }
-    public string Comment { get; internal set; }
+    public string Transmitter { get; internal set; } = string.Empty;
+    public string Comment { get; internal set; } = string.Empty;
     public bool IsMultiplexed { get; private set; }
     public int? CycleTime { get; private set; }
     public IReadOnlyDictionary<string, Signal> Signals => signals;
@@ -38,7 +38,11 @@ public class Message
 
         if (customProperties.TryGetValue("GenMsgCycleTime", out var property))
         {
-            cycleTime = property.IntegerCustomProperty.Value;
+            if (property.PropertyValue is not IntegerPropertyValue integerPropertyValue)
+            {
+                return false;
+            }
+            cycleTime = integerPropertyValue.Value;
             return true;
         }
 
