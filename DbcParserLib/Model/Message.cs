@@ -36,9 +36,25 @@ public class Message
     {
         cycleTime = 0;
 
-        if (customProperties.TryGetValue("GenMsgCycleTime", out var property))
+        if (customProperties.TryGetValue("GenMsgCycleTime", out var propertyCycleTime))
         {
-            if (property.PropertyValue is not IntegerPropertyValue integerPropertyValue)
+            var foundSendType = customProperties.TryGetValue("GenMsgSendType", out var propertySendType);
+            if (foundSendType)
+            {
+                if (propertySendType!.PropertyValue is EnumPropertyValue enumPropertyValue)
+                {
+                    if (!enumPropertyValue.Value.ToLower().Contains("cyclic"))
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            
+            if (propertyCycleTime.PropertyValue is not IntegerPropertyValue integerPropertyValue)
             {
                 return false;
             }
