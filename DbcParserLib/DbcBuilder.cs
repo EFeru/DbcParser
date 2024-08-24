@@ -125,13 +125,13 @@ internal class DbcBuilder : IDbcBuilder
                 {
                     return;
                 }
-                if (node.customProperties.TryGetValue(propertyName, out _))
+                if (node.m_customProperties.TryGetValue(propertyName, out _))
                 {
                     m_observer.DuplicatedPropertyInNode(propertyName, node.Name);
                 }
                 else
                 {
-                    node.customProperties[propertyName] = clonedProperty;
+                    node.m_customProperties[propertyName] = clonedProperty;
                 }
             }
             else
@@ -157,13 +157,13 @@ internal class DbcBuilder : IDbcBuilder
                     return;
                 }
 
-                if (envVariable.customProperties.TryGetValue(propertyName, out _))
+                if (envVariable.m_customProperties.TryGetValue(propertyName, out _))
                 {
                     m_observer.DuplicatedPropertyInEnvironmentVariable(propertyName, envVariable.Name);
                 }
                 else
                 {
-                    envVariable.customProperties[propertyName] = clonedProperty;
+                    envVariable.m_customProperties[propertyName] = clonedProperty;
                 }
             }
             else
@@ -189,13 +189,13 @@ internal class DbcBuilder : IDbcBuilder
                     return;
                 }
 
-                if (message.customProperties.TryGetValue(propertyName, out _))
+                if (message.m_customProperties.TryGetValue(propertyName, out _))
                 {
                     m_observer.DuplicatedPropertyInMessage(propertyName, message.ID);
                 }
                 else
                 {
-                    message.customProperties[propertyName] = clonedProperty;
+                    message.m_customProperties[propertyName] = clonedProperty;
                 }
             }
             else
@@ -221,13 +221,13 @@ internal class DbcBuilder : IDbcBuilder
                     return;
                 }
 
-                if (signal.customProperties.TryGetValue(propertyName, out _))
+                if (signal.m_customProperties.TryGetValue(propertyName, out _))
                 {
                     m_observer.DuplicatedPropertyInSignal(propertyName, signal.Name);
                 }
                 else
                 {
-                    signal.customProperties[propertyName] = clonedProperty;
+                    signal.m_customProperties[propertyName] = clonedProperty;
                 }
             }
             else
@@ -269,13 +269,13 @@ internal class DbcBuilder : IDbcBuilder
     {
         if (TryGetValueMessageSignal(messageId, signalName, out var signal))
         {
-            var extendedMultiplex = new ExtendedMultiplex
+            var extendedMultiplex = new Multiplexing
             {
                 MultiplexorSignal = multiplexorName,
                 MultiplexorRanges = multiplexorRanges
             };
 
-            signal.extendedMultiplex = extendedMultiplex;
+            signal.m_extendedMultiplex = extendedMultiplex;
         }
         else
         {
@@ -353,13 +353,13 @@ internal class DbcBuilder : IDbcBuilder
         var node = m_nodes.FirstOrDefault(n => n.Name.Equals(nodeName));
         if (node != null)
         {
-            if (node.environmentVariables.TryGetValue(variableName, out _))
+            if (node.m_environmentVariables.TryGetValue(variableName, out _))
             {
                 m_observer.DuplicatedEnvironmentVariableInNode(variableName, node.Name);
             }
             else
             {
-                node.environmentVariables[variableName] = m_environmentVariables[variableName];
+                node.m_environmentVariables[variableName] = m_environmentVariables[variableName];
             }
         }
         else
@@ -439,9 +439,9 @@ internal class DbcBuilder : IDbcBuilder
             customProperty.Value.SetDefaultIfNotSet(); 
             foreach (var node in m_nodes)
             {
-                if (!node.customProperties.TryGetValue(customProperty.Key, out _))
+                if (!node.m_customProperties.TryGetValue(customProperty.Key, out _))
                 {
-                    node.customProperties[customProperty.Key] = customProperty.Value;
+                    node.m_customProperties[customProperty.Key] = customProperty.Value;
                 }
             }
         }
@@ -457,9 +457,9 @@ internal class DbcBuilder : IDbcBuilder
             foreach (var message in m_messages.Values)
             {
                 FillSignalsNotSetCustomPropertyWithDefault(message.ID);
-                if (!message.customProperties.TryGetValue(customProperty.Key, out _))
+                if (!message.m_customProperties.TryGetValue(customProperty.Key, out _))
                 {
-                    message.customProperties[customProperty.Key] = customProperty.Value;
+                    message.m_customProperties[customProperty.Key] = customProperty.Value;
                 }
             }
         }
@@ -476,9 +476,9 @@ internal class DbcBuilder : IDbcBuilder
             customProperty.Value.SetDefaultIfNotSet(); 
             foreach (var signal in m_signals[messageId].Values)
             {
-                if (!signal.customProperties.TryGetValue(customProperty.Key, out _))
+                if (!signal.m_customProperties.TryGetValue(customProperty.Key, out _))
                 {
-                    signal.customProperties[customProperty.Key] = customProperty.Value;
+                    signal.m_customProperties[customProperty.Key] = customProperty.Value;
                 }
             }
         }
@@ -493,7 +493,7 @@ internal class DbcBuilder : IDbcBuilder
         {
             if (m_signals.TryGetValue(message.Key, out var signals) && signals != null)
             {
-                message.Value.signals = signals;
+                message.Value.m_signals = signals;
             }
         }
 

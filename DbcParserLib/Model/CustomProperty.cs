@@ -7,7 +7,7 @@ namespace DbcParserLib.Model;
 
 public class CustomProperty
 {
-    private readonly IParseFailureObserver observer;
+    private readonly IParseFailureObserver m_observer;
     public string Name { get; }
     public CustomPropertyDataType DataType { get; }
     public ICustomPropertyDefinition PropertyDefinition { get; }
@@ -15,7 +15,7 @@ public class CustomProperty
 
     public CustomProperty(string name, CustomPropertyDataType dataType, ICustomPropertyDefinition propertyDefinition, IParseFailureObserver observer)
     {
-        this.observer = observer;
+        m_observer = observer;
         DataType = dataType;
         PropertyDefinition = propertyDefinition;
         Name = name;
@@ -26,7 +26,7 @@ public class CustomProperty
     {
         // The only thing that actually needs to be cloned is the value as it can differ between different if the same property is used multiple times (e.g. at different nodes)
         // As the clone is always called before the value is set you could just not clone the value as its is PropertyValueUndefined anyway
-        var clone = new CustomProperty(Name, DataType, PropertyDefinition, observer);
+        var clone = new CustomProperty(Name, DataType, PropertyDefinition, m_observer);
         switch (PropertyValue)
         {
             case IntegerPropertyValue integerPropertyValue:
@@ -236,14 +236,14 @@ public class CustomProperty
         integerValue = 0;
         if (!isNumeric)
         {
-            observer.PropertySyntaxError();
+            m_observer.PropertySyntaxError();
             return false;
         }
 
         if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture,
                 out integerValue))
         {
-            observer.PropertySyntaxError();
+            m_observer.PropertySyntaxError();
             return false;
         }
 
@@ -254,7 +254,7 @@ public class CustomProperty
 
         if (integerValue < propertyDefinition.Minimum || integerValue > propertyDefinition.Maximum)
         {
-            observer.PropertyValueOutOfBound(Name, value);
+            m_observer.PropertyValueOutOfBound(Name, value);
             return false;
         }
 
@@ -266,14 +266,14 @@ public class CustomProperty
         hexValue = 0;
         if (!isNumeric)
         {
-            observer.PropertySyntaxError();
+            m_observer.PropertySyntaxError();
             return false;
         }
 
         if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture,
                 out hexValue))
         {
-            observer.PropertySyntaxError();
+            m_observer.PropertySyntaxError();
             return false;
         }
 
@@ -284,7 +284,7 @@ public class CustomProperty
 
         if (hexValue < propertyDefinition.Minimum || hexValue > propertyDefinition.Maximum)
         {
-            observer.PropertyValueOutOfBound(Name, value);
+            m_observer.PropertyValueOutOfBound(Name, value);
             return false;
         }
 
@@ -296,14 +296,14 @@ public class CustomProperty
         floatValue = 0;
         if (!isNumeric)
         {
-            observer.PropertySyntaxError();
+            m_observer.PropertySyntaxError();
             return false;
         }
 
         if (!float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture,
                 out floatValue))
         {
-            observer.PropertySyntaxError();
+            m_observer.PropertySyntaxError();
             return false;
         }
 
@@ -314,7 +314,7 @@ public class CustomProperty
 
         if (floatValue < propertyDefinition.Minimum || floatValue > propertyDefinition.Maximum)
         {
-            observer.PropertyValueOutOfBound(Name, value);
+            m_observer.PropertyValueOutOfBound(Name, value);
             return false;
         }
 
@@ -325,7 +325,7 @@ public class CustomProperty
     {
         if (isNumeric)
         {
-            observer.PropertySyntaxError();
+            m_observer.PropertySyntaxError();
             return false;
         }
 
@@ -346,7 +346,7 @@ public class CustomProperty
         {
             if (!propertyDefinition.Values.Contains(value))
             {
-                observer.PropertyValueOutOfBound(Name, value);
+                m_observer.PropertyValueOutOfBound(Name, value);
                 return false;
             }
 
@@ -361,13 +361,13 @@ public class CustomProperty
         enumValue = null;
         if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var index))
         {
-            observer.PropertySyntaxError();
+            m_observer.PropertySyntaxError();
             return false;
         }
 
         if (index < 0 || index >= propertyDefinition.Values.Count)
         {
-            observer.PropertyValueOutOfIndex(Name, value);
+            m_observer.PropertyValueOutOfIndex(Name, value);
             return false;
         }
 

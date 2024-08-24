@@ -32,7 +32,7 @@ namespace DbcParserLib.Parsers
             {
                 var sig = new Signal
                 {
-                    multiplexing = match.Groups[2].Value,
+                    m_multiplexing = match.Groups[2].Value,
                     Name = match.Groups[1].Value,
                     StartBit = ushort.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture),
                     Length = ushort.Parse(match.Groups[4].Value, CultureInfo.InvariantCulture),

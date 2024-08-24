@@ -1,147 +1,146 @@
-namespace DbcParserLib.Observers
+namespace DbcParserLib.Observers;
+
+public class SilentFailureObserver : IParseFailureObserver
 {
-    public class SilentFailureObserver : IParseFailureObserver
+    public int CurrentLine {get; set;}
+
+    public void DuplicatedMessage(uint messageId)
     {
-        public int CurrentLine {get; set;}
+    }
 
-        public void DuplicatedMessage(uint messageId)
-        {
-        }
+    public void DuplicatedNode(string nodeName)
+    {
+    }
 
-        public void DuplicatedNode(string nodeName)
-        {
-        }
+    public void DuplicatedSignalInMessage(uint messageId, string signalName)
+    {
+    }
 
-        public void DuplicatedSignalInMessage(uint messageId, string signalName)
-        {
-        }
+    public void DuplicatedValueTableName(string tableName)
+    {
+    }
 
-        public void DuplicatedValueTableName(string tableName)
-        {
-        }
+    public void DuplicatedEnvironmentVariableName(string variableName)
+    {
+    }
 
-        public void DuplicatedEnvironmentVariableName(string variableName)
-        {
-        }
+    public void DuplicatedProperty(string propertyName)
+    {
+    }
 
-        public void DuplicatedProperty(string propertyName)
-        {
-        }
+    public void DuplicatedPropertyInNode(string propertyName, string nodeName)
+    {
+    }
 
-        public void DuplicatedPropertyInNode(string propertyName, string nodeName)
-        {
-        }
+    public void DuplicatedPropertyInEnvironmentVariable(string propertyName, string environmentVariableName)
+    {
+    }
 
-        public void DuplicatedPropertyInEnvironmentVariable(string propertyName, string environmentVariableName)
-        {
-        }
+    public void DuplicatedPropertyInMessage(string propertyName, uint messageId)
+    {
+    }
 
-        public void DuplicatedPropertyInMessage(string propertyName, uint messageId)
-        {
-        }
+    public void DuplicatedPropertyInSignal(string propertyName, string signalName)
+    {
+    }
 
-        public void DuplicatedPropertyInSignal(string propertyName, string signalName)
-        {
-        }
+    public void DuplicatedEnvironmentVariableInNode(string environmentVariableName, string nodeName)
+    {
+    }
 
-        public void DuplicatedEnvironmentVariableInNode(string environmentVariableName, string nodeName)
-        {
-        }
+    public void CommentSyntaxError()
+    {
+    }
 
-        public void CommentSyntaxError()
-        {
-        }
+    public void EnvironmentDataVariableSyntaxError()
+    {
+    }
 
-        public void EnvironmentDataVariableSyntaxError()
-        {
-        }
+    public void MessageSyntaxError()
+    {
+    }
 
-        public void MessageSyntaxError()
-        {
-        }
+    public void EnvironmentVariableSyntaxError()
+    {
+    }
 
-        public void EnvironmentVariableSyntaxError()
-        {
-        }
+    public void NodeSyntaxError()
+    {
+    }
 
-        public void NodeSyntaxError()
-        {
-        }
+    public void PropertyDefinitionSyntaxError()
+    {
+    }
 
-        public void PropertyDefinitionSyntaxError()
-        {
-        }
+    public void PropertySyntaxError()
+    {
+    }
 
-        public void PropertySyntaxError()
-        {
-        }
+    public void PropertyDefaultSyntaxError()
+    {
+    }
 
-        public void PropertyDefaultSyntaxError()
-        {
-        }
+    public void SignalSyntaxError()
+    {
+    }
 
-        public void SignalSyntaxError()
-        {
-        }
+    public void SignalValueTypeSyntaxError()
+    {
+    }
 
-        public void SignalValueTypeSyntaxError()
-        {
-        }
-
-        public void SignalMultiplexingError()
-        {
-        }
+    public void SignalMultiplexingError()
+    {
+    }
         
-        public void ValueTableDefinitionSyntaxError()
-        {
-        }
+    public void ValueTableDefinitionSyntaxError()
+    {
+    }
 
-        public void ValueTableSyntaxError()
-        {
-        }
+    public void ValueTableSyntaxError()
+    {
+    }
 
-        public void SignalNameNotFound(uint messageId, string signalName)
-        {
-        }
+    public void SignalNameNotFound(uint messageId, string signalName)
+    {
+    }
 
-        public void NodeNameNotFound(string nodeName)
-        {
-        }
+    public void NodeNameNotFound(string nodeName)
+    {
+    }
 
-        public void MessageIdNotFound(uint messageId)
-        {
-        }
+    public void MessageIdNotFound(uint messageId)
+    {
+    }
 
-        public void EnvironmentVariableNameNotFound(string variableName)
-        {
-        }
+    public void EnvironmentVariableNameNotFound(string variableName)
+    {
+    }
 
-        public void PropertyNameNotFound(string propertyName)
-        {
-        }
+    public void PropertyNameNotFound(string propertyName)
+    {
+    }
 
-        public void TableMapNameNotFound(string tableName)
-        {
-        }
+    public void TableMapNameNotFound(string tableName)
+    {
+    }
 
-        public void PropertyValueOutOfBound(string propertyName, string value)
-        {
-        }
+    public void PropertyValueOutOfBound(string propertyName, string value)
+    {
+    }
 
-        public void PropertyValueOutOfIndex(string propertyName, string index)
-        {
-        }
+    public void PropertyValueOutOfIndex(string propertyName, string index)
+    {
+    }
 
-        public void UnknownLine()
-        {
-        }
+    public void UnknownLine()
+    {
+    }
 
-        public void NoMessageFound()
-        {
-        }
+    public void NoMessageFound()
+    {
+    }
 
-        public void Clear()
-        {
-        }
+    public void Clear()
+    {
     }
 }

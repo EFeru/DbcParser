@@ -13,32 +13,33 @@ public class Message
     public string Comment { get; internal set; } = string.Empty;
     public bool IsMultiplexed { get; private set; }
     public int? CycleTime { get; private set; }
-    public IReadOnlyDictionary<string, Signal> Signals => signals;
-    internal Dictionary<string, Signal> signals = new ();
-    public IReadOnlyDictionary<string, CustomProperty> CustomProperties => customProperties;
-    internal readonly Dictionary<string, CustomProperty> customProperties = new ();
+    public IReadOnlyDictionary<string, Signal> Signals => m_signals;
+    internal Dictionary<string, Signal> m_signals = new ();
+    public IReadOnlyDictionary<string, CustomProperty> CustomProperties => m_customProperties;
+    internal readonly Dictionary<string, CustomProperty> m_customProperties = new ();
 
     internal void FinishUp()
     {
         AdjustExtendedId();
         var hasCycleTime = TryGetCycleTime(out var cycleTime);
         CycleTime = hasCycleTime ? cycleTime : null;
-        
-        foreach (var signal in signals.Values)
+
+        var hasExtendedMultiplexing = m_signals.Values.Any(x => x.m_extendedMultiplex is not null);
+        foreach (var signal in m_signals.Values)
         {
-            signal.FinishUp();
+            signal.FinishUp(this, hasExtendedMultiplexing);
             signal.MessageID = ID;
         }
-        IsMultiplexed = signals.Values.Any(s => s.Multiplexing.Role == MultiplexingRole.Multiplexor);
+        IsMultiplexed = m_signals.Values.Any(s => s.MultiplexingInfo.Role == MultiplexingRole.Multiplexor);
     }
     
     private bool TryGetCycleTime(out int cycleTime)
     {
         cycleTime = 0;
 
-        if (customProperties.TryGetValue("GenMsgCycleTime", out var propertyCycleTime))
+        if (m_customProperties.TryGetValue("GenMsgCycleTime", out var propertyCycleTime))
         {
-            var foundSendType = customProperties.TryGetValue("GenMsgSendType", out var propertySendType);
+            var foundSendType = m_customProperties.TryGetValue("GenMsgSendType", out var propertySendType);
             if (foundSendType)
             {
                 if (propertySendType!.PropertyValue is EnumPropertyValue enumPropertyValue)

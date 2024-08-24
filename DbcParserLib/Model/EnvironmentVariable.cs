@@ -10,8 +10,8 @@ public class EnvironmentVariable
     public string Comment { get; internal set; } = string.Empty;
     public EnvAccessibility Access { get; internal set; }
     public IReadOnlyDictionary<int, string> ValueTableMap { get; internal set; } = new Dictionary<int, string>();
-    public IReadOnlyDictionary<string, CustomProperty> CustomProperties => customProperties;
-    internal readonly Dictionary<string, CustomProperty> customProperties = new ();
+    public IReadOnlyDictionary<string, CustomProperty> CustomProperties => m_customProperties;
+    internal readonly Dictionary<string, CustomProperty> m_customProperties = new ();
     public NumericEnvironmentVariable<int>? IntegerEnvironmentVariable { get; internal set; }
     public NumericEnvironmentVariable<double>? FloatEnvironmentVariable { get; internal set; }
     public DataEnvironmentVariable? DataEnvironmentVariable { get; internal set; }

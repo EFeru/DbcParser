@@ -21,19 +21,19 @@ public class Signal
     public string[] Receiver { get; internal set; } = [];
     public IReadOnlyDictionary<int, string> ValueTableMap { get; internal set; } = new Dictionary<int, string>();
     public string Comment { get; internal set; } = string.Empty;
-    public MultiplexingInfo Multiplexing { get; private set; } = new();
-    internal string multiplexing = string.Empty;
-    internal ExtendedMultiplex? extendedMultiplex;
-    public IReadOnlyDictionary<string, CustomProperty> CustomProperties => customProperties;
-    internal readonly Dictionary<string, CustomProperty> customProperties = new();
+    public MultiplexingInfo MultiplexingInfo { get; private set; } = new();
+    internal string m_multiplexing = string.Empty;
+    internal Multiplexing? m_extendedMultiplex;
+    public IReadOnlyDictionary<string, CustomProperty> CustomProperties => m_customProperties;
+    internal readonly Dictionary<string, CustomProperty> m_customProperties = new();
     public double? InitialValue { get; private set; }
 
-    internal void FinishUp()
+    internal void FinishUp(Message message, bool messageHasComplexMultiplexing)
     {
         InitialValue = null;
         var hasInitialValue = TryGetInitialValue(out var initialValue);
         InitialValue = hasInitialValue ? initialValue : null;
-        Multiplexing = new MultiplexingInfo(this);
+        MultiplexingInfo = new MultiplexingInfo(this, message, messageHasComplexMultiplexing);
         HasScaling = ExtensionsAndHelpers.IsDoubleZero(Offset) && ExtensionsAndHelpers.AreDoublesEqual(Factor, 1.0);
         HasLimits = !ExtensionsAndHelpers.IsDoubleZero(Minimum) || !ExtensionsAndHelpers.IsDoubleZero(Maximum);
         IsInteger = CheckIsInteger();
@@ -43,7 +43,7 @@ public class Signal
     {
         initialValue = null;
 
-        if (!customProperties.TryGetValue("GenSigStartValue", out var property))
+        if (!m_customProperties.TryGetValue("GenSigStartValue", out var property))
         {
             return false;
         }

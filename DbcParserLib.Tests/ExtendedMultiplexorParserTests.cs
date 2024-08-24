@@ -31,31 +31,26 @@ SG_MUL_VAL_ 2024 S1 Service 1-1;";
         var signal3 = dbc.Messages.First().Value.Signals.First(x => x.Key.Equals("S1"));
         var signal4 = dbc.Messages.First().Value.Signals.First(x => x.Key.Equals("Service"));
         
-        Assert.AreEqual(MultiplexingMode.Extended, signal1.Value.Multiplexing.Mode);
-        Assert.AreEqual(MultiplexingRole.Multiplexed, signal1.Value.Multiplexing.Role);
-        Assert.IsNull(signal1.Value.Multiplexing.SimpleMultiplex);
-        Assert.AreEqual("S1", signal1.Value.Multiplexing.ExtendedMultiplex!.MultiplexorSignal);
-        Assert.AreEqual(1, signal1.Value.Multiplexing.ExtendedMultiplex!.MultiplexorRanges.Count);
-        Assert.AreEqual(13, signal1.Value.Multiplexing.ExtendedMultiplex!.MultiplexorRanges.First().Lower);
+        Assert.AreEqual(MultiplexingRole.Multiplexed, signal1.Value.MultiplexingInfo.Role);
+        Assert.IsNotNull(signal1.Value.MultiplexingInfo.Multiplexing);
+        Assert.AreEqual("S1", signal1.Value.MultiplexingInfo.Multiplexing.MultiplexorSignal);
+        Assert.AreEqual(1, signal1.Value.MultiplexingInfo.Multiplexing.MultiplexorRanges.Count);
+        Assert.AreEqual(13, signal1.Value.MultiplexingInfo.Multiplexing.MultiplexorRanges.First().Lower);
         
-        Assert.AreEqual(MultiplexingMode.Extended, signal2.Value.Multiplexing.Mode);
-        Assert.AreEqual(MultiplexingRole.Multiplexed, signal2.Value.Multiplexing.Role);
-        Assert.IsNull(signal2.Value.Multiplexing.SimpleMultiplex);
-        Assert.AreEqual("S1", signal2.Value.Multiplexing.ExtendedMultiplex!.MultiplexorSignal);
-        Assert.AreEqual(1, signal2.Value.Multiplexing.ExtendedMultiplex!.MultiplexorRanges.Count);
-        Assert.AreEqual(17, signal2.Value.Multiplexing.ExtendedMultiplex!.MultiplexorRanges.First().Lower);
+        Assert.AreEqual(MultiplexingRole.Multiplexed, signal2.Value.MultiplexingInfo.Role);
+        Assert.IsNotNull(signal2.Value.MultiplexingInfo.Multiplexing);
+        Assert.AreEqual("S1", signal2.Value.MultiplexingInfo.Multiplexing!.MultiplexorSignal);
+        Assert.AreEqual(1, signal2.Value.MultiplexingInfo.Multiplexing!.MultiplexorRanges.Count);
+        Assert.AreEqual(17, signal2.Value.MultiplexingInfo.Multiplexing!.MultiplexorRanges.First().Lower);
         
-        Assert.AreEqual(MultiplexingMode.Extended, signal3.Value.Multiplexing.Mode);
-        Assert.AreEqual(MultiplexingRole.MultiplexedMultiplexor, signal3.Value.Multiplexing.Role);
-        Assert.IsNull(signal3.Value.Multiplexing.SimpleMultiplex);
-        Assert.AreEqual("Service", signal3.Value.Multiplexing.ExtendedMultiplex!.MultiplexorSignal);
-        Assert.AreEqual(1, signal3.Value.Multiplexing.ExtendedMultiplex!.MultiplexorRanges.Count);
-        Assert.AreEqual(1, signal3.Value.Multiplexing.ExtendedMultiplex!.MultiplexorRanges.First().Lower);
+        Assert.AreEqual(MultiplexingRole.MultiplexedMultiplexor, signal3.Value.MultiplexingInfo.Role);
+        Assert.IsNotNull(signal3.Value.MultiplexingInfo.Multiplexing);
+        Assert.AreEqual("Service", signal3.Value.MultiplexingInfo.Multiplexing!.MultiplexorSignal);
+        Assert.AreEqual(1, signal3.Value.MultiplexingInfo.Multiplexing!.MultiplexorRanges.Count);
+        Assert.AreEqual(1, signal3.Value.MultiplexingInfo.Multiplexing!.MultiplexorRanges.First().Lower);
         
-        Assert.AreEqual(MultiplexingMode.Simple, signal4.Value.Multiplexing.Mode);
-        Assert.AreEqual(MultiplexingRole.Multiplexor, signal4.Value.Multiplexing.Role);
-        Assert.IsNull(signal4.Value.Multiplexing.SimpleMultiplex);
-        Assert.IsNull(signal4.Value.Multiplexing.ExtendedMultiplex);
+        Assert.AreEqual(MultiplexingRole.Multiplexor, signal4.Value.MultiplexingInfo.Role);
+        Assert.IsNotNull(signal4.Value.MultiplexingInfo.Multiplexing);
     }
     
     [Test]
@@ -83,33 +78,28 @@ SG_MUL_VAL_ 100 Mux_4 Mux_3 2-2;";
         var signal3 = dbc.Messages.First().Value.Signals.First(x => x.Key.Equals("Mux_3"));
         var signal4 = dbc.Messages.First().Value.Signals.First(x => x.Key.Equals("Mux_4"));
         
-        Assert.AreEqual(MultiplexingMode.Simple, signal1.Value.Multiplexing.Mode);
-        Assert.AreEqual(MultiplexingRole.Multiplexor, signal1.Value.Multiplexing.Role);
-        Assert.IsNull(signal1.Value.Multiplexing.SimpleMultiplex);
-        Assert.IsNull(signal1.Value.Multiplexing.ExtendedMultiplex);
+        Assert.AreEqual(MultiplexingRole.Multiplexor, signal1.Value.MultiplexingInfo.Role);
+        Assert.IsNotNull(signal1.Value.MultiplexingInfo.Multiplexing);
         
-        Assert.AreEqual(MultiplexingMode.Extended, signal2.Value.Multiplexing.Mode);
-        Assert.AreEqual(MultiplexingRole.MultiplexedMultiplexor, signal2.Value.Multiplexing.Role);
-        Assert.IsNull(signal2.Value.Multiplexing.SimpleMultiplex);
-        Assert.AreEqual("Mux_1", signal2.Value.Multiplexing.ExtendedMultiplex!.MultiplexorSignal);
-        Assert.AreEqual(2, signal2.Value.Multiplexing.ExtendedMultiplex!.MultiplexorRanges.Count);
-        Assert.AreEqual(3, signal2.Value.Multiplexing.ExtendedMultiplex!.MultiplexorRanges.First().Lower);
-        Assert.AreEqual(3, signal2.Value.Multiplexing.ExtendedMultiplex!.MultiplexorRanges.First().Upper);
-        Assert.AreEqual(5, signal2.Value.Multiplexing.ExtendedMultiplex!.MultiplexorRanges.Last().Lower);
-        Assert.AreEqual(10, signal2.Value.Multiplexing.ExtendedMultiplex!.MultiplexorRanges.Last().Upper);
+        Assert.AreEqual(MultiplexingRole.MultiplexedMultiplexor, signal2.Value.MultiplexingInfo.Role);
+        Assert.IsNotNull(signal2.Value.MultiplexingInfo.Multiplexing);
+        Assert.AreEqual("Mux_1", signal2.Value.MultiplexingInfo.Multiplexing!.MultiplexorSignal);
+        Assert.AreEqual(2, signal2.Value.MultiplexingInfo.Multiplexing!.MultiplexorRanges.Count);
+        Assert.AreEqual(3, signal2.Value.MultiplexingInfo.Multiplexing!.MultiplexorRanges.First().Lower);
+        Assert.AreEqual(3, signal2.Value.MultiplexingInfo.Multiplexing!.MultiplexorRanges.First().Upper);
+        Assert.AreEqual(5, signal2.Value.MultiplexingInfo.Multiplexing!.MultiplexorRanges.Last().Lower);
+        Assert.AreEqual(10, signal2.Value.MultiplexingInfo.Multiplexing!.MultiplexorRanges.Last().Upper);
         
-        Assert.AreEqual(MultiplexingMode.Extended, signal3.Value.Multiplexing.Mode);
-        Assert.AreEqual(MultiplexingRole.MultiplexedMultiplexor, signal3.Value.Multiplexing.Role);
-        Assert.IsNull(signal3.Value.Multiplexing.SimpleMultiplex);
-        Assert.AreEqual("Mux_2", signal3.Value.Multiplexing.ExtendedMultiplex!.MultiplexorSignal);
-        Assert.AreEqual(1, signal3.Value.Multiplexing.ExtendedMultiplex!.MultiplexorRanges.Count);
-        Assert.AreEqual(3, signal3.Value.Multiplexing.ExtendedMultiplex!.MultiplexorRanges.First().Lower);
+        Assert.AreEqual(MultiplexingRole.MultiplexedMultiplexor, signal3.Value.MultiplexingInfo.Role);
+        Assert.IsNotNull(signal3.Value.MultiplexingInfo.Multiplexing);
+        Assert.AreEqual("Mux_2", signal3.Value.MultiplexingInfo.Multiplexing!.MultiplexorSignal);
+        Assert.AreEqual(1, signal3.Value.MultiplexingInfo.Multiplexing!.MultiplexorRanges.Count);
+        Assert.AreEqual(3, signal3.Value.MultiplexingInfo.Multiplexing!.MultiplexorRanges.First().Lower);
         
-        Assert.AreEqual(MultiplexingMode.Extended, signal4.Value.Multiplexing.Mode);
-        Assert.AreEqual(MultiplexingRole.Multiplexed, signal4.Value.Multiplexing.Role);
-        Assert.IsNull(signal4.Value.Multiplexing.SimpleMultiplex);
-        Assert.AreEqual("Mux_3", signal4.Value.Multiplexing.ExtendedMultiplex!.MultiplexorSignal);
-        Assert.AreEqual(1, signal4.Value.Multiplexing.ExtendedMultiplex!.MultiplexorRanges.Count);
-        Assert.AreEqual(2, signal4.Value.Multiplexing.ExtendedMultiplex!.MultiplexorRanges.First().Lower);
+        Assert.AreEqual(MultiplexingRole.Multiplexed, signal4.Value.MultiplexingInfo.Role);
+        Assert.IsNotNull(signal4.Value.MultiplexingInfo.Multiplexing);
+        Assert.AreEqual("Mux_3", signal4.Value.MultiplexingInfo.Multiplexing!.MultiplexorSignal);
+        Assert.AreEqual(1, signal4.Value.MultiplexingInfo.Multiplexing!.MultiplexorRanges.Count);
+        Assert.AreEqual(2, signal4.Value.MultiplexingInfo.Multiplexing!.MultiplexorRanges.First().Lower);
     }
 }

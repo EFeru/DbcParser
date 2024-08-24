@@ -12,16 +12,24 @@ internal class MultiplexingInfoTests
     {
         var sig = new Signal
         {
-            multiplexing = string.Empty,
+            m_multiplexing = string.Empty,
             Name = "Test",
-            extendedMultiplex = null
+            m_extendedMultiplex = null
         };
 
-        var multiplexing = new MultiplexingInfo(sig);
+        var message = new Message
+        {
+            m_signals = new Dictionary<string, Signal>
+            {
+                { "Test", sig }
+            }
+        };
+
+        var multiplexing = new MultiplexingInfo(sig, message, false);
         Assert.AreEqual(MultiplexingRole.None, multiplexing.Role);
-        Assert.AreEqual(MultiplexingMode.None, multiplexing.Mode);
-        Assert.IsNull(multiplexing.ExtendedMultiplex);
-        Assert.IsNull(multiplexing.SimpleMultiplex);
+        Assert.IsNotNull(multiplexing.Multiplexing);
+        Assert.AreEqual(string.Empty, multiplexing.Multiplexing.MultiplexorSignal);
+        Assert.AreEqual(0, multiplexing.Multiplexing.MultiplexorRanges.Count);
     }
 
     [Test]
@@ -29,93 +37,168 @@ internal class MultiplexingInfoTests
     {
         var sig = new Signal
         {
-            multiplexing = "M",
+            m_multiplexing = "M",
             Name = "Test",
-            extendedMultiplex = null
+            m_extendedMultiplex = null
+        };
+        
+        var message = new Message
+        {
+            m_signals = new Dictionary<string, Signal>
+            {
+                { "Test", sig }
+            }
         };
 
-        var multiplexing = new MultiplexingInfo(sig);
+        var multiplexing = new MultiplexingInfo(sig, message, false);
         Assert.AreEqual(MultiplexingRole.Multiplexor, multiplexing.Role);
-        Assert.AreEqual(MultiplexingMode.Simple, multiplexing.Mode);
-        Assert.IsNull(multiplexing.ExtendedMultiplex);
-        Assert.IsNull(multiplexing.SimpleMultiplex);
+        Assert.IsNotNull(multiplexing.Multiplexing);
+        Assert.AreEqual(string.Empty, multiplexing.Multiplexing.MultiplexorSignal);
+        Assert.AreEqual(0, multiplexing.Multiplexing.MultiplexorRanges.Count);
     }
 
     [Test]
     public void MultiplexedSingleDigitTest()
     {
-        var sig = new Signal
+        var multiplexedSignal = new Signal
         {
-            multiplexing = "m3",
+            m_multiplexing = "m3",
             Name = "Test",
-            extendedMultiplex = null
+            m_extendedMultiplex = null
+        };
+        
+        var multiplexorSignal = new Signal
+        {
+            m_multiplexing = "M",
+            Name = "Multiplexor",
+            m_extendedMultiplex = null
+        };
+        
+        var message = new Message
+        {
+            m_signals = new Dictionary<string, Signal>
+            {
+                { "Test", multiplexedSignal },
+                { "Multiplexor", multiplexorSignal },
+            }
         };
 
-        var multiplexing = new MultiplexingInfo(sig);
+        var multiplexing = new MultiplexingInfo(multiplexedSignal, message, false);
         Assert.AreEqual(MultiplexingRole.Multiplexed, multiplexing.Role);
-        Assert.AreEqual(MultiplexingMode.Simple, multiplexing.Mode);
-        Assert.IsNull(multiplexing.ExtendedMultiplex);
-        Assert.AreEqual(3, multiplexing.SimpleMultiplex!.MultiplexorValue);
+        Assert.IsNotNull(multiplexing.Multiplexing);
+        Assert.AreEqual("Multiplexor", multiplexing.Multiplexing.MultiplexorSignal);
+        Assert.AreEqual(1, multiplexing.Multiplexing.MultiplexorRanges.Count);
+        Assert.AreEqual(3, multiplexing.Multiplexing.MultiplexorRanges.First().Lower);
+        Assert.AreEqual(3, multiplexing.Multiplexing.MultiplexorRanges.First().Upper);
     }
 
     [Test]
     public void ExtendedMultiplexingUsedInvalid()
     {
-        var sig = new Signal
+        var multiplexedSignal = new Signal
         {
-            multiplexing = "m3M",
+            m_multiplexing = "m3M",
             Name = "Test",
-            extendedMultiplex = null
+            m_extendedMultiplex = null
+        };
+        
+        var multiplexorSignal = new Signal
+        {
+            m_multiplexing = "M",
+            Name = "Multiplexor",
+            m_extendedMultiplex = null
+        };
+        
+        var message = new Message
+        {
+            m_signals = new Dictionary<string, Signal>
+            {
+                { "Test", multiplexedSignal },
+                { "Multiplexor", multiplexorSignal },
+            }
         };
 
-        var multiplexing = new MultiplexingInfo(sig);
+        var multiplexing = new MultiplexingInfo(multiplexedSignal, message, false);
         
         Assert.AreEqual(MultiplexingRole.Unknown, multiplexing.Role);
-        Assert.AreEqual(MultiplexingMode.Simple, multiplexing.Mode);
-        Assert.IsNull(multiplexing.ExtendedMultiplex);
-        Assert.IsNull(multiplexing.SimpleMultiplex);
+        Assert.IsNotNull(multiplexing.Multiplexing);
+        Assert.AreEqual(string.Empty, multiplexing.Multiplexing.MultiplexorSignal);
+        Assert.AreEqual(0, multiplexing.Multiplexing.MultiplexorRanges.Count);
     }
 
     [Test]
     public void MultiplexedDoubleDigitTest()
     {
-        var sig = new Signal
+        var multiplexedSignal = new Signal
         {
-            multiplexing = "m12",
+            m_multiplexing = "m12",
             Name = "Test",
-            extendedMultiplex = null
+            m_extendedMultiplex = null
+        };
+        
+        var multiplexorSignal = new Signal
+        {
+            m_multiplexing = "M",
+            Name = "Multiplexor",
+            m_extendedMultiplex = null
+        };
+        
+        var message = new Message
+        {
+            m_signals = new Dictionary<string, Signal>
+            {
+                { "Test", multiplexedSignal },
+                { "Multiplexor", multiplexorSignal },
+            }
         };
 
-        var multiplexing = new MultiplexingInfo(sig);
+        var multiplexing = new MultiplexingInfo(multiplexedSignal, message, false);
         
         Assert.AreEqual(MultiplexingRole.Multiplexed, multiplexing.Role);
-        Assert.AreEqual(MultiplexingMode.Simple, multiplexing.Mode);
-        Assert.IsNull(multiplexing.ExtendedMultiplex);
-        Assert.AreEqual(12, multiplexing.SimpleMultiplex!.MultiplexorValue);
+        Assert.IsNotNull(multiplexing.Multiplexing);
+        Assert.AreEqual("Multiplexor", multiplexing.Multiplexing.MultiplexorSignal);
+        Assert.AreEqual(1, multiplexing.Multiplexing.MultiplexorRanges.Count);
+        Assert.AreEqual(12, multiplexing.Multiplexing.MultiplexorRanges.First().Lower);
+        Assert.AreEqual(12, multiplexing.Multiplexing.MultiplexorRanges.First().Upper);
     }
     
     [Test]
     public void ExtendedMultiplexing()
     {
-        var sig = new Signal
+        var multiplexedSignal = new Signal
         {
-            multiplexing = "m3M",
+            m_multiplexing = "m3M",
             Name = "Test",
-            extendedMultiplex = new ExtendedMultiplex
+            m_extendedMultiplex = new Multiplexing
             {
                 MultiplexorSignal = "Multiplexor",
-                MultiplexorRanges = new List<MultiplexorRange> { new MultiplexorRange{ Lower = 3, Upper = 3} }
+                MultiplexorRanges = new List<MultiplexorRange> { new MultiplexorRange{ Lower = 3, Upper = 4} }
+            }
+        };
+        
+        var multiplexorSignal = new Signal
+        {
+            m_multiplexing = "M",
+            Name = "Multiplexor",
+            m_extendedMultiplex = null
+        };
+        
+        var message = new Message
+        {
+            m_signals = new Dictionary<string, Signal>
+            {
+                { "Test", multiplexedSignal },
+                { "Multiplexor", multiplexorSignal },
             }
         };
 
-        var multiplexing = new MultiplexingInfo(sig);
+        var multiplexing = new MultiplexingInfo(multiplexedSignal, message, true);
         
         Assert.AreEqual(MultiplexingRole.MultiplexedMultiplexor, multiplexing.Role);
-        Assert.AreEqual(MultiplexingMode.Extended, multiplexing.Mode);
-        Assert.IsNull(multiplexing.SimpleMultiplex);
-        Assert.AreEqual("Multiplexor", multiplexing.ExtendedMultiplex!.MultiplexorSignal);
-        Assert.AreEqual(1, multiplexing.ExtendedMultiplex!.MultiplexorRanges.Count);
-        Assert.AreEqual(3, multiplexing.ExtendedMultiplex!.MultiplexorRanges.First().Lower);
-        Assert.AreEqual(3, multiplexing.ExtendedMultiplex!.MultiplexorRanges.First().Upper);
+        Assert.IsNotNull(multiplexing.Multiplexing);
+        Assert.AreEqual("Multiplexor", multiplexing.Multiplexing.MultiplexorSignal);
+        Assert.AreEqual(1, multiplexing.Multiplexing.MultiplexorRanges.Count);
+        Assert.AreEqual(3, multiplexing.Multiplexing.MultiplexorRanges.First().Lower);
+        Assert.AreEqual(4, multiplexing.Multiplexing.MultiplexorRanges.First().Upper);
     }
 }

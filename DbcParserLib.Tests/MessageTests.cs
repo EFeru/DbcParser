@@ -11,13 +11,13 @@ internal class MessageTests
     {
         var sig = new Signal
         {
-            multiplexing = "M",
+            m_multiplexing = "M",
             Name = "Test"
         };
 
         var message = new Message
         {
-            signals = new Dictionary<string, Signal>
+            m_signals = new Dictionary<string, Signal>
             {
                 { "Test", sig }
             }
@@ -31,13 +31,13 @@ internal class MessageTests
     {
         var sig = new Signal
         {
-            multiplexing = null,
+            m_multiplexing = null,
             Name = "Test"
         };
 
         var message = new Message
         {
-            signals = new Dictionary<string, Signal>
+            m_signals = new Dictionary<string, Signal>
             {
                 { "Test", sig }
             }

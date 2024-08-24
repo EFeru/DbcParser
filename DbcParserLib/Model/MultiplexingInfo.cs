@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace DbcParserLib.Model;
@@ -7,102 +8,120 @@ public class MultiplexingInfo
 {
     private const string MultiplexorLabel = "M";
     private const string MultiplexedLabel = "m";
-
-    public MultiplexingMode Mode { get; private set; }
+    
+    public MultiplexingRole Role { get; }
     
     /// <summary>
-    /// As of now a Multiplexor will always lead to Mode being Simple
+    /// This always exists but only contains information if Role is Multiplexed or MultiplexedMultiplexor
     /// </summary>
-    public MultiplexingRole Role { get; private set; }
-    
-    /// <summary>
-    /// Is available if Mode is Simple and the Role is Multiplexed 
-    /// </summary>
-    public SimpleMultiplex? SimpleMultiplex { get; private set; }
-    
-    /// <summary>
-    /// Is available if Mode is Extended and Role is Multiplexed or MultiplexedMultiplexor
-    /// </summary>
-    public ExtendedMultiplex? ExtendedMultiplex { get; private set; }
+    public Multiplexing Multiplexing { get; }
 
     public MultiplexingInfo()
     {
-        Mode = MultiplexingMode.Unknown;
         Role = MultiplexingRole.Unknown;
+        Multiplexing = new Multiplexing();
     }
     
-    public MultiplexingInfo(Signal signal)
+    public MultiplexingInfo(Signal signal, Message message, bool messageHasComplexMultiplexing)
     {
-        Mode = GetMultiplexingMode(signal);
-        ParseMultiplexing(signal);
+        if (!messageHasComplexMultiplexing)
+        {
+            HandleSimpleMultiplexing(signal, message, out var role, out var multiplexing);
+            Role = role;
+            Multiplexing = multiplexing;
+        }
+        else
+        {
+            HandleExtendedMultiplexing(signal, out var role, out var multiplexing);
+            Role = role;
+            Multiplexing = multiplexing;
+        }
     }
 
-    private static MultiplexingMode GetMultiplexingMode(Signal signal)
+    private void HandleSimpleMultiplexing(Signal signal, Message message, out MultiplexingRole role, out Multiplexing multiplexing)
     {
-        if (string.IsNullOrWhiteSpace(signal.multiplexing))
+        role = MultiplexingRole.Unknown;
+        multiplexing = new Multiplexing();
+        
+        if (string.IsNullOrWhiteSpace(signal.m_multiplexing))
         {
-            return MultiplexingMode.None;
-        }
-
-        if (signal.extendedMultiplex is not null)
-        {
-            return MultiplexingMode.Extended;
+            role = MultiplexingRole.None;
+            return;
         }
         
-        return MultiplexingMode.Simple;
+        if (signal.m_multiplexing.Equals(MultiplexorLabel))
+        {
+            role = MultiplexingRole.Multiplexor;
+            return;
+        }
+
+        if (signal.m_multiplexing.EndsWith(MultiplexorLabel))
+        {
+            return;
+        }
+        
+        const string extractNumberFromStringRegex = @"\d+";
+        var match = Regex.Match(signal.m_multiplexing, extractNumberFromStringRegex);
+
+        if (match.Success && uint.TryParse(match.Value, out var multiplexorValue))
+        {
+            var multiplexorSignal =  message.m_signals.Values.FirstOrDefault(x => x.m_multiplexing.Equals(MultiplexorLabel));
+            if (multiplexorSignal is null)
+            {
+                return;
+            }
+            role = MultiplexingRole.Multiplexed;
+            multiplexing = new Multiplexing
+            {
+                MultiplexorSignal = multiplexorSignal.Name,
+                MultiplexorRanges = new List<MultiplexorRange> { new MultiplexorRange
+                    {
+                        Lower = multiplexorValue,
+                        Upper = multiplexorValue
+                    }
+                }
+            };
+        }
     }
     
-    private void ParseMultiplexing(Signal signal)
+    private void HandleExtendedMultiplexing(Signal signal, out MultiplexingRole role, out Multiplexing multiplexing)
     {
-        if (string.IsNullOrWhiteSpace(signal.multiplexing))
+        role = MultiplexingRole.Unknown;
+        multiplexing = new Multiplexing();
+        
+        if (string.IsNullOrWhiteSpace(signal.m_multiplexing))
         {
-            Role = MultiplexingRole.None;
+            role = MultiplexingRole.None;
             return;
         }
 
-        if (signal.multiplexing.Equals(MultiplexorLabel))
+        if (signal.m_multiplexing.Equals(MultiplexorLabel))
         {
-            Role = MultiplexingRole.Multiplexor;
+            role = MultiplexingRole.Multiplexor;
             return;
         }
 
-        if (signal.multiplexing.StartsWith(MultiplexedLabel))
+        if (signal.m_multiplexing.StartsWith(MultiplexedLabel))
         {
-            if (signal.multiplexing.EndsWith(MultiplexorLabel))
+            if (signal.m_multiplexing.EndsWith(MultiplexorLabel))
             {
-                if (signal.extendedMultiplex is not null)
+                if (signal.m_extendedMultiplex is not null)
                 {
-                    Role = MultiplexingRole.MultiplexedMultiplexor;
-                    ExtendedMultiplex = signal.extendedMultiplex;
+                    role = MultiplexingRole.MultiplexedMultiplexor;
+                    multiplexing = signal.m_extendedMultiplex;
                     return;
                 }
                 
-                Role = MultiplexingRole.Unknown;
+                role = MultiplexingRole.Unknown;
                 return;
             }
 
-            if (signal.extendedMultiplex is not null)
+            if (signal.m_extendedMultiplex is not null)
             {
-                Role = MultiplexingRole.Multiplexed;
-                ExtendedMultiplex = signal.extendedMultiplex;
-                return;
-            }
-            
-            const string extractNumberFromStringRegex = @"\d+";
-            var match = Regex.Match(signal.multiplexing, extractNumberFromStringRegex);
-
-            if (match.Success && uint.TryParse(match.Value, out var multiplexorValue))
-            {
-                Role = MultiplexingRole.Multiplexed;
-                SimpleMultiplex = new SimpleMultiplex
-                {
-                    MultiplexorValue = multiplexorValue
-                };
-                return;
+                role = MultiplexingRole.Multiplexed;
+                multiplexing = signal.m_extendedMultiplex;
             }
         }
-
-        Role = MultiplexingRole.Unknown;
     }
 }
 
@@ -115,20 +134,7 @@ public enum MultiplexingRole
     MultiplexedMultiplexor
 }
 
-public enum MultiplexingMode
-{
-    None,
-    Unknown,
-    Simple,
-    Extended
-}
-
-public class SimpleMultiplex
-{
-    public uint MultiplexorValue { get; internal set; }
-}
-
-public class ExtendedMultiplex
+public class Multiplexing
 {
     public string MultiplexorSignal { get; internal set; } = string.Empty;
     public IReadOnlyCollection<MultiplexorRange> MultiplexorRanges { get; internal set; } = new List<MultiplexorRange>();

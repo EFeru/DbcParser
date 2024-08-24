@@ -75,7 +75,7 @@ namespace DbcParserLib.Tests
                     Assert.AreEqual(0, signal.Offset);
                     Assert.AreEqual(-10, signal.Minimum);
                     Assert.AreEqual(35.6, signal.Maximum);
-                    Assert.IsTrue(string.IsNullOrWhiteSpace(signal.multiplexing));
+                    Assert.IsTrue(string.IsNullOrWhiteSpace(signal.m_multiplexing));
                     Assert.AreEqual("deg", signal.Unit);
                     Assert.AreEqual("NEO", signal.Receiver.FirstOrDefault());
                 });
@@ -103,7 +103,7 @@ namespace DbcParserLib.Tests
                     Assert.AreEqual(0, signal.Offset);
                     Assert.AreEqual(-10, signal.Minimum);
                     Assert.AreEqual(35.6, signal.Maximum);
-                    Assert.AreEqual("m7", signal.multiplexing);
+                    Assert.AreEqual("m7", signal.m_multiplexing);
                     Assert.AreEqual("deg", signal.Unit);
                     Assert.AreEqual("NEO", signal.Receiver.FirstOrDefault());
                 });
@@ -131,7 +131,7 @@ namespace DbcParserLib.Tests
                     Assert.AreEqual(0, signal.Offset);
                     Assert.AreEqual(-10, signal.Minimum);
                     Assert.AreEqual(35.6, signal.Maximum);
-                    Assert.AreEqual("m7", signal.multiplexing);
+                    Assert.AreEqual("m7", signal.m_multiplexing);
                     Assert.AreEqual("deg", signal.Unit);
                     CollectionAssert.AreEqual(new[] { "NEO", "WHEEL", "TOP" }, signal.Receiver);
 
@@ -160,7 +160,7 @@ namespace DbcParserLib.Tests
                     Assert.AreEqual(0, signal.Offset);
                     Assert.AreEqual(-10, signal.Minimum);
                     Assert.AreEqual(35.6, signal.Maximum);
-                    Assert.AreEqual("m7", signal.multiplexing);
+                    Assert.AreEqual("m7", signal.m_multiplexing);
                     Assert.AreEqual("deg", signal.Unit);
                     CollectionAssert.AreEqual(new[] { "NEO", "WHEEL", "TOP" }, signal.Receiver);
 
