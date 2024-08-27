@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31515.178
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34607.119
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbcParserLib", "DbcParserLib\DbcParserLib.csproj", "{82DD10F6-784A-4D87-B117-FB910E84D175}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo", "Demo\Demo.csproj", "{9CA98991-90EF-4E86-BCA6-372EF2AE471E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbcParserLib.Tests", "DbcParserLib.Tests\DbcParserLib.Tests.csproj", "{0FE933E2-4870-49BD-9A9A-931F30730D82}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbcParserLib.Tests", "DbcParserLib.Tests\DbcParserLib.Tests.csproj", "{0FE933E2-4870-49BD-9A9A-931F30730D82}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbcParserLib.Benchmarks", "DbcParserLib.Benchmarks\DbcParserLib.Benchmarks.csproj", "{0B3323E7-FEC3-4606-9012-C6166D941CCC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{0FE933E2-4870-49BD-9A9A-931F30730D82}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0FE933E2-4870-49BD-9A9A-931F30730D82}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0FE933E2-4870-49BD-9A9A-931F30730D82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B3323E7-FEC3-4606-9012-C6166D941CCC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B3323E7-FEC3-4606-9012-C6166D941CCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B3323E7-FEC3-4606-9012-C6166D941CCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B3323E7-FEC3-4606-9012-C6166D941CCC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

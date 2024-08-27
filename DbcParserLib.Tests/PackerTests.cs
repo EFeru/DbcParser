@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using DbcParserLib.Model;
+using System;
 
 namespace DbcParserLib.Tests
 {
@@ -23,6 +24,14 @@ namespace DbcParserLib.Tests
 
             var val = Packer.RxSignalUnpack(txMsg, sig);
             Assert.AreEqual(-34.3, val, 1e-2);
+
+
+            var byteMsg = new byte[8];
+            Packer.TxSignalPack(byteMsg, - 34.3, sig);
+            Assert.AreEqual(43816, BitConverter.ToUInt64(byteMsg));
+
+            var valbyte = Packer.RxSignalUnpack(byteMsg, sig);
+            Assert.AreEqual(-34.3, valbyte, 1e-2);
         }
 
         [TestCase((ushort)0, 3255382835ul)]
@@ -47,6 +56,14 @@ namespace DbcParserLib.Tests
 
             var val = Packer.RxSignalUnpack(txMsg, sig);
             Assert.AreEqual(expected, val, 1e-2);
+
+
+            var byteMsg = new byte[8];
+            Packer.TxSignalPack(byteMsg, expected, sig);
+            Assert.AreEqual(packet, BitConverter.ToUInt64(byteMsg));
+
+            var valbyte = Packer.RxSignalUnpack(byteMsg, sig);
+            Assert.AreEqual(expected, valbyte, 1e-2);
         }
 
         [TestCase((ushort)0, 439799153665ul)]
@@ -71,6 +88,14 @@ namespace DbcParserLib.Tests
 
             var val = Packer.RxSignalUnpack(txMsg, sig);
             Assert.AreEqual(value, val, 1e-2);
+
+
+            var byteMsg = new byte[8];
+            Packer.TxSignalPack(byteMsg, value, sig);
+            Assert.AreEqual(packet, BitConverter.ToUInt64(byteMsg));
+
+            var valbyte = Packer.RxSignalUnpack(byteMsg, sig);
+            Assert.AreEqual(value, valbyte, 1e-2);
         }
 
         [Test]
@@ -92,6 +117,14 @@ namespace DbcParserLib.Tests
 
             var val = Packer.RxSignalUnpack(txMsg, sig);
             Assert.AreEqual(expected, val, 1e-2);
+
+
+            var byteMsg = new byte[8];
+            Packer.TxSignalPack(byteMsg, expected, sig);
+            Assert.AreEqual(13853404129830452697, BitConverter.ToUInt64(byteMsg));
+
+            var valbyte = Packer.RxSignalUnpack(byteMsg, sig);
+            Assert.AreEqual(expected, valbyte, 1e-2);
         }
 
         [Test]
@@ -113,6 +146,14 @@ namespace DbcParserLib.Tests
 
             var val = Packer.RxSignalUnpack(txMsg, sig);
             Assert.AreEqual(expected, val, 1e-2);
+
+
+            var byteMsg = new byte[8];
+            Packer.TxSignalPack(byteMsg, expected, sig);
+            Assert.AreEqual(2419432028705210816, BitConverter.ToUInt64(byteMsg));
+
+            var valbyte = Packer.RxSignalUnpack(byteMsg, sig);
+            Assert.AreEqual(expected, valbyte, 1e-2);
         }
 
         [Test]
@@ -139,6 +180,67 @@ namespace DbcParserLib.Tests
         }
 
         [Test]
+        public void SimplePackingMultiPackBigEndian()
+        {
+            var sig1 = new Signal
+            {
+                StartBit = 7,
+                Length = 10,
+                ValueType = DbcValueType.Unsigned,
+                ByteOrder = 0,
+                Factor = 1,
+                Offset = 0
+            };
+
+            var sig2 = new Signal
+            {
+                StartBit = 13,
+                Length = 6,
+                ValueType = DbcValueType.Unsigned,
+                ByteOrder = 0,
+                Factor = 1,
+                Offset = 0
+            };
+
+            var sig3 = new Signal
+            {
+                StartBit = 23,
+                Length = 32,
+                ValueType = DbcValueType.Unsigned,
+                ByteOrder = 0,
+                Factor = 1,
+                Offset = 0
+            };
+
+            var sig4 = new Signal
+            {
+                StartBit = 55,
+                Length = 16,
+                ValueType = DbcValueType.Unsigned,
+                ByteOrder = 0,
+                Factor = 1,
+                Offset = 0
+            };
+
+            ulong TxMsg = 0;
+            TxMsg |= Packer.TxSignalPack(0, sig1);
+            TxMsg |= Packer.TxSignalPack(63, sig2);
+            TxMsg |= Packer.TxSignalPack(0, sig3);
+            TxMsg |= Packer.TxSignalPack(ushort.MaxValue, sig4);
+
+            Assert.AreEqual(18446462598732857088, TxMsg);
+
+
+            byte[] txMsg = new byte[8];
+            Packer.TxSignalPack(txMsg, 0, sig1);
+            Packer.TxSignalPack(txMsg, 63, sig2);
+            Packer.TxSignalPack(txMsg, 0, sig3);
+            Packer.TxSignalPack(txMsg, ushort.MaxValue, sig4);
+
+            Assert.AreEqual(18446462598732857088, BitConverter.ToUInt64(txMsg));
+        }
+
+        [Test]
         public void PackingTest64Bit()
         {
             var sig = new Signal
@@ -156,6 +258,14 @@ namespace DbcParserLib.Tests
 
             var val = Packer.RxSignalUnpack(txMsg, sig);
             Assert.AreEqual(396.31676720860366, val);
+
+
+            var byteMsg = new byte[8];
+            Packer.TxSignalPack(byteMsg, 396.31676720860366, sig);
+            Assert.AreEqual(3963167672086036480, BitConverter.ToUInt64(byteMsg));
+
+            var valbyte = Packer.RxSignalUnpack(byteMsg, sig);
+            Assert.AreEqual(396.31676720860366, valbyte);
         }
 
         //Although Pack has one output per value/signal. Unpack can produce the same result for two different RxMsg64 inputs
@@ -180,6 +290,17 @@ namespace DbcParserLib.Tests
 
             val = Packer.RxSignalUnpack(9655716608953581040, sig);
             Assert.AreEqual(8, val);
+
+
+            var byteMsg = new byte[8];
+            Packer.TxSignalPack(byteMsg, 8, sig);
+            Assert.AreEqual(9583660007044415488, BitConverter.ToUInt64(byteMsg));
+
+            var valbyte = Packer.RxSignalUnpack(byteMsg, sig);
+            Assert.AreEqual(8, valbyte);
+
+            valbyte = Packer.RxSignalUnpack(BitConverter.GetBytes(9655716608953581040), sig);
+            Assert.AreEqual(8, valbyte);
         }
 
         //A bit packing test with a length of 1 (to test signals with < 8 bits)
@@ -204,11 +325,21 @@ namespace DbcParserLib.Tests
 
             val = Packer.RxSignalUnpack(140737488617472, sig);
             Assert.AreEqual(1, val);
+
+
+            var byteMsg = new byte[8];
+            Packer.TxSignalPack(byteMsg, 1, sig);
+            Assert.AreEqual(262144, BitConverter.ToUInt64(byteMsg));
+
+            var valbyte = Packer.RxSignalUnpack(byteMsg, sig);
+            Assert.AreEqual(1, valbyte);
+
+            valbyte = Packer.RxSignalUnpack(BitConverter.GetBytes(140737488617472), sig);
+            Assert.AreEqual(1, valbyte);
         }
 
-        //A bit packing test with a length of 3 (to test signals with < 8 bits)
         [Test]
-        public void BitPackingTest2()
+        public void UnsignedPackingTest()
         {
             var sig = new Signal
             {
@@ -228,6 +359,113 @@ namespace DbcParserLib.Tests
 
             val = Packer.RxSignalUnpack(498806260540323729, sig);
             Assert.AreEqual(6, val);
+
+
+            var byteMsg = new byte[8];
+            Packer.TxSignalPack(byteMsg, 6, sig);
+            Assert.AreEqual(384, BitConverter.ToUInt64(byteMsg));
+
+            var valbyte = Packer.RxSignalUnpack(byteMsg, sig);
+            Assert.AreEqual(6, valbyte);
+
+            valbyte = Packer.RxSignalUnpack(BitConverter.GetBytes(498806260540323729), sig);
+            Assert.AreEqual(6, valbyte);
+        }
+
+        [Test]
+        public void BytePackingBigEndianSmaller8Byte()
+        {
+            var messageLength = 5;
+
+            var sig = new Signal
+            {
+                Length = 12,
+                StartBit = 13,
+                ValueType = DbcValueType.Unsigned,
+                ByteOrder = 0,
+                Factor = 1,
+                Offset = 0
+            };
+
+            var byteMsg = new byte[messageLength];
+
+            Packer.TxSignalPack(byteMsg, 4095, sig);
+            Assert.AreEqual(byteMsg, new byte[] { 0, 63, 252, 0, 0 });
+
+            var valbyte = Packer.RxSignalUnpack(byteMsg, sig);
+            Assert.AreEqual(4095, valbyte);
+        }
+
+        [Test]
+        public void BytePackingLittleEndianSmaller8Byte()
+        {
+            var messageLength = 5;
+
+            var sig = new Signal
+            {
+                Length = 12,
+                StartBit = 26,
+                ValueType = DbcValueType.Unsigned,
+                ByteOrder = 1,
+                Factor = 1,
+                Offset = 0
+            };
+
+            var byteMsg = new byte[messageLength];
+
+            Packer.TxSignalPack(byteMsg, 4095, sig);
+            Assert.AreEqual(byteMsg, new byte[] {0, 0, 0, 252, 63});
+
+            var valbyte = Packer.RxSignalUnpack(byteMsg, sig);
+            Assert.AreEqual(4095, valbyte);
+        }
+
+        [Test]
+        public void BytePackingBigEndianBigger8Byte()
+        {
+            var messageLength = 24;
+
+            var sig = new Signal
+            {
+                Length = 12,
+                StartBit = 138,
+                ValueType = DbcValueType.Unsigned,
+                ByteOrder = 0,
+                Factor = 1,
+                Offset = 0
+            };
+
+            var byteMsg = new byte[messageLength];
+
+            Packer.TxSignalPack(byteMsg, 4095, sig);
+            Assert.AreEqual(byteMsg, new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 255, 128, 0, 0, 0, 0 });
+
+            var valbyte = Packer.RxSignalUnpack(byteMsg, sig);
+            Assert.AreEqual(4095, valbyte);
+        }
+
+        [Test]
+        public void BytePackingLittleEndianBigger8Byte()
+        {
+            var messageLength = 24;
+
+            var sig = new Signal
+            {
+                Length = 12,
+                StartBit = 138,
+                ValueType = DbcValueType.Unsigned,
+                ByteOrder = 1,
+                Factor = 1,
+                Offset = 0
+            };
+
+            var byteMsg = new byte[messageLength];
+
+            Packer.TxSignalPack(byteMsg, 4095, sig);
+            Assert.AreEqual(byteMsg, new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 252, 63, 0, 0, 0, 0, 0 });
+
+            var valbyte = Packer.RxSignalUnpack(byteMsg, sig);
+            Assert.AreEqual(4095, valbyte);
         }
     }
 }
