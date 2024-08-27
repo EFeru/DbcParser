@@ -119,6 +119,11 @@ namespace DbcParserLib.Observers
             AddError("[SIG_VALTYPE_] Signal value type syntax error");
         }
 
+        public void SignalExtendedMultiplexingError()
+        {
+            AddError("[SG_MUL_VAL_] Signal extended multiplexing syntax error");
+        }
+
         public void ValueTableDefinitionSyntaxError()
         {
             AddError("[VAL_TABLE_] Value table definition syntax error");

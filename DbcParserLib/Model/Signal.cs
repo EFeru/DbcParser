@@ -64,6 +64,7 @@ namespace DbcParserLib.Model
         public IReadOnlyDictionary<int, string> ValueTableMap = new Dictionary<int, string>();
         public string Comment;
         public string Multiplexing;
+        public string ExtendedMultiplexing = string.Empty;
         public readonly Dictionary<string, CustomProperty> CustomProperties = new Dictionary<string, CustomProperty>();
         public double InitialValue
         {

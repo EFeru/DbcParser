@@ -88,6 +88,10 @@ namespace DbcParserLib.Observers
         {
         }
 
+        public void SignalExtendedMultiplexingError()
+        {
+        }
+
         public void ValueTableDefinitionSyntaxError()
         {
         }

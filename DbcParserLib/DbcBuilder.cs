@@ -201,6 +201,18 @@ namespace DbcParserLib
                 m_observer.SignalNameNotFound(messageId, signalName);
         }
 
+        public void AddSignalExtendedMultiplexingInfo(uint messageId, string signalName, string extendedMultiplexingInfo)
+        {
+            if (TryGetValueMessageSignal(messageId, signalName, out var signal))
+            {
+                signal.ExtendedMultiplexing = extendedMultiplexingInfo;
+            }
+            else
+            {
+                m_observer.SignalNameNotFound(messageId, signalName);
+            }
+        }
+
         public void AddNodeComment(string nodeName, string comment)
         {
             var node = m_nodes.FirstOrDefault(n => n.Name.Equals(nodeName));
