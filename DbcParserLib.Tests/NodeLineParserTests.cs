@@ -90,7 +90,7 @@ namespace DbcParserLib.Tests
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
             Assert.That(nodeLineParser.TryParse(@"BU_: NODE_1 NODE_2    NODE_4   ", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
-            CollectionAssert.AreEquivalent(expectations, results);
+            Assert.That(results, Is.EquivalentTo(expectations));
         }
 
         [TestCase("BU_: 0nodeName")]

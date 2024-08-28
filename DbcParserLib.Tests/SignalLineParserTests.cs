@@ -133,7 +133,7 @@ namespace DbcParserLib.Tests
                     Assert.That(signal.Maximum, Is.EqualTo(35.6));
                     Assert.That(signal.Multiplexing, Is.EqualTo("m7"));
                     Assert.That(signal.Unit, Is.EqualTo("deg"));
-                    CollectionAssert.AreEqual(new[] { "NEO", "WHEEL", "TOP" }, signal.Receiver);
+                    Assert.That(signal.Receiver, Is.EqualTo(new[] { "NEO", "WHEEL", "TOP" }).AsCollection);
 
                 });
 
@@ -162,7 +162,7 @@ namespace DbcParserLib.Tests
                     Assert.That(signal.Maximum, Is.EqualTo(35.6));
                     Assert.That(signal.Multiplexing, Is.EqualTo("m7"));
                     Assert.That(signal.Unit, Is.EqualTo("deg"));
-                    CollectionAssert.AreEqual(new[] { "NEO", "WHEEL", "TOP" }, signal.Receiver);
+                    Assert.That(signal.Receiver, Is.EqualTo(new[] { "NEO", "WHEEL", "TOP" }).AsCollection);
 
                 });
 
