@@ -65,24 +65,29 @@ namespace DbcParserLib
             m_parseObserver.Clear();
 
             var builder = new DbcBuilder(m_parseObserver);
-            var nextLineProvider = new NextLineProvider(reader);
+            var nextLineProvider = new NextLineProvider(reader, m_parseObserver);
 
-            while (reader.Peek() >= 0)
-                ParseLine(reader.ReadLine(), builder, nextLineProvider);
+            while (nextLineProvider.TryGetLine(out var line))
+            {
+                ParseLine(line, builder, nextLineProvider);
+            }         
 
             return builder.Build();
         }
 
         private static void ParseLine(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
-            m_parseObserver.CurrentLine++;
             if (string.IsNullOrWhiteSpace(line))
-                return;
-
-            foreach(var parser in LineParsers)
             {
-                if(parser.TryParse(line, builder, nextLineProvider))
+                return;
+            }           
+
+            foreach (var parser in LineParsers)
+            {
+                if (parser.TryParse(line, builder, nextLineProvider))
+                {
                     break;
+                }
             }
         }
     }
