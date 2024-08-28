@@ -154,7 +154,7 @@ namespace Demo
                 foreach (var sig in msg.Signals)
                 {
                     var valueTableString = string.Join("\n", sig.ValueTableMap);
-                    dtSignals.Rows.Add("0x" + sig.ID.ToString("X"), sig.Name, sig.StartBit, sig.Length, sig.ByteOrder, sig.ValueType, sig.InitialValue, sig.Factor, sig.Offset, sig.Minimum, sig.Maximum, sig.Unit, valueTableString, sig.Comment);
+                    dtSignals.Rows.Add("0x" + sig.Parent.ID.ToString("X"), sig.Name, sig.StartBit, sig.Length, sig.ByteOrder, sig.ValueType, sig.InitialValue, sig.Factor, sig.Offset, sig.Minimum, sig.Maximum, sig.Unit, valueTableString, sig.Comment);
 
                     int rowIdx = dtSignals.Rows.Count - 1;
                     int colIdx = dtSignals.Columns.IndexOf(msg.Transmitter);

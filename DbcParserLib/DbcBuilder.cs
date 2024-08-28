@@ -60,7 +60,7 @@ namespace DbcParserLib
         {
             if (m_currentMessage != null)
             {
-                signal.ID = m_currentMessage.ID;
+                signal.Parent = m_currentMessage;
                 if(m_signals[m_currentMessage.ID].TryGetValue(signal.Name, out _))
                     m_observer.DuplicatedSignalInMessage(m_currentMessage.ID, signal.Name);
                 else
