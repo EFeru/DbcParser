@@ -22,6 +22,7 @@ namespace DbcParserLib.Model
         public IReadOnlyDictionary<int, string> ValueTableMap { get; }
         public string Comment { get; }
         public string Multiplexing { get; }
+        public string ExtendedMultiplexing { get; }
         public IReadOnlyDictionary<string, CustomProperty> CustomProperties { get; }
 
         internal ImmutableSignal(Signal signal) 
@@ -43,6 +44,7 @@ namespace DbcParserLib.Model
             ValueTableMap = signal.ValueTableMap;
             Comment = signal.Comment;
             Multiplexing = signal.Multiplexing;
+            ExtendedMultiplexing = signal.ExtendedMultiplexing;
             CustomProperties = signal.CustomProperties;
         }
     }
@@ -66,6 +68,7 @@ namespace DbcParserLib.Model
         public IReadOnlyDictionary<int, string> ValueTableMap = new Dictionary<int, string>();
         public string Comment;
         public string Multiplexing;
+        public string ExtendedMultiplexing;
         public Message Parent;
         public readonly Dictionary<string, CustomProperty> CustomProperties = new Dictionary<string, CustomProperty>();
         public double InitialValue

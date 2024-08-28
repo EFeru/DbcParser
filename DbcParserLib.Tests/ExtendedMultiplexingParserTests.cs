@@ -35,7 +35,7 @@ SG_MUL_VAL_ 2024 S1 Service 1-1;";
             Assert.AreEqual("S1 13-13", signal1.ExtendedMultiplexing);
             Assert.AreEqual("S1 17-17", signal2.ExtendedMultiplexing);
             Assert.AreEqual("Service 1-1", signal3.ExtendedMultiplexing);
-            Assert.AreEqual(string.Empty, signal4.ExtendedMultiplexing);
+            Assert.IsNull(signal4.ExtendedMultiplexing);
         }
 
         [Test]
@@ -63,7 +63,7 @@ SG_MUL_VAL_ 100 Mux_4 Mux_3 2-2;";
             var signal3 = dbc.Messages.First().Signals.First(x => x.Name.Equals("Mux_3"));
             var signal4 = dbc.Messages.First().Signals.First(x => x.Name.Equals("Mux_4"));
 
-            Assert.AreEqual(string.Empty, signal1.ExtendedMultiplexing);
+            Assert.IsNull(signal1.ExtendedMultiplexing);
             Assert.AreEqual("Mux_1 3-3, 5-10", signal2.ExtendedMultiplexing);
             Assert.AreEqual("Mux_2 3-3", signal3.ExtendedMultiplexing);
             Assert.AreEqual("Mux_3 2-2", signal4.ExtendedMultiplexing);
