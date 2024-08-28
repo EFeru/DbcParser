@@ -7,7 +7,7 @@ namespace DbcParserLib.Parsers
     {
         private const string ValueTableLineStarter = "VAL_ ";
         private const string ValueTableLinkParsingRegex = @"VAL_\s+(\d+)\s+([a-zA-Z_][\w]*)\s+([a-zA-Z_][\w]*)\s*;";
-        private const string ValueTableParsingRegex = @"VAL_\s+(?:(?:(\d+)\s+([a-zA-Z_][\w]*))|([a-zA-Z_][\w]*))\s+((?:(?:-?\d+)\s+(?:""[^""]*"")\s+)*)\s*;";
+        private const string ValueTableParsingRegex = @"VAL_\s+(?:(?:(\d+)\s+([a-zA-Z_][\w]*))|([a-zA-Z_][\w]*))\s+((?:(?:-?\d+)\s+(?:""[^""]*"")\s+)*)((?:(?:-?\d+)\s+(?:""[^""]*"")\s*));";
 
         private readonly IParseFailureObserver m_observer;
 
@@ -33,7 +33,9 @@ namespace DbcParserLib.Parsers
             match = Regex.Match(cleanLine, ValueTableParsingRegex);
             if (match.Success)
             {
-                if (match.Groups[4].Value.TryParseToDict(out var valueTableDictionary))
+                var dictionary = string.IsNullOrEmpty(match.Groups[4].Value) ? match.Groups[5].Value : string.Concat(match.Groups[4].Value, match.Groups[5].Value);
+
+                if (!string.IsNullOrEmpty(dictionary) && dictionary.TryParseToDict(out var valueTableDictionary))
                 {
                     if (match.Groups[3].Value != "")
                         builder.LinkTableValuesToEnvironmentVariable(match.Groups[3].Value, valueTableDictionary);

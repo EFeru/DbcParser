@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DbcParserLib.Model
 {
@@ -25,7 +26,7 @@ namespace DbcParserLib.Model
 
         internal ImmutableSignal(Signal signal) 
         {
-            ID = signal.ID;
+            ID = signal.Parent.ID;
             Name = signal.Name;
             StartBit = signal.StartBit;
             Length = signal.Length;
@@ -48,7 +49,8 @@ namespace DbcParserLib.Model
 
     public class Signal
     {
-        public uint ID;
+        [Obsolete("Please refer to Parent property instead and retrieve ID from there, if needed")]
+        public uint ID => Parent?.ID ?? 0;
         public string Name;
         public ushort StartBit;
         public ushort Length;
@@ -64,7 +66,7 @@ namespace DbcParserLib.Model
         public IReadOnlyDictionary<int, string> ValueTableMap = new Dictionary<int, string>();
         public string Comment;
         public string Multiplexing;
-        public string ExtendedMultiplexing = string.Empty;
+        public Message Parent;
         public readonly Dictionary<string, CustomProperty> CustomProperties = new Dictionary<string, CustomProperty>();
         public double InitialValue
         {

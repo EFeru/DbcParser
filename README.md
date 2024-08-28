@@ -14,6 +14,23 @@ Below is a quick preview of the extracted data using a [Tesla dbc file](https://
 
 <br>
 
+## Disclaimer
+DbcParser currently relies on well formatted dbc files as input. Well formatted means that tags are non splitted on several lines or cumulated into a single line.
+The only multiline support is for comments.
+This may change in future, but at the moment this is a requirement.
+
+As an example of unsupported stuff:
+```
+BO_ 1160 DAS_steeringControl: 4 NEO
+ SG_ DAS_steeringControlType : 23|2@0+ 
+ (1,0) [0|0] ""  EPAS
+```
+
+```
+VAL_ 1160 DAS_steeringControlType 1 "ANGLE_CONTROL" 3 
+"DISABLED" 0 "NONE" 2 "RESERVED" ; 
+```
+
 ## Quickstart
 
 Install the library via [Nuget Packages](https://www.nuget.org/packages/DbcParserLib/) and add at the top of your file:

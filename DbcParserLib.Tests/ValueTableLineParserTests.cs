@@ -159,9 +159,6 @@ namespace DbcParserLib.Tests
         public void ValueTableWithMapDefinitionIsParsedAndLinkedToChannel()
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
-            var multiline = Helpers.ConvertToMultiLine(
-                @"3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 ""AEB_LOCK_STATE_UNLOCKED"" 0 ""AEB_LOCK_STATE_LOCKED"""
-                    .SplitBySpace(), 0);
             dbcBuilderMock.Setup(
                 builder => builder.LinkTableValuesToSignal(
                     470, 
@@ -178,6 +175,25 @@ namespace DbcParserLib.Tests
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
             Assert.IsTrue(ParseLine(@"VAL_ 470 channelName 3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 ""AEB_LOCK_STATE_UNLOCKED"" 0 ""AEB_LOCK_STATE_LOCKED"" ;", valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object));
+        }
+
+        [Test]
+        public void ValueTableWithMapOnlyOneDefinitionIsParsedAndLinkedToChannel()
+        {
+            var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
+            dbcBuilderMock.Setup(
+                builder => builder.LinkTableValuesToSignal(
+                    470,
+                    "channelName",
+                    new Dictionary<int, string>
+                    {
+                       { 0, "AEB_LOCK_STATE_LOCKED" }
+                    }
+                ));
+            var valueTableLineParsers = CreateParser();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+
+            Assert.IsTrue(ParseLine(@"VAL_ 470 channelName 0 ""AEB_LOCK_STATE_LOCKED"" ;", valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object));
         }
 
         [TestCase("VAL_TABLE_ TableName 0 \"Running\" 1 \"  Idle\" ;")]
@@ -230,13 +246,13 @@ namespace DbcParserLib.Tests
         }
 
         [TestCase("VAL_ 869 qGearboxOil 0 \"Running\" 1 \"Idle\" ")]
-        [TestCase("VAL_ 869 qGearboxOil 0 \"Running\" 1 \"Idle\";")]
         [TestCase("VAL_ -869 qGearboxOil 0 \"Running\" 1 \"Idle\" ;")]
         [TestCase("VAL_ 869 \"qGearboxOil\" 0 \"Running\" 1 \"Idle\" ;")]
         [TestCase("VAL_ 869 qGearboxOil 0 \"Running\" 1 Idle ;")]
         [TestCase("VAL_ envVarName 0 \"Running\" 1 Idle ;")]
         [TestCase("VAL_ envVarName 0 \"Running\" 1 \"Idle\" ")]
         [TestCase("VAL_ envVarName 0 \"Running\" 1.5 \"Idle\" ;")]
+        [TestCase("VAL_ envVarName 0 \"Running\"1 \"Idle\" ;")]
         public void ValueTableSyntaxErrorIsObserved(string line)
         {
             var observerMock = m_repository.Create<IParseFailureObserver>();
