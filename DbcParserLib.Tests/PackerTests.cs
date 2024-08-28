@@ -20,18 +20,18 @@ namespace DbcParserLib.Tests
             };
 
             var txMsg = Packer.TxSignalPack(-34.3, sig);
-            Assert.AreEqual(43816, txMsg);
+            Assert.That(txMsg, Is.EqualTo(43816));
 
             var val = Packer.RxSignalUnpack(txMsg, sig);
-            Assert.AreEqual(-34.3, val, 1e-2);
+            Assert.That(val, Is.EqualTo(-34.3).Within(1e-2));
 
 
             var byteMsg = new byte[8];
             Packer.TxSignalPack(byteMsg, - 34.3, sig);
-            Assert.AreEqual(43816, BitConverter.ToUInt64(byteMsg));
+            Assert.That(BitConverter.ToUInt64(byteMsg), Is.EqualTo(43816));
 
             var valbyte = Packer.RxSignalUnpack(byteMsg, sig);
-            Assert.AreEqual(-34.3, valbyte, 1e-2);
+            Assert.That(valbyte, Is.EqualTo(-34.3).Within(1e-2));
         }
 
         [TestCase((ushort)0, 3255382835ul)]
@@ -52,18 +52,18 @@ namespace DbcParserLib.Tests
 
             var expected = -34.3f;
             var txMsg = Packer.TxSignalPack(expected, sig);
-            Assert.AreEqual(packet, txMsg);
+            Assert.That(txMsg, Is.EqualTo(packet));
 
             var val = Packer.RxSignalUnpack(txMsg, sig);
-            Assert.AreEqual(expected, val, 1e-2);
+            Assert.That(val, Is.EqualTo(expected).Within(1e-2));
 
 
             var byteMsg = new byte[8];
             Packer.TxSignalPack(byteMsg, expected, sig);
-            Assert.AreEqual(packet, BitConverter.ToUInt64(byteMsg));
+            Assert.That(BitConverter.ToUInt64(byteMsg), Is.EqualTo(packet));
 
             var valbyte = Packer.RxSignalUnpack(byteMsg, sig);
-            Assert.AreEqual(expected, valbyte, 1e-2);
+            Assert.That(valbyte, Is.EqualTo(expected).Within(1e-2));
         }
 
         [TestCase((ushort)0, 439799153665ul)]
@@ -84,18 +84,18 @@ namespace DbcParserLib.Tests
 
             var value = -34.3f;
             var txMsg = Packer.TxSignalPack(value, sig);
-            Assert.AreEqual(packet, txMsg);
+            Assert.That(txMsg, Is.EqualTo(packet));
 
             var val = Packer.RxSignalUnpack(txMsg, sig);
-            Assert.AreEqual(value, val, 1e-2);
+            Assert.That(val, Is.EqualTo(value).Within(1e-2));
 
 
             var byteMsg = new byte[8];
             Packer.TxSignalPack(byteMsg, value, sig);
-            Assert.AreEqual(packet, BitConverter.ToUInt64(byteMsg));
+            Assert.That(BitConverter.ToUInt64(byteMsg), Is.EqualTo(packet));
 
             var valbyte = Packer.RxSignalUnpack(byteMsg, sig);
-            Assert.AreEqual(value, valbyte, 1e-2);
+            Assert.That(valbyte, Is.EqualTo(value).Within(1e-2));
         }
 
         [Test]
@@ -113,18 +113,18 @@ namespace DbcParserLib.Tests
 
             var expected = -34.3567;
             var txMsg = Packer.TxSignalPack(expected, sig);
-            Assert.AreEqual(13853404129830452697, txMsg);
+            Assert.That(txMsg, Is.EqualTo(13853404129830452697));
 
             var val = Packer.RxSignalUnpack(txMsg, sig);
-            Assert.AreEqual(expected, val, 1e-2);
+            Assert.That(val, Is.EqualTo(expected).Within(1e-2));
 
 
             var byteMsg = new byte[8];
             Packer.TxSignalPack(byteMsg, expected, sig);
-            Assert.AreEqual(13853404129830452697, BitConverter.ToUInt64(byteMsg));
+            Assert.That(BitConverter.ToUInt64(byteMsg), Is.EqualTo(13853404129830452697));
 
             var valbyte = Packer.RxSignalUnpack(byteMsg, sig);
-            Assert.AreEqual(expected, valbyte, 1e-2);
+            Assert.That(valbyte, Is.EqualTo(expected).Within(1e-2));
         }
 
         [Test]
@@ -142,18 +142,18 @@ namespace DbcParserLib.Tests
 
             var expected = -34.35564;
             var txMsg = Packer.TxSignalPack(expected, sig);
-            Assert.AreEqual(2419432028705210816, txMsg);
+            Assert.That(txMsg, Is.EqualTo(2419432028705210816));
 
             var val = Packer.RxSignalUnpack(txMsg, sig);
-            Assert.AreEqual(expected, val, 1e-2);
+            Assert.That(val, Is.EqualTo(expected).Within(1e-2));
 
 
             var byteMsg = new byte[8];
             Packer.TxSignalPack(byteMsg, expected, sig);
-            Assert.AreEqual(2419432028705210816, BitConverter.ToUInt64(byteMsg));
+            Assert.That(BitConverter.ToUInt64(byteMsg), Is.EqualTo(2419432028705210816));
 
             var valbyte = Packer.RxSignalUnpack(byteMsg, sig);
-            Assert.AreEqual(expected, valbyte, 1e-2);
+            Assert.That(valbyte, Is.EqualTo(expected).Within(1e-2));
         }
 
         [Test]
@@ -170,13 +170,13 @@ namespace DbcParserLib.Tests
             };
 
             var txMsg = Packer.TxSignalPack(800, sig);
-            Assert.AreEqual(107374182400, txMsg);
+            Assert.That(txMsg, Is.EqualTo(107374182400));
 
             var val = Packer.RxSignalUnpack(txMsg, sig);
-            Assert.AreEqual(800, val);
+            Assert.That(val, Is.EqualTo(800));
 
             val = Packer.RxSignalUnpack(9655716608953581040, sig);
-            Assert.AreEqual(800, val);
+            Assert.That(val, Is.EqualTo(800));
         }
 
         [Test]
@@ -228,7 +228,7 @@ namespace DbcParserLib.Tests
             TxMsg |= Packer.TxSignalPack(0, sig3);
             TxMsg |= Packer.TxSignalPack(ushort.MaxValue, sig4);
 
-            Assert.AreEqual(18446462598732857088, TxMsg);
+            Assert.That(TxMsg, Is.EqualTo(18446462598732857088));
 
 
             byte[] txMsg = new byte[8];
@@ -237,7 +237,7 @@ namespace DbcParserLib.Tests
             Packer.TxSignalPack(txMsg, 0, sig3);
             Packer.TxSignalPack(txMsg, ushort.MaxValue, sig4);
 
-            Assert.AreEqual(18446462598732857088, BitConverter.ToUInt64(txMsg));
+            Assert.That(BitConverter.ToUInt64(txMsg), Is.EqualTo(18446462598732857088));
         }
 
         [Test]
@@ -254,18 +254,18 @@ namespace DbcParserLib.Tests
             };
 
             var txMsg = Packer.TxSignalPack(396.31676720860366, sig);
-            Assert.AreEqual(3963167672086036480, txMsg);
+            Assert.That(txMsg, Is.EqualTo(3963167672086036480));
 
             var val = Packer.RxSignalUnpack(txMsg, sig);
-            Assert.AreEqual(396.31676720860366, val);
+            Assert.That(val, Is.EqualTo(396.31676720860366));
 
 
             var byteMsg = new byte[8];
             Packer.TxSignalPack(byteMsg, 396.31676720860366, sig);
-            Assert.AreEqual(3963167672086036480, BitConverter.ToUInt64(byteMsg));
+            Assert.That(BitConverter.ToUInt64(byteMsg), Is.EqualTo(3963167672086036480));
 
             var valbyte = Packer.RxSignalUnpack(byteMsg, sig);
-            Assert.AreEqual(396.31676720860366, valbyte);
+            Assert.That(valbyte, Is.EqualTo(396.31676720860366));
         }
 
         //Although Pack has one output per value/signal. Unpack can produce the same result for two different RxMsg64 inputs
@@ -283,24 +283,24 @@ namespace DbcParserLib.Tests
             };
 
             var txMsg = Packer.TxSignalPack(8, sig);
-            Assert.AreEqual(9583660007044415488, txMsg);
+            Assert.That(txMsg, Is.EqualTo(9583660007044415488));
 
             var val = Packer.RxSignalUnpack(txMsg, sig);
-            Assert.AreEqual(8, val);
+            Assert.That(val, Is.EqualTo(8));
 
             val = Packer.RxSignalUnpack(9655716608953581040, sig);
-            Assert.AreEqual(8, val);
+            Assert.That(val, Is.EqualTo(8));
 
 
             var byteMsg = new byte[8];
             Packer.TxSignalPack(byteMsg, 8, sig);
-            Assert.AreEqual(9583660007044415488, BitConverter.ToUInt64(byteMsg));
+            Assert.That(BitConverter.ToUInt64(byteMsg), Is.EqualTo(9583660007044415488));
 
             var valbyte = Packer.RxSignalUnpack(byteMsg, sig);
-            Assert.AreEqual(8, valbyte);
+            Assert.That(valbyte, Is.EqualTo(8));
 
             valbyte = Packer.RxSignalUnpack(BitConverter.GetBytes(9655716608953581040), sig);
-            Assert.AreEqual(8, valbyte);
+            Assert.That(valbyte, Is.EqualTo(8));
         }
 
         //A bit packing test with a length of 1 (to test signals with < 8 bits)
@@ -318,24 +318,24 @@ namespace DbcParserLib.Tests
             };
 
             var txMsg = Packer.TxSignalPack(1, sig);
-            Assert.AreEqual(262144, txMsg);
+            Assert.That(txMsg, Is.EqualTo(262144));
 
             var val = Packer.RxSignalUnpack(txMsg, sig);
-            Assert.AreEqual(1, val);
+            Assert.That(val, Is.EqualTo(1));
 
             val = Packer.RxSignalUnpack(140737488617472, sig);
-            Assert.AreEqual(1, val);
+            Assert.That(val, Is.EqualTo(1));
 
 
             var byteMsg = new byte[8];
             Packer.TxSignalPack(byteMsg, 1, sig);
-            Assert.AreEqual(262144, BitConverter.ToUInt64(byteMsg));
+            Assert.That(BitConverter.ToUInt64(byteMsg), Is.EqualTo(262144));
 
             var valbyte = Packer.RxSignalUnpack(byteMsg, sig);
-            Assert.AreEqual(1, valbyte);
+            Assert.That(valbyte, Is.EqualTo(1));
 
             valbyte = Packer.RxSignalUnpack(BitConverter.GetBytes(140737488617472), sig);
-            Assert.AreEqual(1, valbyte);
+            Assert.That(valbyte, Is.EqualTo(1));
         }
 
         [Test]
@@ -352,24 +352,24 @@ namespace DbcParserLib.Tests
             };
 
             var txMsg = Packer.TxSignalPack(6, sig);
-            Assert.AreEqual(384, txMsg);
+            Assert.That(txMsg, Is.EqualTo(384));
 
             var val = Packer.RxSignalUnpack(txMsg, sig);
-            Assert.AreEqual(6, val);
+            Assert.That(val, Is.EqualTo(6));
 
             val = Packer.RxSignalUnpack(498806260540323729, sig);
-            Assert.AreEqual(6, val);
+            Assert.That(val, Is.EqualTo(6));
 
 
             var byteMsg = new byte[8];
             Packer.TxSignalPack(byteMsg, 6, sig);
-            Assert.AreEqual(384, BitConverter.ToUInt64(byteMsg));
+            Assert.That(BitConverter.ToUInt64(byteMsg), Is.EqualTo(384));
 
             var valbyte = Packer.RxSignalUnpack(byteMsg, sig);
-            Assert.AreEqual(6, valbyte);
+            Assert.That(valbyte, Is.EqualTo(6));
 
             valbyte = Packer.RxSignalUnpack(BitConverter.GetBytes(498806260540323729), sig);
-            Assert.AreEqual(6, valbyte);
+            Assert.That(valbyte, Is.EqualTo(6));
         }
 
         [Test]
@@ -390,10 +390,10 @@ namespace DbcParserLib.Tests
             var byteMsg = new byte[messageLength];
 
             Packer.TxSignalPack(byteMsg, 4095, sig);
-            Assert.AreEqual(byteMsg, new byte[] { 0, 63, 252, 0, 0 });
+            Assert.That(new byte[] { 0, 63, 252, 0, 0 }, Is.EqualTo(byteMsg));
 
             var valbyte = Packer.RxSignalUnpack(byteMsg, sig);
-            Assert.AreEqual(4095, valbyte);
+            Assert.That(valbyte, Is.EqualTo(4095));
         }
 
         [Test]
@@ -414,10 +414,10 @@ namespace DbcParserLib.Tests
             var byteMsg = new byte[messageLength];
 
             Packer.TxSignalPack(byteMsg, 4095, sig);
-            Assert.AreEqual(byteMsg, new byte[] {0, 0, 0, 252, 63});
+            Assert.That(new byte[] { 0, 0, 0, 252, 63 }, Is.EqualTo(byteMsg));
 
             var valbyte = Packer.RxSignalUnpack(byteMsg, sig);
-            Assert.AreEqual(4095, valbyte);
+            Assert.That(valbyte, Is.EqualTo(4095));
         }
 
         [Test]
@@ -438,10 +438,10 @@ namespace DbcParserLib.Tests
             var byteMsg = new byte[messageLength];
 
             Packer.TxSignalPack(byteMsg, 4095, sig);
-            Assert.AreEqual(byteMsg, new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 255, 128, 0, 0, 0, 0 });
+            Assert.That(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 255, 128, 0, 0, 0, 0 }, Is.EqualTo(byteMsg));
 
             var valbyte = Packer.RxSignalUnpack(byteMsg, sig);
-            Assert.AreEqual(4095, valbyte);
+            Assert.That(valbyte, Is.EqualTo(4095));
         }
 
         [Test]
@@ -462,10 +462,10 @@ namespace DbcParserLib.Tests
             var byteMsg = new byte[messageLength];
 
             Packer.TxSignalPack(byteMsg, 4095, sig);
-            Assert.AreEqual(byteMsg, new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 252, 63, 0, 0, 0, 0, 0 });
+            Assert.That(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 252, 63, 0, 0, 0, 0, 0 }, Is.EqualTo(byteMsg));
 
             var valbyte = Packer.RxSignalUnpack(byteMsg, sig);
-            Assert.AreEqual(4095, valbyte);
+            Assert.That(valbyte, Is.EqualTo(4095));
         }
     }
 }

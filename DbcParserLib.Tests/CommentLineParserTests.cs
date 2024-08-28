@@ -35,7 +35,7 @@ namespace DbcParserLib.Tests
             var commentLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsFalse(commentLineParser.TryParse(string.Empty, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(commentLineParser.TryParse(string.Empty, dbcBuilderMock.Object, nextLineProviderMock.Object), Is.False);
         }
 
         [Test]
@@ -45,7 +45,7 @@ namespace DbcParserLib.Tests
             var commentLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsFalse(commentLineParser.TryParse("xfsgt_", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(commentLineParser.TryParse("xfsgt_", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.False);
         }
 
         [Test]
@@ -55,7 +55,7 @@ namespace DbcParserLib.Tests
             var commentLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsFalse(commentLineParser.TryParse("CM_ ", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(commentLineParser.TryParse("CM_ ", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.False);
         }
 
         [Test]
@@ -65,7 +65,7 @@ namespace DbcParserLib.Tests
             var commentLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(commentLineParser.TryParse("CM_ SG_ ;", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(commentLineParser.TryParse("CM_ SG_ ;", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [Test]
@@ -75,7 +75,7 @@ namespace DbcParserLib.Tests
             var commentLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(commentLineParser.TryParse("CM_ SG_ xxx;", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(commentLineParser.TryParse("CM_ SG_ xxx;", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [Test]
@@ -86,7 +86,7 @@ namespace DbcParserLib.Tests
             var commentLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(commentLineParser.TryParse(@"CM_ SG_ 75 channelName ""This is a description"";", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(commentLineParser.TryParse(@"CM_ SG_ 75 channelName ""This is a description"";", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [Test]
@@ -105,7 +105,7 @@ namespace DbcParserLib.Tests
             var commentLineParser = CreateParser();
 
             var reader = new ArrayBasedLineProvider(multiLineComment);
-            Assert.IsTrue(commentLineParser.TryParse(multiLineComment[0], dbcBuilderMock.Object, reader));
+            Assert.That(commentLineParser.TryParse(multiLineComment[0], dbcBuilderMock.Object, reader), Is.True);
         }
 
         [Test]
@@ -116,7 +116,7 @@ namespace DbcParserLib.Tests
             var commentLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(commentLineParser.TryParse(@"CM_ SG_ 75    channelName      ""This is a description""     ;", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(commentLineParser.TryParse(@"CM_ SG_ 75    channelName      ""This is a description""     ;", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [Test]
@@ -135,7 +135,7 @@ namespace DbcParserLib.Tests
             var commentLineParser = CreateParser();
 
             var reader = new ArrayBasedLineProvider(multiLineComment);
-            Assert.IsTrue(commentLineParser.TryParse(multiLineComment[0], dbcBuilderMock.Object, reader));
+            Assert.That(commentLineParser.TryParse(multiLineComment[0], dbcBuilderMock.Object, reader), Is.True);
         }
 
         [Test]
@@ -146,7 +146,7 @@ namespace DbcParserLib.Tests
             var commentLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(commentLineParser.TryParse(@"CM_ BO_ 75 ""This is a description""  ;", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(commentLineParser.TryParse(@"CM_ BO_ 75 ""This is a description""  ;", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [Test]
@@ -165,7 +165,7 @@ namespace DbcParserLib.Tests
             var commentLineParser = CreateParser();
 
             var reader = new ArrayBasedLineProvider(multiLineComment);
-            Assert.IsTrue(commentLineParser.TryParse(multiLineComment[0], dbcBuilderMock.Object, reader));
+            Assert.That(commentLineParser.TryParse(multiLineComment[0], dbcBuilderMock.Object, reader), Is.True);
         }
 
         [Test]
@@ -175,7 +175,7 @@ namespace DbcParserLib.Tests
             var commentLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(commentLineParser.TryParse(@"CM_ BO_ ;", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(commentLineParser.TryParse(@"CM_ BO_ ;", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [Test]
@@ -185,7 +185,7 @@ namespace DbcParserLib.Tests
             var commentLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(commentLineParser.TryParse(@"CM_ BO_ xxx;", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(commentLineParser.TryParse(@"CM_ BO_ xxx;", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [Test]
@@ -196,7 +196,7 @@ namespace DbcParserLib.Tests
             var commentLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(commentLineParser.TryParse(@"CM_ BU_ node_name ""This is a description""  ;", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(commentLineParser.TryParse(@"CM_ BU_ node_name ""This is a description""  ;", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [Test]
@@ -215,7 +215,7 @@ namespace DbcParserLib.Tests
             var commentLineParser = CreateParser();
 
             var reader = new ArrayBasedLineProvider(multiLineComment);
-            Assert.IsTrue(commentLineParser.TryParse(multiLineComment[0], dbcBuilderMock.Object, reader));
+            Assert.That(commentLineParser.TryParse(multiLineComment[0], dbcBuilderMock.Object, reader), Is.True);
         }
 
         [Test]
@@ -225,7 +225,7 @@ namespace DbcParserLib.Tests
             var commentLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(commentLineParser.TryParse(@"CM_ BU_ ;", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(commentLineParser.TryParse(@"CM_ BU_ ;", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [Test]
@@ -235,7 +235,7 @@ namespace DbcParserLib.Tests
             var commentLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(commentLineParser.TryParse(@"CM_ BU_ xxx;", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(commentLineParser.TryParse(@"CM_ BU_ xxx;", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [Test]
@@ -247,7 +247,7 @@ namespace DbcParserLib.Tests
             var commentLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(commentLineParser.TryParse(@"CM_ BU_ xxx no quotes;", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(commentLineParser.TryParse(@"CM_ BU_ xxx no quotes;", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [TestCase("CM_ SG_ 865 \"Test with incorrect \"syntax\"\";")]

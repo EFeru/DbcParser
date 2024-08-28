@@ -35,7 +35,7 @@ namespace DbcParserLib.Tests
             var signalLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsFalse(signalLineParser.TryParse(string.Empty, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(signalLineParser.TryParse(string.Empty, dbcBuilderMock.Object, nextLineProviderMock.Object), Is.False);
         }
 
         [Test]
@@ -45,7 +45,7 @@ namespace DbcParserLib.Tests
             var signalLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsFalse(signalLineParser.TryParse("xfsgt_", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(signalLineParser.TryParse("xfsgt_", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.False);
         }
 
         [Test]
@@ -55,7 +55,7 @@ namespace DbcParserLib.Tests
             var signalLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsFalse(signalLineParser.TryParse("SIG_VALTYPE_ ", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(signalLineParser.TryParse("SIG_VALTYPE_ ", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.False);
         }
 
         [Test]
@@ -65,7 +65,7 @@ namespace DbcParserLib.Tests
             var signalLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(signalLineParser.TryParse("SIG_VALTYPE_ 32 signal 0;", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(signalLineParser.TryParse("SIG_VALTYPE_ 32 signal 0;", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [Test]
@@ -77,7 +77,7 @@ namespace DbcParserLib.Tests
 
             dbcBuilderMock.Setup(x => x.AddSignalValueType(45, "signal", DbcValueType.IEEEFloat));
 
-            Assert.IsTrue(signalLineParser.TryParse("SIG_VALTYPE_ 45 signal 1;", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(signalLineParser.TryParse("SIG_VALTYPE_ 45 signal 1;", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [Test]
@@ -89,7 +89,7 @@ namespace DbcParserLib.Tests
 
             dbcBuilderMock.Setup(x => x.AddSignalValueType(45, "signal", DbcValueType.IEEEDouble));
 
-            Assert.IsTrue(signalLineParser.TryParse("SIG_VALTYPE_ 45 signal 2;", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(signalLineParser.TryParse("SIG_VALTYPE_ 45 signal 2;", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [TestCase("SIG_VALTYPE_ 869 qGearboxOil 1")]
