@@ -15,9 +15,9 @@ namespace DbcParserLib.Tests
         {
             var dbc = Parser.ParseFromPath(MainDbcFilePath);
 
-            Assert.AreEqual(38, dbc.Messages.Count());
-            Assert.AreEqual(485, dbc.Messages.SelectMany(m => m.Signals).Count());
-            Assert.AreEqual(15, dbc.Nodes.Count());
+            Assert.That(dbc.Messages.Count(), Is.EqualTo(38));
+            Assert.That(dbc.Messages.SelectMany(m => m.Signals).Count(), Is.EqualTo(485));
+            Assert.That(dbc.Nodes.Count(), Is.EqualTo(15));
         }
         [Test]
         public void ParseMessageWithStartBitGreaterThan255Test()
@@ -30,8 +30,8 @@ BO_ 200 SENSOR: 39 SENSOR
 
             var dbc = Parser.Parse(dbcString);
 
-            Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(2, dbc.Messages.SelectMany(m => m.Signals).Count());
+            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+            Assert.That(dbc.Messages.SelectMany(m => m.Signals).Count(), Is.EqualTo(2));
         }
 
         [Test]
@@ -40,9 +40,9 @@ BO_ 200 SENSOR: 39 SENSOR
             // With the new code, this test is quite useless
             var dbc = Parser.ParseFromPath(MainDbcFilePath);
             dbc = Parser.ParseFromPath(MainDbcFilePath);
-            Assert.AreEqual(38, dbc.Messages.Count());
-            Assert.AreEqual(485, dbc.Messages.SelectMany(m => m.Signals).Count());
-            Assert.AreEqual(15, dbc.Nodes.Count());
+            Assert.That(dbc.Messages.Count(), Is.EqualTo(38));
+            Assert.That(dbc.Messages.SelectMany(m => m.Signals).Count(), Is.EqualTo(485));
+            Assert.That(dbc.Nodes.Count(), Is.EqualTo(15));
         }
 
         [Test]
@@ -53,10 +53,10 @@ BO_ 200 SENSOR: 39 SENSOR
             var targetMessage = dbc.Messages.FirstOrDefault(x => x.ID == 309);
             Assert.IsNotNull(targetMessage);
 
-            Assert.AreEqual("ESP_135h", targetMessage.Name);
-            Assert.AreEqual("ESP", targetMessage.Transmitter);
-            Assert.AreEqual(5, targetMessage.DLC);
-            Assert.AreEqual(19, targetMessage.Signals.Count);
+            Assert.That(targetMessage.Name, Is.EqualTo("ESP_135h"));
+            Assert.That(targetMessage.Transmitter, Is.EqualTo("ESP"));
+            Assert.That(targetMessage.DLC, Is.EqualTo(5));
+            Assert.That(targetMessage.Signals.Count, Is.EqualTo(19));
         }
 
         [Test]
@@ -67,18 +67,18 @@ BO_ 200 SENSOR: 39 SENSOR
             var targetMessage = dbc.Messages.FirstOrDefault(x => x.ID == 1006);
             Assert.IsNotNull(targetMessage);
 
-            Assert.AreEqual(24, targetMessage.Signals.Count);
+            Assert.That(targetMessage.Signals.Count, Is.EqualTo(24));
 
             var signal = targetMessage.Signals.FirstOrDefault(x => x.Name.Equals("UI_camBlockBlurThreshold"));
             Assert.IsNotNull(signal);
-            Assert.AreEqual(DbcValueType.Unsigned, signal.ValueType);
-            Assert.AreEqual(11, signal.StartBit);
-            Assert.AreEqual(6, signal.Length);
-            Assert.AreEqual(0.01587, signal.Factor);
-            Assert.AreEqual(1, signal.ByteOrder);
-            Assert.AreEqual(0, signal.Minimum);
-            Assert.AreEqual(1, signal.Maximum);
-            Assert.AreEqual(2, signal.Receiver.Length);
+            Assert.That(signal.ValueType, Is.EqualTo(DbcValueType.Unsigned));
+            Assert.That(signal.StartBit, Is.EqualTo(11));
+            Assert.That(signal.Length, Is.EqualTo(6));
+            Assert.That(signal.Factor, Is.EqualTo(0.01587));
+            Assert.That(signal.ByteOrder, Is.EqualTo(1));
+            Assert.That(signal.Minimum, Is.EqualTo(0));
+            Assert.That(signal.Maximum, Is.EqualTo(1));
+            Assert.That(signal.Receiver.Length, Is.EqualTo(2));
         }
 
         [Test]
@@ -89,18 +89,18 @@ BO_ 200 SENSOR: 39 SENSOR
             var targetMessage = dbc.Messages.FirstOrDefault(x => x.ID == 264);
             Assert.IsNotNull(targetMessage);
 
-            Assert.AreEqual(7, targetMessage.Signals.Count);
+            Assert.That(targetMessage.Signals.Count, Is.EqualTo(7));
 
             var signal = targetMessage.Signals.FirstOrDefault(x => x.Name.Equals("DI_torqueMotor"));
             Assert.IsNotNull(signal);
-            Assert.AreEqual(DbcValueType.Signed, signal.ValueType);
-            Assert.AreEqual("Nm", signal.Unit);
-            Assert.AreEqual(13, signal.Length);
-            Assert.AreEqual(0.25, signal.Factor);
-            Assert.AreEqual(1, signal.ByteOrder);
-            Assert.AreEqual(-750, signal.Minimum);
-            Assert.AreEqual(750, signal.Maximum);
-            Assert.AreEqual(1, signal.Receiver.Length);
+            Assert.That(signal.ValueType, Is.EqualTo(DbcValueType.Signed));
+            Assert.That(signal.Unit, Is.EqualTo("Nm"));
+            Assert.That(signal.Length, Is.EqualTo(13));
+            Assert.That(signal.Factor, Is.EqualTo(0.25));
+            Assert.That(signal.ByteOrder, Is.EqualTo(1));
+            Assert.That(signal.Minimum, Is.EqualTo(-750));
+            Assert.That(signal.Maximum, Is.EqualTo(750));
+            Assert.That(signal.Receiver.Length, Is.EqualTo(1));
         }
 
         [Test]
@@ -134,8 +134,8 @@ CM_ SG_ 1043 COUNTER_ALT ""only increments on change""; ";
 
             var dbc = Parser.Parse(dbcString);
 
-            Assert.AreEqual(3, dbc.Messages.Count());
-            Assert.AreEqual(0, dbc.Nodes.Count());
+            Assert.That(dbc.Messages.Count(), Is.EqualTo(3));
+            Assert.That(dbc.Nodes.Count(), Is.EqualTo(0));
 
             var messageIds = new[] { 961, 1041, 1043 };
             var signalCount = new[] { 7, 4, 3 };
@@ -145,11 +145,11 @@ CM_ SG_ 1043 COUNTER_ALT ""only increments on change""; ";
                 var targetMessage = dbc.Messages.FirstOrDefault(x => x.ID == messageIds[i]);
                 Assert.IsNotNull(targetMessage);
 
-                Assert.AreEqual(signalCount[i], targetMessage.Signals.Count);
+                Assert.That(targetMessage.Signals.Count, Is.EqualTo(signalCount[i]));
 
                 var signal = targetMessage.Signals.FirstOrDefault(x => x.Name.Equals("COUNTER_ALT"));
                 Assert.IsNotNull(signal);
-                Assert.AreEqual("only increments on change", signal.Comment);
+                Assert.That(signal.Comment, Is.EqualTo("only increments on change"));
             }
         }
 
@@ -171,15 +171,15 @@ CM_ SG_ 1043 COUNTER_ALT ""only increments on change""; ";
 
             var dbc = Parser.Parse(dbcString);
 
-            Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(1, dbc.Nodes.Count());
+            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+            Assert.That(dbc.Nodes.Count(), Is.EqualTo(1));
 
-            Assert.AreEqual("Message comment", dbc.Messages.First().Comment);
-            Assert.AreEqual("Node comment", dbc.Nodes.First().Comment);
+            Assert.That(dbc.Messages.First().Comment, Is.EqualTo("Message comment"));
+            Assert.That(dbc.Nodes.First().Comment, Is.EqualTo("Node comment"));
 
             var signal = dbc.Messages.Single().Signals.FirstOrDefault(x => x.Name.Equals("COUNTER_ALT"));
             Assert.IsNotNull(signal);
-            Assert.AreEqual("only increments on change", signal.Comment);
+            Assert.That(signal.Comment, Is.EqualTo("only increments on change"));
         }
 
         [Test]
@@ -202,15 +202,15 @@ CM_ SG_ 1043 COUNTER_ALT ""only increments on change""; ";
 
             var dbc = Parser.Parse(dbcString);
 
-            Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(1, dbc.Nodes.Count());
+            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+            Assert.That(dbc.Nodes.Count(), Is.EqualTo(1));
 
-            Assert.AreEqual($"Message comment first line{Environment.NewLine}second line{Environment.NewLine}third line", dbc.Messages.First().Comment);
-            Assert.AreEqual("Node comment", dbc.Nodes.First().Comment);
+            Assert.That(dbc.Messages.First().Comment, Is.EqualTo($"Message comment first line{Environment.NewLine}second line{Environment.NewLine}third line"));
+            Assert.That(dbc.Nodes.First().Comment, Is.EqualTo("Node comment"));
 
             var signal = dbc.Messages.Single().Signals.FirstOrDefault(x => x.Name.Equals("COUNTER_ALT"));
             Assert.IsNotNull(signal);
-            Assert.AreEqual("only increments on change", signal.Comment);
+            Assert.That(signal.Comment, Is.EqualTo("only increments on change"));
         }
 
         [Test]
@@ -235,12 +235,12 @@ VAL_ 1043 withNamedTable DI_aebLockState ; ";
 
             var dbc = Parser.Parse(dbcString);
 
-            Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(0, dbc.Nodes.Count());
+            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+            Assert.That(dbc.Nodes.Count(), Is.EqualTo(0));
 
             var signal = dbc.Messages.Single().Signals.Single();
             Assert.IsNotNull(signal);
-            Assert.AreEqual(expectedValueTableMap, signal.ValueTableMap);
+            Assert.That(signal.ValueTableMap, Is.EqualTo(expectedValueTableMap));
         }
 
         [Test]
@@ -263,12 +263,12 @@ VAL_ 1043 withNamedTable 3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 
 
             var dbc = Parser.Parse(dbcString);
 
-            Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(0, dbc.Nodes.Count());
+            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+            Assert.That(dbc.Nodes.Count(), Is.EqualTo(0));
 
             var signal = dbc.Messages.Single().Signals.Single();
             Assert.IsNotNull(signal);
-            Assert.AreEqual(expectedValueTableMap, signal.ValueTableMap);
+            Assert.That(signal.ValueTableMap, Is.EqualTo(expectedValueTableMap));
         }
 
         [Test]
@@ -299,23 +299,23 @@ BA_ ""IntegerAttribute"" BO_ 1043 7;
 BA_ ""EnumAttributeName"" SG_ 1043 COUNTER_ALT ""ThirdVal""; ";
 
             var dbc = Parser.Parse(dbcString);
-            Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(1, dbc.Nodes.Count());
+            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+            Assert.That(dbc.Nodes.Count(), Is.EqualTo(1));
 
             var node = dbc.Nodes.First();
-            Assert.AreEqual(1, node.CustomProperties.Count());
-            Assert.AreEqual(70, node.CustomProperties["HexAttribute"].HexCustomProperty.Value);
+            Assert.That(node.CustomProperties.Count(), Is.EqualTo(1));
+            Assert.That(node.CustomProperties["HexAttribute"].HexCustomProperty.Value, Is.EqualTo(70));
 
             var message = dbc.Messages.First();
-            Assert.AreEqual(2, message.CustomProperties.Count());
-            Assert.AreEqual(7, message.CustomProperties["IntegerAttribute"].IntegerCustomProperty.Value);
-            Assert.AreEqual(0.5, message.CustomProperties["FloatAttribute"].FloatCustomProperty.Value);
+            Assert.That(message.CustomProperties.Count(), Is.EqualTo(2));
+            Assert.That(message.CustomProperties["IntegerAttribute"].IntegerCustomProperty.Value, Is.EqualTo(7));
+            Assert.That(message.CustomProperties["FloatAttribute"].FloatCustomProperty.Value, Is.EqualTo(0.5));
 
             var signal = dbc.Messages.Single().Signals.FirstOrDefault(x => x.Name.Equals("COUNTER_ALT"));
             Assert.IsNotNull(signal);
-            Assert.AreEqual(2, signal.CustomProperties.Count());
-            Assert.AreEqual("ThirdVal", signal.CustomProperties["EnumAttributeName"].EnumCustomProperty.Value);
-            Assert.AreEqual("DefaultString", signal.CustomProperties["StringAttribute"].StringCustomProperty.Value);
+            Assert.That(signal.CustomProperties.Count(), Is.EqualTo(2));
+            Assert.That(signal.CustomProperties["EnumAttributeName"].EnumCustomProperty.Value, Is.EqualTo("ThirdVal"));
+            Assert.That(signal.CustomProperties["StringAttribute"].StringCustomProperty.Value, Is.EqualTo("DefaultString"));
         }
 
         [Test]
@@ -333,11 +333,11 @@ EV_ EnvVarName: 0 [0|1] """" 0 2 DUMMY_NODE_VECTOR0 XXX; ";
 
             var dbc = Parser.Parse(dbcString);
 
-            Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(1, dbc.Nodes.Count());
-            Assert.AreEqual(1, dbc.EnvironmentVariables.Count());
+            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+            Assert.That(dbc.Nodes.Count(), Is.EqualTo(1));
+            Assert.That(dbc.EnvironmentVariables.Count(), Is.EqualTo(1));
 
-            Assert.AreEqual("EnvVarName", dbc.Nodes.First().EnvironmentVariables.First().Key);
+            Assert.That(dbc.Nodes.First().EnvironmentVariables.First().Key, Is.EqualTo("EnvVarName"));
         }
 
         [Test]
@@ -356,13 +356,13 @@ ENVVAR_DATA_ EnvVarName: 5;";
 
             var dbc = Parser.Parse(dbcString);
 
-            Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(1, dbc.Nodes.Count());
-            Assert.AreEqual(1, dbc.EnvironmentVariables.Count());
+            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+            Assert.That(dbc.Nodes.Count(), Is.EqualTo(1));
+            Assert.That(dbc.EnvironmentVariables.Count(), Is.EqualTo(1));
 
-            Assert.AreEqual("EnvVarName", dbc.Nodes.First().EnvironmentVariables.First().Key);
-            Assert.AreEqual(EnvDataType.Data, dbc.Nodes.First().EnvironmentVariables.First().Value.Type);
-            Assert.AreEqual(5, dbc.Nodes.First().EnvironmentVariables.First().Value.DataEnvironmentVariable.Length);
+            Assert.That(dbc.Nodes.First().EnvironmentVariables.First().Key, Is.EqualTo("EnvVarName"));
+            Assert.That(dbc.Nodes.First().EnvironmentVariables.First().Value.Type, Is.EqualTo(EnvDataType.Data));
+            Assert.That(dbc.Nodes.First().EnvironmentVariables.First().Value.DataEnvironmentVariable.Length, Is.EqualTo(5));
         }
 
         [Test]
@@ -380,12 +380,12 @@ EV_ EnvVarName: 0 [0|1] """" 0 2 DUMMY_NODE_VECTOR0 XXX,YYY;";
 
             var dbc = Parser.Parse(dbcString);
 
-            Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(2, dbc.Nodes.Count());
-            Assert.AreEqual(1, dbc.EnvironmentVariables.Count());
+            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+            Assert.That(dbc.Nodes.Count(), Is.EqualTo(2));
+            Assert.That(dbc.EnvironmentVariables.Count(), Is.EqualTo(1));
 
-            Assert.AreEqual("EnvVarName", dbc.Nodes.First().EnvironmentVariables.First().Key);
-            Assert.AreEqual("EnvVarName", dbc.Nodes.Last().EnvironmentVariables.First().Key);
+            Assert.That(dbc.Nodes.First().EnvironmentVariables.First().Key, Is.EqualTo("EnvVarName"));
+            Assert.That(dbc.Nodes.Last().EnvironmentVariables.First().Key, Is.EqualTo("EnvVarName"));
         }
 
         [Test]
@@ -406,18 +406,18 @@ ENVVAR_DATA_ EnvVarName3: 5;";
 
             var dbc = Parser.Parse(dbcString);
 
-            Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(1, dbc.Nodes.Count());
-            Assert.AreEqual(3, dbc.EnvironmentVariables.Count());
+            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+            Assert.That(dbc.Nodes.Count(), Is.EqualTo(1));
+            Assert.That(dbc.EnvironmentVariables.Count(), Is.EqualTo(3));
 
-            Assert.AreEqual("EnvVarName1", dbc.Nodes.First().EnvironmentVariables.First().Key);
-            Assert.AreEqual(EnvDataType.Integer, dbc.Nodes.First().EnvironmentVariables.First().Value.Type);
+            Assert.That(dbc.Nodes.First().EnvironmentVariables.First().Key, Is.EqualTo("EnvVarName1"));
+            Assert.That(dbc.Nodes.First().EnvironmentVariables.First().Value.Type, Is.EqualTo(EnvDataType.Integer));
 
-            Assert.AreEqual("EnvVarName2", dbc.Nodes.First().EnvironmentVariables.ElementAt(1).Key);
-            Assert.AreEqual(EnvDataType.Float, dbc.Nodes.First().EnvironmentVariables.ElementAt(1).Value.Type);
+            Assert.That(dbc.Nodes.First().EnvironmentVariables.ElementAt(1).Key, Is.EqualTo("EnvVarName2"));
+            Assert.That(dbc.Nodes.First().EnvironmentVariables.ElementAt(1).Value.Type, Is.EqualTo(EnvDataType.Float));
 
-            Assert.AreEqual("EnvVarName3", dbc.Nodes.First().EnvironmentVariables.Last().Key);
-            Assert.AreEqual(EnvDataType.Data, dbc.Nodes.First().EnvironmentVariables.Last().Value.Type);
+            Assert.That(dbc.Nodes.First().EnvironmentVariables.Last().Key, Is.EqualTo("EnvVarName3"));
+            Assert.That(dbc.Nodes.First().EnvironmentVariables.Last().Value.Type, Is.EqualTo(EnvDataType.Data));
         }
     }
 }

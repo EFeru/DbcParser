@@ -52,20 +52,20 @@ namespace DbcParserLib.Tests
             dbcBuilderMock.Setup(mock => mock.AddEnvironmentVariable("EnvKlemme45", It.IsAny<EnvironmentVariable>()))
                 .Callback<string, EnvironmentVariable>((_, envVariable) =>
                 {
-                    Assert.AreEqual("EnvKlemme45", envVariable.Name);
-                    Assert.AreEqual("", envVariable.Unit);
-                    Assert.AreEqual(EnvAccessibility.Unrestricted, envVariable.Access);
-                    Assert.AreEqual(EnvDataType.Integer, envVariable.Type);
-                    Assert.AreEqual(0, envVariable.IntegerEnvironmentVariable.Minimum);
-                    Assert.AreEqual(1, envVariable.IntegerEnvironmentVariable.Maximum);
-                    Assert.AreEqual(0, envVariable.IntegerEnvironmentVariable.Default);
+                    Assert.That(envVariable.Name, Is.EqualTo("EnvKlemme45"));
+                    Assert.That(envVariable.Unit, Is.EqualTo(""));
+                    Assert.That(envVariable.Access, Is.EqualTo(EnvAccessibility.Unrestricted));
+                    Assert.That(envVariable.Type, Is.EqualTo(EnvDataType.Integer));
+                    Assert.That(envVariable.IntegerEnvironmentVariable.Minimum, Is.EqualTo(0));
+                    Assert.That(envVariable.IntegerEnvironmentVariable.Maximum, Is.EqualTo(1));
+                    Assert.That(envVariable.IntegerEnvironmentVariable.Default, Is.EqualTo(0));
                 }
             );
             dbcBuilderMock.Setup(mock => mock.AddNodeEnvironmentVariable("ENTtest", "EnvKlemme45"));
             var environmentVariableLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(ParseLine(parsingLine, environmentVariableLineParser, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(ParseLine(parsingLine, environmentVariableLineParser, dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [Test]
@@ -77,17 +77,17 @@ namespace DbcParserLib.Tests
             dbcBuilderMock.Setup(mock => mock.AddEnvironmentVariable("EnvKlemme45", It.IsAny<EnvironmentVariable>()))
                 .Callback<string, EnvironmentVariable>((_, envVariable) =>
                 {
-                    Assert.AreEqual("EnvKlemme45", envVariable.Name);
-                    Assert.AreEqual("", envVariable.Unit);
-                    Assert.AreEqual(EnvAccessibility.Unrestricted, envVariable.Access);
-                    Assert.AreEqual(EnvDataType.String, envVariable.Type);
+                    Assert.That(envVariable.Name, Is.EqualTo("EnvKlemme45"));
+                    Assert.That(envVariable.Unit, Is.EqualTo(""));
+                    Assert.That(envVariable.Access, Is.EqualTo(EnvAccessibility.Unrestricted));
+                    Assert.That(envVariable.Type, Is.EqualTo(EnvDataType.String));
                 }
                 );
             dbcBuilderMock.Setup(mock => mock.AddNodeEnvironmentVariable("ENTtest", "EnvKlemme45"));
             var environmentVariableLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(ParseLine(parsingLine, environmentVariableLineParser, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(ParseLine(parsingLine, environmentVariableLineParser, dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [Test]
@@ -99,20 +99,20 @@ namespace DbcParserLib.Tests
             dbcBuilderMock.Setup(mock => mock.AddEnvironmentVariable("EnvKlemme45", It.IsAny<EnvironmentVariable>()))
                 .Callback<string, EnvironmentVariable>((_, envVariable) =>
                 {
-                    Assert.AreEqual("EnvKlemme45", envVariable.Name);
-                    Assert.AreEqual("", envVariable.Unit);
-                    Assert.AreEqual(EnvAccessibility.Unrestricted, envVariable.Access);
-                    Assert.AreEqual(EnvDataType.Float, envVariable.Type);
-                    Assert.AreEqual(0, envVariable.FloatEnvironmentVariable.Minimum);
-                    Assert.AreEqual(10, envVariable.FloatEnvironmentVariable.Maximum);
-                    Assert.AreEqual(5, envVariable.FloatEnvironmentVariable.Default);
+                    Assert.That(envVariable.Name, Is.EqualTo("EnvKlemme45"));
+                    Assert.That(envVariable.Unit, Is.EqualTo(""));
+                    Assert.That(envVariable.Access, Is.EqualTo(EnvAccessibility.Unrestricted));
+                    Assert.That(envVariable.Type, Is.EqualTo(EnvDataType.Float));
+                    Assert.That(envVariable.FloatEnvironmentVariable.Minimum, Is.EqualTo(0));
+                    Assert.That(envVariable.FloatEnvironmentVariable.Maximum, Is.EqualTo(10));
+                    Assert.That(envVariable.FloatEnvironmentVariable.Default, Is.EqualTo(5));
                 }
                 );
             dbcBuilderMock.Setup(mock => mock.AddNodeEnvironmentVariable("ENTtest", "EnvKlemme45"));
             var environmentVariableLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(ParseLine(parsingLine, environmentVariableLineParser, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(ParseLine(parsingLine, environmentVariableLineParser, dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [Test]
@@ -124,20 +124,20 @@ namespace DbcParserLib.Tests
             dbcBuilderMock.Setup(mock => mock.AddEnvironmentVariable("EnvKlemme45", It.IsAny<EnvironmentVariable>()))
                 .Callback<string, EnvironmentVariable>((_, envVariable) =>
                 {
-                    Assert.AreEqual("EnvKlemme45", envVariable.Name);
-                    Assert.AreEqual("", envVariable.Unit);
-                    Assert.AreEqual(EnvAccessibility.Unrestricted, envVariable.Access);
-                    Assert.AreEqual(EnvDataType.Float, envVariable.Type);
-                    Assert.AreEqual(0, envVariable.FloatEnvironmentVariable.Minimum);
-                    Assert.AreEqual(10, envVariable.FloatEnvironmentVariable.Maximum);
-                    Assert.AreEqual(5, envVariable.FloatEnvironmentVariable.Default);
+                    Assert.That(envVariable.Name, Is.EqualTo("EnvKlemme45"));
+                    Assert.That(envVariable.Unit, Is.EqualTo(""));
+                    Assert.That(envVariable.Access, Is.EqualTo(EnvAccessibility.Unrestricted));
+                    Assert.That(envVariable.Type, Is.EqualTo(EnvDataType.Float));
+                    Assert.That(envVariable.FloatEnvironmentVariable.Minimum, Is.EqualTo(0));
+                    Assert.That(envVariable.FloatEnvironmentVariable.Maximum, Is.EqualTo(10));
+                    Assert.That(envVariable.FloatEnvironmentVariable.Default, Is.EqualTo(5));
                 }
                 );
             dbcBuilderMock.Setup(mock => mock.AddNodeEnvironmentVariable("ENTtest", "EnvKlemme45"));
             var environmentVariableLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(ParseLine(parsingLine, environmentVariableLineParser, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(ParseLine(parsingLine, environmentVariableLineParser, dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [Test]
@@ -152,7 +152,7 @@ namespace DbcParserLib.Tests
             var environmentVariableLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(ParseLine(parsingLine, environmentVariableLineParser, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(ParseLine(parsingLine, environmentVariableLineParser, dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [Test]
@@ -165,7 +165,7 @@ namespace DbcParserLib.Tests
             var environmentVariableLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(ParseLine(parsingLine, environmentVariableLineParser, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(ParseLine(parsingLine, environmentVariableLineParser, dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [Test]

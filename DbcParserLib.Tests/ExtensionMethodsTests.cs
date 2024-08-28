@@ -15,10 +15,10 @@ namespace DbcParserLib.Tests
                 ByteOrder = 0, // 0 = Big Endian (Motorola), 1 = Little Endian (Intel)
             };
 
-            Assert.IsTrue(sig.Motorola());
-            Assert.IsTrue(sig.Msb());
-            Assert.IsFalse(sig.Intel());
-            Assert.IsFalse(sig.Lsb());
+            Assert.That(sig.Motorola(), Is.True);
+            Assert.That(sig.Msb(), Is.True);
+            Assert.That(sig.Intel(), Is.False);
+            Assert.That(sig.Lsb(), Is.False);
         }
 
         [Test]
@@ -29,10 +29,10 @@ namespace DbcParserLib.Tests
                 ByteOrder = 1, // 0 = Big Endian (Motorola), 1 = Little Endian (Intel)
             };
 
-            Assert.IsFalse(sig.Motorola());
-            Assert.IsFalse(sig.Msb());
-            Assert.IsTrue(sig.Intel());
-            Assert.IsTrue(sig.Lsb());
+            Assert.That(sig.Motorola(), Is.False);
+            Assert.That(sig.Msb(), Is.False);
+            Assert.That(sig.Intel(), Is.True);
+            Assert.That(sig.Lsb(), Is.True);
         }
 
         [Test]
@@ -44,8 +44,8 @@ namespace DbcParserLib.Tests
             };
 
             var multiplexing = sig.MultiplexingInfo();
-            Assert.AreEqual(MultiplexingRole.None, multiplexing.Role);
-            Assert.AreEqual(0, multiplexing.Group);
+            Assert.That(multiplexing.Role, Is.EqualTo(MultiplexingRole.None));
+            Assert.That(multiplexing.Group, Is.EqualTo(0));
         }
 
         [Test]
@@ -57,8 +57,8 @@ namespace DbcParserLib.Tests
             };
 
             var multiplexing = sig.MultiplexingInfo();
-            Assert.AreEqual(MultiplexingRole.Multiplexor, multiplexing.Role);
-            Assert.AreEqual(0, multiplexing.Group);
+            Assert.That(multiplexing.Role, Is.EqualTo(MultiplexingRole.Multiplexor));
+            Assert.That(multiplexing.Group, Is.EqualTo(0));
         }
 
         [Test]
@@ -70,8 +70,8 @@ namespace DbcParserLib.Tests
             };
 
             var multiplexing = sig.MultiplexingInfo();
-            Assert.AreEqual(MultiplexingRole.Multiplexed, multiplexing.Role);
-            Assert.AreEqual(3, multiplexing.Group);
+            Assert.That(multiplexing.Role, Is.EqualTo(MultiplexingRole.Multiplexed));
+            Assert.That(multiplexing.Group, Is.EqualTo(3));
         }
 
         [Test]
@@ -83,8 +83,8 @@ namespace DbcParserLib.Tests
             };
 
             var multiplexing = sig.MultiplexingInfo();
-            Assert.AreEqual(MultiplexingRole.Multiplexed, multiplexing.Role);
-            Assert.AreEqual(3, multiplexing.Group);
+            Assert.That(multiplexing.Role, Is.EqualTo(MultiplexingRole.Multiplexed));
+            Assert.That(multiplexing.Group, Is.EqualTo(3));
         }
 
         [Test]
@@ -96,8 +96,8 @@ namespace DbcParserLib.Tests
             };
 
             var multiplexing = sig.MultiplexingInfo();
-            Assert.AreEqual(MultiplexingRole.Multiplexed, multiplexing.Role);
-            Assert.AreEqual(12, multiplexing.Group);
+            Assert.That(multiplexing.Role, Is.EqualTo(MultiplexingRole.Multiplexed));
+            Assert.That(multiplexing.Group, Is.EqualTo(12));
         }
 
         [Test]
@@ -111,7 +111,7 @@ namespace DbcParserLib.Tests
             var message = new Message();
             message.Signals.Add(sig);
 
-            Assert.IsTrue(message.IsMultiplexed());
+            Assert.That(message.IsMultiplexed(), Is.True);
         }
 
         [Test]
@@ -125,14 +125,14 @@ namespace DbcParserLib.Tests
             var message = new Message();
             message.Signals.Add(sig);
 
-            Assert.IsFalse(message.IsMultiplexed());
+            Assert.That(message.IsMultiplexed(), Is.False);
         }
 
         [Test]
         public void EmptyMessageIsNotMultiplexedTest()
         {
             var message = new Message();
-            Assert.IsFalse(message.IsMultiplexed());
+            Assert.That(message.IsMultiplexed(), Is.False);
         }
 
         [TestCase("1 \"First\" 2 \"Second\" 3 \"Third\"")]
@@ -142,7 +142,7 @@ namespace DbcParserLib.Tests
         public void FsmNoErrorTest(string text)
         {
             var operation = text.TryParseToDict(out _);
-            Assert.IsTrue(operation);
+            Assert.That(operation, Is.True);
         }
 
         [TestCase("1 \"First 2 \"Second\" 3 \"Third\"")]
@@ -155,7 +155,7 @@ namespace DbcParserLib.Tests
         public void FsmWithErrorTest(string text)
         {
             var operation = text.TryParseToDict(out _);
-            Assert.IsFalse(operation);
+            Assert.That(operation, Is.False);
         }
 
         [Test]
@@ -170,8 +170,8 @@ namespace DbcParserLib.Tests
                 { 3, "Third" }
             };
 
-            Assert.IsTrue(operation);
-            Assert.AreEqual(expectedDict, dict);
+            Assert.That(operation, Is.True);
+            Assert.That(dict, Is.EqualTo(expectedDict));
         }
 
         [Test]
@@ -186,8 +186,8 @@ namespace DbcParserLib.Tests
                 { 3, " T h i r d " }
             };
 
-            Assert.IsTrue(operation);
-            Assert.AreEqual(expectedDict, dict);
+            Assert.That(operation, Is.True);
+            Assert.That(dict, Is.EqualTo(expectedDict));
         }
 
         [Test]
@@ -201,8 +201,8 @@ namespace DbcParserLib.Tests
                 { 2, " " }
             };
 
-            Assert.IsTrue(operation);
-            Assert.AreEqual(expectedDict, dict);
+            Assert.That(operation, Is.True);
+            Assert.That(dict, Is.EqualTo(expectedDict));
         }
 
         [Test]
@@ -216,8 +216,8 @@ namespace DbcParserLib.Tests
                 { 2, "2" }
             };
 
-            Assert.IsTrue(operation);
-            Assert.AreEqual(expectedDict, dict);
+            Assert.That(operation, Is.True);
+            Assert.That(dict, Is.EqualTo(expectedDict));
         }
 
         [Test]
@@ -226,8 +226,8 @@ namespace DbcParserLib.Tests
             var text = "1 \"First with spaces\" 2 \" Second \" 3 T h i r d \"";
             var operation = text.TryParseToDict(out var dict);
 
-            Assert.IsFalse(operation);
-            Assert.IsNull(dict);
+            Assert.That(operation, Is.False);
+            Assert.That(dict, Is.Null);
         }
     }
 }
