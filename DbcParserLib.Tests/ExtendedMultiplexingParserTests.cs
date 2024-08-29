@@ -24,18 +24,18 @@ SG_MUL_VAL_ 2024 S1 Service 1-1;";
 
             var dbc = Parser.Parse(dbcString);
 
-            Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(4, dbc.Messages.SelectMany(m => m.Signals).Count());
+            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+            Assert.That(dbc.Messages.SelectMany(m => m.Signals).Count(), Is.EqualTo(4));
 
             var signal1 = dbc.Messages.First().Signals.First(x => x.Name.Equals("S1_PID_0D_VehicleSpeed"));
             var signal2 = dbc.Messages.First().Signals.First(x => x.Name.Equals("S1_PID_11_ThrottlePosition"));
             var signal3 = dbc.Messages.First().Signals.First(x => x.Name.Equals("S1"));
             var signal4 = dbc.Messages.First().Signals.First(x => x.Name.Equals("Service"));
 
-            Assert.AreEqual("S1 13-13", signal1.ExtendedMultiplexing);
-            Assert.AreEqual("S1 17-17", signal2.ExtendedMultiplexing);
-            Assert.AreEqual("Service 1-1", signal3.ExtendedMultiplexing);
-            Assert.IsNull(signal4.ExtendedMultiplexing);
+            Assert.That(signal1.ExtendedMultiplexing, Is.EqualTo("S1 13-13"));
+            Assert.That(signal2.ExtendedMultiplexing, Is.EqualTo("S1 17-17"));
+            Assert.That(signal3.ExtendedMultiplexing, Is.EqualTo("Service 1-1"));
+            Assert.That(signal4.ExtendedMultiplexing, Is.Null);
         }
 
         [Test]
@@ -55,18 +55,18 @@ SG_MUL_VAL_ 100 Mux_4 Mux_3 2-2;";
 
             var dbc = Parser.Parse(dbcString);
 
-            Assert.AreEqual(1, dbc.Messages.Count());
-            Assert.AreEqual(4, dbc.Messages.SelectMany(m => m.Signals).Count());
+            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+            Assert.That(dbc.Messages.SelectMany(m => m.Signals).Count(), Is.EqualTo(4));
 
             var signal1 = dbc.Messages.First().Signals.First(x => x.Name.Equals("Mux_1"));
             var signal2 = dbc.Messages.First().Signals.First(x => x.Name.Equals("Mux_2"));
             var signal3 = dbc.Messages.First().Signals.First(x => x.Name.Equals("Mux_3"));
             var signal4 = dbc.Messages.First().Signals.First(x => x.Name.Equals("Mux_4"));
 
-            Assert.IsNull(signal1.ExtendedMultiplexing);
-            Assert.AreEqual("Mux_1 3-3, 5-10", signal2.ExtendedMultiplexing);
-            Assert.AreEqual("Mux_2 3-3", signal3.ExtendedMultiplexing);
-            Assert.AreEqual("Mux_3 2-2", signal4.ExtendedMultiplexing);
+            Assert.That(signal1.ExtendedMultiplexing, Is.Null);
+            Assert.That(signal2.ExtendedMultiplexing, Is.EqualTo("Mux_1 3-3, 5-10"));
+            Assert.That(signal3.ExtendedMultiplexing, Is.EqualTo("Mux_2 3-3"));
+            Assert.That(signal4.ExtendedMultiplexing, Is.EqualTo("Mux_3 2-2"));
         }
     }
 }
