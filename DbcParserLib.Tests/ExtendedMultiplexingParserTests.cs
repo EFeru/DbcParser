@@ -36,9 +36,27 @@ SG_MUL_VAL_ 2024 S1 Service 1-1;";
 
             Assert.Multiple(() =>
             {
-                Assert.That(signal1?.ExtendedMultiplexing, Is.EqualTo("S1 13-13"));
-                Assert.That(signal2?.ExtendedMultiplexing, Is.EqualTo("S1 17-17"));
-                Assert.That(signal3?.ExtendedMultiplexing, Is.EqualTo("Service 1-1"));
+                Assert.That(signal1?.ExtendedMultiplexing, Is.Not.Null);
+                Assert.That(signal1?.ExtendedMultiplexing.MultiplexorSignal, Is.EqualTo("S1"));
+                Assert.That(signal1?.ExtendedMultiplexing.MultiplexingRanges, Has.Count.EqualTo(1));
+                Assert.That(signal1?.ExtendedMultiplexing.MultiplexingRanges.FirstOrDefault()?.IsRange, Is.EqualTo(false));
+                Assert.That(signal1?.ExtendedMultiplexing.MultiplexingRanges.FirstOrDefault()?.Lower, Is.EqualTo(13));
+                Assert.That(signal1?.ExtendedMultiplexing.MultiplexingRanges.FirstOrDefault()?.Upper, Is.EqualTo(13));
+
+                Assert.That(signal2?.ExtendedMultiplexing, Is.Not.Null);
+                Assert.That(signal2?.ExtendedMultiplexing.MultiplexorSignal, Is.EqualTo("S1"));
+                Assert.That(signal2?.ExtendedMultiplexing.MultiplexingRanges, Has.Count.EqualTo(1));
+                Assert.That(signal2?.ExtendedMultiplexing.MultiplexingRanges.FirstOrDefault()?.IsRange, Is.EqualTo(false));
+                Assert.That(signal2?.ExtendedMultiplexing.MultiplexingRanges.FirstOrDefault()?.Lower, Is.EqualTo(17));
+                Assert.That(signal2?.ExtendedMultiplexing.MultiplexingRanges.FirstOrDefault()?.Upper, Is.EqualTo(17));
+
+                Assert.That(signal3?.ExtendedMultiplexing, Is.Not.Null);
+                Assert.That(signal3?.ExtendedMultiplexing.MultiplexorSignal, Is.EqualTo("Service"));
+                Assert.That(signal3?.ExtendedMultiplexing.MultiplexingRanges, Has.Count.EqualTo(1));
+                Assert.That(signal3?.ExtendedMultiplexing.MultiplexingRanges.FirstOrDefault()?.IsRange, Is.EqualTo(false));
+                Assert.That(signal3?.ExtendedMultiplexing.MultiplexingRanges.FirstOrDefault()?.Lower, Is.EqualTo(1));
+                Assert.That(signal3?.ExtendedMultiplexing.MultiplexingRanges.FirstOrDefault()?.Upper, Is.EqualTo(1));                
+                
                 Assert.That(signal4, Is.Not.Null);
                 Assert.That(signal4?.ExtendedMultiplexing, Is.Null);
             });
@@ -76,9 +94,30 @@ SG_MUL_VAL_ 100 Mux_4 Mux_3 2-2;";
             {
                 Assert.That(signal1, Is.Not.Null);
                 Assert.That(signal1?.ExtendedMultiplexing, Is.Null);
-                Assert.That(signal2?.ExtendedMultiplexing, Is.EqualTo("Mux_1 3-3, 5-10"));
-                Assert.That(signal3?.ExtendedMultiplexing, Is.EqualTo("Mux_2 3-3"));
-                Assert.That(signal4?.ExtendedMultiplexing, Is.EqualTo("Mux_3 2-2"));
+
+                Assert.That(signal2?.ExtendedMultiplexing, Is.Not.Null);
+                Assert.That(signal2?.ExtendedMultiplexing.MultiplexorSignal, Is.EqualTo("Mux_1"));
+                Assert.That(signal2?.ExtendedMultiplexing.MultiplexingRanges, Has.Count.EqualTo(2));
+                Assert.That(signal2?.ExtendedMultiplexing.MultiplexingRanges.FirstOrDefault()?.IsRange, Is.EqualTo(false));
+                Assert.That(signal2?.ExtendedMultiplexing.MultiplexingRanges.FirstOrDefault()?.Lower, Is.EqualTo(3));
+                Assert.That(signal2?.ExtendedMultiplexing.MultiplexingRanges.FirstOrDefault()?.Upper, Is.EqualTo(3));
+                Assert.That(signal2?.ExtendedMultiplexing.MultiplexingRanges.LastOrDefault()?.IsRange, Is.EqualTo(true));
+                Assert.That(signal2?.ExtendedMultiplexing.MultiplexingRanges.LastOrDefault()?.Lower, Is.EqualTo(5));
+                Assert.That(signal2?.ExtendedMultiplexing.MultiplexingRanges.LastOrDefault()?.Upper, Is.EqualTo(10));
+
+                Assert.That(signal3?.ExtendedMultiplexing, Is.Not.Null);
+                Assert.That(signal3?.ExtendedMultiplexing.MultiplexorSignal, Is.EqualTo("Mux_2"));
+                Assert.That(signal3?.ExtendedMultiplexing.MultiplexingRanges, Has.Count.EqualTo(1));
+                Assert.That(signal3?.ExtendedMultiplexing.MultiplexingRanges.FirstOrDefault()?.IsRange, Is.EqualTo(false));
+                Assert.That(signal3?.ExtendedMultiplexing.MultiplexingRanges.FirstOrDefault()?.Lower, Is.EqualTo(3));
+                Assert.That(signal3?.ExtendedMultiplexing.MultiplexingRanges.FirstOrDefault()?.Upper, Is.EqualTo(3));
+
+                Assert.That(signal4?.ExtendedMultiplexing, Is.Not.Null);
+                Assert.That(signal4?.ExtendedMultiplexing.MultiplexorSignal, Is.EqualTo("Mux_3"));
+                Assert.That(signal4?.ExtendedMultiplexing.MultiplexingRanges, Has.Count.EqualTo(1));
+                Assert.That(signal4?.ExtendedMultiplexing.MultiplexingRanges.FirstOrDefault()?.IsRange, Is.EqualTo(false));
+                Assert.That(signal4?.ExtendedMultiplexing.MultiplexingRanges.FirstOrDefault()?.Lower, Is.EqualTo(2));
+                Assert.That(signal4?.ExtendedMultiplexing.MultiplexingRanges.FirstOrDefault()?.Upper, Is.EqualTo(2));
             });
         }
     }

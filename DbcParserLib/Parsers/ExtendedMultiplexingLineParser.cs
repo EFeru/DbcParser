@@ -1,4 +1,7 @@
-﻿using DbcParserLib.Observers;
+﻿using DbcParserLib.Model;
+using DbcParserLib.Observers;
+using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace DbcParserLib.Parsers
@@ -28,18 +31,25 @@ namespace DbcParserLib.Parsers
             {
                 var multiplexorSignal = match.Groups[3].Value;
                 var multiplexorRanges = match.Groups[4].Value;
-                /*var rangesArray = multiplexorRanges.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                var rangesArray = multiplexorRanges.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                var rangesParsed = new List<MultiplexingRange>();
 
                 foreach (var range in rangesArray)
                 {
                     var rangeClean = range.Trim();
                     var numbers = rangeClean.Split('-');
 
-                    var upper = uint.Parse(numbers[0]);
-                    var lower = uint.Parse(numbers[1]);
-                }*/
+                    var lower = uint.Parse(numbers[0]);
+                    var upper = uint.Parse(numbers[1]);
 
-                builder.AddSignalExtendedMultiplexingInfo(uint.Parse(match.Groups[1].Value), match.Groups[2].Value, $"{multiplexorSignal} {multiplexorRanges}");
+                    rangesParsed.Add(new MultiplexingRange(lower, upper));
+                }
+
+                var extendendMultiplexing = new ParsingExtendedMultiplexing(multiplexorSignal, rangesParsed);
+
+                builder.AddSignalExtendedMultiplexingInfo(uint.Parse(match.Groups[1].Value), match.Groups[2].Value, extendendMultiplexing);
             }
             else
             {

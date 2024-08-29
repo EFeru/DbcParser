@@ -201,11 +201,11 @@ namespace DbcParserLib
                 m_observer.SignalNameNotFound(messageId, signalName);
         }
 
-        public void AddSignalExtendedMultiplexingInfo(uint messageId, string signalName, string extendedMultiplexingInfo)
+        public void AddSignalExtendedMultiplexingInfo(uint messageId, string signalName, ParsingExtendedMultiplexing extendedMultiplexing)
         {
             if (TryGetValueMessageSignal(messageId, signalName, out var signal))
             {
-                signal.ExtendedMultiplexing = extendedMultiplexingInfo;
+                signal.ExtendedMultiplexing = extendedMultiplexing;
             }
             else
             {
