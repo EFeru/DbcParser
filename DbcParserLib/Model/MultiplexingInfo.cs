@@ -1,7 +1,10 @@
 namespace DbcParserLib.Model
 {
-    public struct MultiplexingInfo
-    {
+    public class MultiplexingInfo
+    { 
+        public MultiplexingRole Role { get; }
+        public int Group { get; }
+
         public MultiplexingInfo(MultiplexingRole role)
             : this(role, 0)
         {
@@ -12,13 +15,5 @@ namespace DbcParserLib.Model
             Role = role;
             Group = group;
         }
-
-        public MultiplexingRole Role {get;}
-        public int Group {get;}
-    }
-
-    public enum MultiplexingRole
-    {
-        None, Unknown, Multiplexed, Multiplexor
     }
 }
