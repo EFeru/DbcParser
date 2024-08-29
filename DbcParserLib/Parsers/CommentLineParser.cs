@@ -109,7 +109,6 @@ namespace DbcParserLib.Parsers
 
             while (nextLineProvider.TryGetLine(out var nextLine))
             {
-                observer.CurrentLine++;
                 stringBuilder.AppendLine(nextLine);
                 if (nextLine.EndsWith(";"))
                     break;

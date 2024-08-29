@@ -9,6 +9,7 @@ namespace DbcParserLib
         private TextReader m_reader;
         private IParseFailureObserver m_observer;
         private string m_lineMemory;
+        private bool m_isVirtualLine;
 
         public NextLineProvider(TextReader reader, IParseFailureObserver observer)
         {
@@ -21,6 +22,10 @@ namespace DbcParserLib
             line = null;
             if (m_lineMemory != null)
             {
+                if (m_isVirtualLine == false)
+                {
+                    m_observer.CurrentLine++;
+                }
                 line = m_lineMemory;
                 line = line.Trim();
                 line = HandleMultipleDefinitionsPerLine(line);
@@ -52,10 +57,25 @@ namespace DbcParserLib
                 }
                 var firstLinePart = line.Substring(0, definitionTerminationLocation + 1);
                 m_lineMemory = line.Substring(definitionTerminationLocation + 2, line.Length - 1).Trim();
+                m_isVirtualLine = true;
 
                 return firstLinePart;
             }
             return line;
+        }
+
+        public string PeakNextLine()
+        {
+            if (m_lineMemory == null)
+            {
+                m_lineMemory = m_reader.ReadLine();
+                m_isVirtualLine = false;
+                return m_lineMemory;
+            }
+            else
+            {
+                return m_lineMemory;
+            }
         }
     }
 }
