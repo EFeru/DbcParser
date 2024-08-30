@@ -13,7 +13,7 @@ namespace DbcParserLib
         void AddSignal(Signal signal);
         void AddSignalComment(uint messageId, string signalName, string comment);
         void AddSignalValueType(uint messageId, string signalName, DbcValueType valueType);
-        void AddSignalExtendedMultiplexingInfo(uint messageId, string signalName, ParsingExtendedMultiplexing extendedMultiplexing);
+        void AddSignalExtendedMultiplexingInfo(uint messageId, string signalName, string multiplexorSignal, string ranges);
         void LinkNamedTableToSignal(uint messageId, string signalName, string tableName);
         void LinkTableValuesToSignal(uint messageId, string signalName, IReadOnlyDictionary<int, string> dictValues);
         void LinkTableValuesToEnvironmentVariable(string variableName, IReadOnlyDictionary<int, string> dictValues);

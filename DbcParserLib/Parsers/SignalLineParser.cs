@@ -29,9 +29,10 @@ namespace DbcParserLib.Parsers
             if (match.Success)
             {
                 var factorStr = match.Groups[7].Value;
+
                 var sig = new Signal
                 {
-                    Multiplexing = match.Groups[2].Value,
+                    ParsingMultiplexing = new ParsingMultiplexing(match.Groups[2].Value, m_observer),
                     Name = match.Groups[1].Value,
                     StartBit = ushort.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture),
                     Length = ushort.Parse(match.Groups[4].Value, CultureInfo.InvariantCulture),

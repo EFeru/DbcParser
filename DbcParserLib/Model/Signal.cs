@@ -42,7 +42,7 @@ namespace DbcParserLib.Model
             Receiver = signal.Receiver;
             ValueTableMap = signal.ValueTableMap;
             Comment = signal.Comment;
-            Multiplexing = signal.MultiplexingInfo();
+            Multiplexing = new MultiplexingInfo(signal.ParsingMultiplexing);
             CustomProperties = signal.CustomProperties;
         }
     }
@@ -65,8 +65,7 @@ namespace DbcParserLib.Model
         public string[] Receiver;
         public IReadOnlyDictionary<int, string> ValueTableMap = new Dictionary<int, string>();
         public string Comment;
-        public string Multiplexing;
-        internal ParsingExtendedMultiplexing ExtendedMultiplexing;
+        internal ParsingMultiplexing ParsingMultiplexing;
         public Message Parent;
         public readonly Dictionary<string, CustomProperty> CustomProperties = new Dictionary<string, CustomProperty>();
         public double InitialValue

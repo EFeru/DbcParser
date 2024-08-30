@@ -1,11 +1,12 @@
-﻿namespace DbcParserLib.Model
+﻿using System;
+
+namespace DbcParserLib.Model
 {
+    [Flags]
     public enum MultiplexingRole
     {
         None, 
-        Unknown, // Used if parsing fails
         Multiplexed, 
-        Multiplexor, 
-        MultiplexedMultiplexor
+        Multiplexor
     }
 }

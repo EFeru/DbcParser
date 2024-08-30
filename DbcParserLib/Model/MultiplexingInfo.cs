@@ -1,19 +1,16 @@
+using System.Linq;
+
 namespace DbcParserLib.Model
 {
     public class MultiplexingInfo
     { 
         public MultiplexingRole Role { get; }
-        public int Group { get; }
+        public uint Group { get; }
 
-        public MultiplexingInfo(MultiplexingRole role)
-            : this(role, 0)
+        public MultiplexingInfo(ParsingMultiplexing parsingMultiplexing)
         {
-        }
-
-        public MultiplexingInfo(MultiplexingRole role, int group)
-        {
-            Role = role;
-            Group = group;
+            Role = parsingMultiplexing.Role;
+            Group = parsingMultiplexing.MultiplexerValues.FirstOrDefault();
         }
     }
 }

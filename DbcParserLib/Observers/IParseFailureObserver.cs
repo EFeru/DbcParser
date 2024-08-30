@@ -25,7 +25,8 @@
         void PropertyDefaultSyntaxError();
         void SignalSyntaxError();
         void SignalValueTypeSyntaxError();
-        void SignalExtendedMultiplexingError();
+        void SignalMultiplexingSyntaxError();
+        void SignalExtendedMultiplexingSyntaxError();
         void ValueTableDefinitionSyntaxError();
         void ValueTableSyntaxError();
         void SignalNameNotFound(uint messageId, string signalName);

@@ -201,11 +201,18 @@ namespace DbcParserLib
                 m_observer.SignalNameNotFound(messageId, signalName);
         }
 
-        public void AddSignalExtendedMultiplexingInfo(uint messageId, string signalName, ParsingExtendedMultiplexing extendedMultiplexing)
+        public void AddSignalExtendedMultiplexingInfo(uint messageId, string signalName, string multiplexorSignal, string ranges)
         {
             if (TryGetValueMessageSignal(messageId, signalName, out var signal))
             {
-                signal.ExtendedMultiplexing = extendedMultiplexing;
+                if (TryGetValueMessageSignal(messageId, multiplexorSignal, out var _))
+                {
+                    signal.ParsingMultiplexing.AddExtendedMultiplexingInformation(multiplexorSignal, ranges);
+                }
+                else
+                {
+                    m_observer.SignalExtendedMultiplexingSyntaxError();
+                }
             }
             else
             {

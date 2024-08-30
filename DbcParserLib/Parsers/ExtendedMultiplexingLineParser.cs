@@ -32,28 +32,11 @@ namespace DbcParserLib.Parsers
                 var multiplexorSignal = match.Groups[3].Value;
                 var multiplexorRanges = match.Groups[4].Value;
 
-                var rangesArray = multiplexorRanges.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-
-                var rangesParsed = new List<MultiplexingRange>();
-
-                foreach (var range in rangesArray)
-                {
-                    var rangeClean = range.Trim();
-                    var numbers = rangeClean.Split('-');
-
-                    var lower = uint.Parse(numbers[0]);
-                    var upper = uint.Parse(numbers[1]);
-
-                    rangesParsed.Add(new MultiplexingRange(lower, upper));
-                }
-
-                var extendendMultiplexing = new ParsingExtendedMultiplexing(multiplexorSignal, rangesParsed);
-
-                builder.AddSignalExtendedMultiplexingInfo(uint.Parse(match.Groups[1].Value), match.Groups[2].Value, extendendMultiplexing);
+                builder.AddSignalExtendedMultiplexingInfo(uint.Parse(match.Groups[1].Value), match.Groups[2].Value, multiplexorSignal, multiplexorRanges);
             }
             else
             {
-                m_observer.SignalExtendedMultiplexingError();
+                m_observer.SignalExtendedMultiplexingSyntaxError();
             }
 
             return true;
