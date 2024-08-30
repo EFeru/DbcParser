@@ -95,6 +95,7 @@ namespace DbcParserLib.Tests
 
         [TestCase("BU_: 0nodeName")]
         [TestCase("BU_:nodeName")]
+        [TestCase("BU_:")]
         public void NodeSyntaxErrorIsObserved(string line)
         {
             var observerMock = m_repository.Create<IParseFailureObserver>();
