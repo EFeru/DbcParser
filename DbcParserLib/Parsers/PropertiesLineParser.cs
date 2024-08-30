@@ -37,6 +37,10 @@ namespace DbcParserLib.Parsers
                     builder.AddMessageCustomProperty(match.Groups[1].Value, uint.Parse(match.Groups[5].Value, CultureInfo.InvariantCulture), stringValue, isNumeric);
                 else if (match.Groups[6].Value == "SG_")
                     builder.AddSignalCustomProperty(match.Groups[1].Value, uint.Parse(match.Groups[7].Value, CultureInfo.InvariantCulture), match.Groups[8].Value, stringValue, isNumeric);
+                else
+                {
+                    builder.AddGlobalCustomProperty(match.Groups[1].Value, match.Groups[9].Value, isNumeric);
+                }
             }
             else
                 m_observer.PropertySyntaxError();

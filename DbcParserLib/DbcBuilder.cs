@@ -18,6 +18,7 @@ namespace DbcParserLib
         private readonly IDictionary<uint, Message> m_messages = new Dictionary<uint, Message>();
         private readonly IDictionary<uint, IDictionary<string, Signal>> m_signals = new Dictionary<uint, IDictionary<string, Signal>>();
         private readonly IDictionary<string, EnvironmentVariable> m_environmentVariables = new Dictionary<string, EnvironmentVariable>();
+        private readonly IDictionary<string, CustomProperty> m_globalCustomProperties = new Dictionary<string, CustomProperty>();
 
         private readonly IDictionary<string, ValuesTable> m_namedTablesMap = new Dictionary<string, ValuesTable>();
         private readonly IDictionary<CustomPropertyObjectType, IDictionary<string, CustomPropertyDefinition>> m_customProperties = new Dictionary<CustomPropertyObjectType, IDictionary<string, CustomPropertyDefinition>>() {
@@ -112,6 +113,23 @@ namespace DbcParserLib
                 }
                 else
                     m_observer.NodeNameNotFound(nodeName);
+            }
+            else
+                m_observer.PropertyNameNotFound(propertyName);
+        }
+
+        public void AddGlobalCustomProperty(string propertyName, string value, bool isNumeric)
+        {
+            if(m_customProperties[CustomPropertyObjectType.Global].TryGetValue(propertyName, out var customPropertyDefinition))
+            {
+                var property = new CustomProperty(customPropertyDefinition);
+                if(!property.SetCustomPropertyValue(value, isNumeric))
+                    return;
+
+                if(m_globalCustomProperties.TryGetValue(propertyName, out _))
+                    m_observer.DuplicatedGlobalProperty(propertyName);
+                else
+                    m_globalCustomProperties[propertyName] = property;
             }
             else
                 m_observer.PropertyNameNotFound(propertyName);
@@ -332,6 +350,35 @@ namespace DbcParserLib
             }
         }
 
+        private void FillEnvironmentVariablesNotSetCustomPropertyWithDefault()
+        {
+            var environmentCustomProperties = m_customProperties[CustomPropertyObjectType.Environment];
+            foreach (var customProperty in environmentCustomProperties)
+            {
+                foreach (var envVariable in m_environmentVariables.Values)
+                {
+                    if (!envVariable.CustomProperties.TryGetValue(customProperty.Key, out _))
+                    {
+                        envVariable.CustomProperties[customProperty.Key] = new CustomProperty(customProperty.Value);
+                        envVariable.CustomProperties[customProperty.Key].SetCustomPropertyValueFromDefault();
+                    }
+                }
+            }
+        }
+
+        private void FillGlobalCustomPropertiesNotSetCustomPropertyWithDefault()
+        {
+            var globalCustomProperties = m_customProperties[CustomPropertyObjectType.Global];
+            foreach (var customPropertyPair in globalCustomProperties)
+            {
+                if (!m_globalCustomProperties.TryGetValue(customPropertyPair.Key, out _))
+                {
+                    m_globalCustomProperties[customPropertyPair.Key] = new CustomProperty(customPropertyPair.Value);
+                    m_globalCustomProperties[customPropertyPair.Key].SetCustomPropertyValueFromDefault();
+                }
+            }
+        }
+
         private void FillMessagesNotSetCustomPropertyWithDefault()
         {
             var messageCustomProperties = m_customProperties[CustomPropertyObjectType.Message];
@@ -369,6 +416,8 @@ namespace DbcParserLib
         {
             FillNodesNotSetCustomPropertyWithDefault();
             FillMessagesNotSetCustomPropertyWithDefault();
+            FillEnvironmentVariablesNotSetCustomPropertyWithDefault();
+            FillGlobalCustomPropertiesNotSetCustomPropertyWithDefault();
 
             foreach (var message in m_messages)
             {
@@ -399,7 +448,7 @@ namespace DbcParserLib
             //}
             //return new Dbc(nodes, messages, environmentVariables);
 
-            return new Dbc(m_nodes.ToArray(), m_messages.Values.ToArray(), m_environmentVariables.Values.ToArray(), m_customProperties[CustomPropertyObjectType.Global].Values);
+            return new Dbc(m_nodes.ToArray(), m_messages.Values.ToArray(), m_environmentVariables.Values.ToArray(), m_globalCustomProperties.Values);
         }
     }
 
