@@ -24,6 +24,8 @@ namespace DbcParserLib
             {CustomPropertyObjectType.Node, new Dictionary<string, CustomPropertyDefinition>()},
             {CustomPropertyObjectType.Message, new Dictionary<string, CustomPropertyDefinition>()},
             {CustomPropertyObjectType.Signal, new Dictionary<string, CustomPropertyDefinition>()},
+            {CustomPropertyObjectType.Environment, new Dictionary<string, CustomPropertyDefinition>()},
+            {CustomPropertyObjectType.Global, new Dictionary<string, CustomPropertyDefinition>()},
         };
 
         private Message m_currentMessage;
@@ -35,10 +37,8 @@ namespace DbcParserLib
 
         public void AddNode(Node node)
         {
-            if(m_nodes.Contains(node))
+            if(m_nodes.Add(node) == false)
                 m_observer.DuplicatedNode(node.Name);
-            else
-                m_nodes.Add(node);
         }
 
         public void AddMessage(Message message)
@@ -399,7 +399,7 @@ namespace DbcParserLib
             //}
             //return new Dbc(nodes, messages, environmentVariables);
 
-            return new Dbc(m_nodes.ToArray(), m_messages.Values.ToArray(), m_environmentVariables.Values.ToArray());
+            return new Dbc(m_nodes.ToArray(), m_messages.Values.ToArray(), m_environmentVariables.Values.ToArray(), m_customProperties[CustomPropertyObjectType.Global].Values);
         }
     }
 

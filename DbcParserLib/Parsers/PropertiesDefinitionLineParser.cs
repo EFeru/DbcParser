@@ -47,9 +47,11 @@ namespace DbcParserLib.Parsers
                         Name = match.Groups[2].Value,
                     };
 
-                    CustomPropertyObjectType objectType = CustomPropertyObjectType.Node;
+                    CustomPropertyObjectType objectType = CustomPropertyObjectType.Global;
                     switch (match.Groups[1].Value)
                     {
+                        case "BU_":
+                            objectType = CustomPropertyObjectType.Node; break;
                         case "BO_":
                             objectType = CustomPropertyObjectType.Message; break;
                         case "SG_":
