@@ -7,7 +7,7 @@ namespace DbcParserLib.Parsers
     internal class NodeLineParser : ILineParser
     {
         private const string NodeLineStarter = "BU_:";
-        private const string NodeLineParsingRegex = @"BU_:((?:\s+(?:[a-zA-Z_][\w]*))+)";
+        private const string NodeLineParsingRegex = @"BU_:((?:\s+(?:[a-zA-Z_][\w]*))*)";
 
         private readonly IParseFailureObserver m_observer;
 
