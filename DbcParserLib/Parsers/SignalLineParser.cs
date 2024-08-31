@@ -10,7 +10,6 @@ namespace DbcParserLib.Parsers
     {
         private const string SignalLineStarter = "SG_ ";
         private const string SignedSymbol = "-";
-        private static readonly string[] m_commaSpaceSeparator = new string[] { Helpers.Space, Helpers.Comma };
         private const string SignalRegex = @"\s*SG_\s+([\w]+)\s*([Mm\d]*)\s*:\s*(\d+)\|(\d+)@([01])([+-])\s+\(([\d\+\-eE.]+),([\d\+\-eE.]+)\)\s+\[([\d\+\-eE.]+)\|([\d\+\-eE.]+)\]\s+""(.*)""\s+([\w\s,]+)";
 
         private readonly IParseFailureObserver m_observer;
@@ -43,7 +42,7 @@ namespace DbcParserLib.Parsers
                     Minimum = double.Parse(match.Groups[9].Value, CultureInfo.InvariantCulture),
                     Maximum = double.Parse(match.Groups[10].Value, CultureInfo.InvariantCulture),
                     Unit = match.Groups[11].Value,
-                    Receiver = match.Groups[12].Value.Split(m_commaSpaceSeparator, StringSplitOptions.RemoveEmptyEntries)  // can be multiple receivers splitted by ","
+                    Receiver = match.Groups[12].Value.Split(ExtensionsAndHelpers.CommaSpaceSeparator, StringSplitOptions.RemoveEmptyEntries)  // can be multiple receivers splitted by ","
                 };
 
                 builder.AddSignal(sig);

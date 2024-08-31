@@ -116,6 +116,13 @@ namespace DbcParserLib
                 return false;
         }
 
+        private static readonly string[] SpaceArray = { " " };
+        public static readonly string[] CommaSpaceSeparator = { " ", "," };
+
+        public static string[] SplitBySpace(this string value)
+        {
+            return value.Split(SpaceArray, System.StringSplitOptions.RemoveEmptyEntries);
+        }
     }
 
     internal class StringToDictionaryParser
