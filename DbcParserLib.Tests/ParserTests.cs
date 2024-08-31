@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using System.Linq;
 using DbcParserLib.Model;
+using DbcParserLib.Observers;
 
 namespace DbcParserLib.Tests
 {
@@ -421,18 +422,55 @@ ENVVAR_DATA_ EnvVarName3: 5;";
         }
 
         [Test]
-        public void MultilineTestcases()
+        public void MultilineValueTableTest()
         {
-            var dbcString1 = @"VAL_ 134 TEST_BuckleSwitch 0 ""Buckled "" 1 "" Unbuckle "" 2 ""Not Used"" 3 ""Not Used
+            var dbcString = @"
+BO_ 134 TestMessage: 1 Test
+ SG_ TEST_BuckleSwitch : 0|8@0+ (1,0) [0|0] """" Receiver
+
+VAL_ 134 TEST_BuckleSwitch 0 ""Buckled "" 1 "" Unbuckle "" 2 ""Not Used"" 3 ""Not Used
 Default value: 0x0"";";
 
-            var dbcString2 = @"BO_ 1160 DAS_steeringControl: 4 NEO
- SG_ DAS_steeringControlType : 23|2@0+ 
- (1,0) [0|0] ""  EPAS
- SG_ DAS_steeringControlChecksum : 31|8@0+ (1,0) [0|0] ""  EPAS, OTHER
- SG_ DAS_steeringControlCounter : 19|4@0+ (1,0) [0|0] ""  EPAS";
+            var failureObserver = new SimpleFailureObserver();
+            Parser.SetParsingFailuresObserver(failureObserver);
+            var dbc = Parser.Parse(dbcString);
+            var errorList = failureObserver.GetErrorList();
 
-            var dbcString3 = "VAL_ 1160 DAS_steeringControlType 1 \"ANGLE_CONTROL\" 3 \"DISABLED\" 0 \"NONE\" 2 \"RESERVED\" ; VAL_ 1160 DAS_steeringAngleRequest 16384 \"ZERO_ANGLE\" ;";
+            Assert.That(errorList, Has.Count.EqualTo(0));
+        }
+
+        [Test]
+        public void MultilineSignalTest()
+        {
+            var dbcString = @"BO_ 1160 DAS_steeringControl: 4 NEO
+ SG_ DAS_steeringControlType : 23|2@0+ 
+ (1,0) [0|0] """"  EPAS
+ SG_ DAS_steeringControlChecksum : 31|8@0+ (1,0) [0|0] """"  EPAS, OTHER
+ SG_ DAS_steeringControlCounter : 19|4@0+ (1,0) [0|0] """"  EPAS";
+
+            var failureObserver = new SimpleFailureObserver();
+            Parser.SetParsingFailuresObserver(failureObserver);
+            var dbc = Parser.Parse(dbcString);
+            var errorList = failureObserver.GetErrorList();
+
+            Assert.That(errorList, Has.Count.EqualTo(0));
+        }
+
+        [Test]
+        public void SingleLineMultiValueTableTest()
+        {
+            var dbcString = @"BO_ 1160 DAS_steeringControl: 4 NEO
+ SG_ DAS_steeringControlType : 23|2@0+ (1,0) [0|0] """"  EPAS
+ SG_ DAS_steeringAngleRequest : 0|16@0+ (1,0) [0|0] """"  EPAS
+
+VAL_ 1160 DAS_steeringControlType 1 ""ANGLE_CONTROL"" 3 ""DISABLED"" 0 ""NONE"" 2 ""RESERVED"" ; VAL_ 1160 DAS_steeringAngleRequest 16384 ""ZERO_ANGLE"" ;";
+
+            var failureObserver = new SimpleFailureObserver();
+            Parser.SetParsingFailuresObserver(failureObserver);
+            var dbc = Parser.Parse(dbcString);
+            var errorList = failureObserver.GetErrorList();
+
+            Assert.That(errorList, Has.Count.EqualTo(0));
         }
     }
 }

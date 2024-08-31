@@ -115,7 +115,7 @@ namespace DbcParserLib
                     return line;
                 }
                 var firstLinePart = line.Substring(0, definitionTerminationLocation + 1);
-                m_lineMemory = line.Substring(definitionTerminationLocation + 2, line.Length - 1).Trim();
+                m_lineMemory = line.Substring(definitionTerminationLocation + 2, line.Length - 1 - firstLinePart.Length).Trim();
                 m_isVirtualLine = true;
 
                 return firstLinePart;
