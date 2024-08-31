@@ -14,12 +14,11 @@ Below is a quick preview of the extracted data using a [Tesla dbc file](https://
 
 <br>
 
-## Disclaimer
-DbcParser currently relies on well formatted dbc files as input. Well formatted means that tags are non splitted on several lines or cumulated into a single line.
+> [!IMPORTANT]
+> DbcParser currently relies on well formatted dbc files as input. Well formatted means that tags are non splitted on several lines or cumulated into a single line.
 The only multiline support is for comments.
 This may change in future, but at the moment this is a requirement.
-
-As an example of unsupported stuff:
+> As an example of unsupported stuff:
 ```
 BO_ 1160 DAS_steeringControl: 4 NEO
  SG_ DAS_steeringControlType : 23|2@0+ 
