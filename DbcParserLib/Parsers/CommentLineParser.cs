@@ -1,4 +1,3 @@
-using System.Text;
 using System.Text.RegularExpressions;
 using DbcParserLib.Observers;
 
@@ -22,39 +21,34 @@ namespace DbcParserLib.Parsers
 
         public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
-            var cleanLine = line; //line.Trim();
-
-            if (cleanLine.StartsWith(CommentLineStarter) == false)
+            if (line.StartsWith(CommentLineStarter) == false)
                 return false;
 
-            /*if (!cleanLine.EndsWith(";"))
-                cleanLine = GetNextLines(cleanLine, m_observer, nextLineProvider);*/
-
-            if (cleanLine.StartsWith("CM_ SG_"))
+            if (line.StartsWith("CM_ SG_"))
             {
-                SetSignalComment(cleanLine, m_observer, builder, nextLineProvider);
+                SetSignalComment(line, m_observer, builder, nextLineProvider);
                 return true;
             }
 
-            if (cleanLine.StartsWith("CM_ BU_"))
+            if (line.StartsWith("CM_ BU_"))
             {
-                SetNodeComment(cleanLine, m_observer, builder, nextLineProvider);
+                SetNodeComment(line, m_observer, builder, nextLineProvider);
                 return true;
             }
 
-            if (cleanLine.StartsWith("CM_ BO_"))
+            if (line.StartsWith("CM_ BO_"))
             {
-                SetMessageComment(cleanLine, m_observer, builder, nextLineProvider);
+                SetMessageComment(line, m_observer, builder, nextLineProvider);
                 return true;
             }
 
-            if (cleanLine.StartsWith("CM_ EV_"))
+            if (line.StartsWith("CM_ EV_"))
             {
-                SetEnvironmentVariableComment(cleanLine, m_observer, builder);
+                SetEnvironmentVariableComment(line, m_observer, builder);
                 return true;
             }
 
-            var match = Regex.Match(cleanLine, GenericCommentParsingRegex);
+            var match = Regex.Match((string)line, GenericCommentParsingRegex);
             if (match.Success)
                 return true;
 
@@ -101,19 +95,5 @@ namespace DbcParserLib.Parsers
             else
                 observer.CommentSyntaxError();
         }
-
-        /*private static string GetNextLines(string currentLine, IParseFailureObserver observer, INextLineProvider nextLineProvider)
-        {
-            var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine(currentLine);
-
-            while (nextLineProvider.TryGetLine(out var nextLine))
-            {
-                stringBuilder.AppendLine(nextLine);
-                if (nextLine.EndsWith(";"))
-                    break;
-            }
-            return stringBuilder.ToString();
-        }*/
     }
 }

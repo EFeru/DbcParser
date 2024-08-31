@@ -169,16 +169,16 @@ namespace DbcParserLib
 
         private string CombineLines(string currentLine, string nextLine)
         {
-            /*currentLine = currentLine.TrimEnd('\r', '\n');
+            currentLine = currentLine.TrimEnd('\r', '\n');
 
             string combinedLine = currentLine + " " + nextLine;
 
-            return combinedLine;*/
+            return combinedLine;
 
-            var stringBuilder = new StringBuilder();
+            /*var stringBuilder = new StringBuilder();
             stringBuilder.AppendLine(currentLine);
             stringBuilder.Append(nextLine);
-            return stringBuilder.ToString();
+            return stringBuilder.ToString();*/
         }
     }
 }

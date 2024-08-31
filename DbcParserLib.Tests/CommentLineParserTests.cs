@@ -50,13 +50,24 @@ namespace DbcParserLib.Tests
         }
 
         [Test]
+        // Should parse as it is a comment but should be observed as error
+        // This however would be catched previously by the IgnoreLineParser
         public void OnlyPrefixIsIgnored()
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
-            var commentLineParser = CreateParser();
+
+            var counter = 0;
+            var failureObserverMock = new Mock<IParseFailureObserver>();
+            failureObserverMock
+                .Setup(observer => observer.CommentSyntaxError())
+                .Callback(() => counter++);
+
+            var commentLineParser = new CommentLineParser(failureObserverMock.Object);
+
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.That(commentLineParser.TryParse("CM_ ", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.False);
+            Assert.That(commentLineParser.TryParse("CM_ ", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
+            Assert.That(counter, Is.EqualTo(1));
         }
 
         [Test]
@@ -93,9 +104,9 @@ namespace DbcParserLib.Tests
         [Test]
         public void FullMultilineIsParsed()
         {
-            var dbcString = @"CM_ SG_ 75 channelName \""This is the first line""
-""this is the second line""
-""this is the third line\"";";
+            var dbcString = @"CM_ SG_ 75 channelName ""This is the first line
+this is the second line
+this is the third line"";";
 
             var expectedText = "This is the first line\r\nthis is the second line\r\nthis is the third line";
 
@@ -125,9 +136,9 @@ namespace DbcParserLib.Tests
         [Test]
         public void FullMultilineIsParsedAndRobustToWhiteSpace()
         {
-            var dbcString = @"CM_ SG_ 75 channelName \""This is the first line""
-""   this is the second line""
-""   this is the third line\"";";
+            var dbcString = @"CM_ SG_ 75 channelName ""This is the first line
+   this is the second line
+   this is the third line"";";
 
             // Spaces at linestart are always removed
             var expectedText = "This is the first line\r\nthis is the second line\r\nthis is the third line";
@@ -158,9 +169,9 @@ namespace DbcParserLib.Tests
         [Test]
         public void FullMultilineIsParsedForMessageAndRobustToWhiteSpace()
         {
-            var dbcString = @"CM_ BO_ 75 \""This is the first line""
-""   this is the second line""
-""   this is the third line\"";";
+            var dbcString = @"CM_ BO_ 75 ""This is the first line
+   this is the second line
+   this is the third line"";";
 
             // Spaces at linestart are always removed
             var expectedText = "This is the first line\r\nthis is the second line\r\nthis is the third line";
@@ -211,9 +222,9 @@ namespace DbcParserLib.Tests
         [Test]
         public void FullMultilineIsParsedForNodeAndRobustToWhiteSpace()
         {
-            var dbcString = @"CM_ BU_ node_name \""This is the first line""
-""   this is the second line""
-""   this is the third line\"";";
+            var dbcString = @"CM_ BU_ node_name ""This is the first line
+   this is the second line
+   this is the third line"";";
 
             // Spaces at linestart are always removed
             var expectedText = "This is the first line\r\nthis is the second line\r\nthis is the third line";
