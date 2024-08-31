@@ -126,8 +126,8 @@ namespace DbcParserLib
         }
 
         // Sequence of return codes was taken from the internals of "String.ReplaceLineEndings" method.
-        private const string NewLineCharsExceptLineFeed = "\r\f\u0085\u2028\u2029\n";
-        private static readonly string pattern = $"[{Regex.Escape(NewLineCharsExceptLineFeed)}]+";
+        private const string NewLineChars = "\r\f\u0085\u2028\u2029\n";
+        private static readonly string pattern = $"[{Regex.Escape(NewLineChars)}]+";
 
         public static string ReplaceNewlinesWithSpace(this string input)
         {
