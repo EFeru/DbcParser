@@ -12,6 +12,7 @@ namespace DbcParserLib.Tests
     public class PropertiesLineParserTests
     {
         private MockRepository m_repository;
+        private static SilentFailureObserver m_silentFailureObserver = new SilentFailureObserver();
 
         [SetUp]
         public void Setup()
@@ -27,10 +28,9 @@ namespace DbcParserLib.Tests
 
         private static List<ILineParser> CreateParser()
         {
-            var observer = new SilentFailureObserver();
             return new List<ILineParser>() {
-                new PropertiesLineParser(observer),
-                new PropertiesDefinitionLineParser(observer)
+                new PropertiesLineParser(m_silentFailureObserver),
+                new PropertiesDefinitionLineParser(m_silentFailureObserver)
             };
         }
 
@@ -47,10 +47,10 @@ namespace DbcParserLib.Tests
         [Test]
         public void IntDefinitionCustomPropertyIsParsedTest()
         {
-            var builder = new DbcBuilder(new SilentFailureObserver());
+            var builder = new DbcBuilder(m_silentFailureObserver);
 
             var customPropertyLineParsers = CreateParser();
-            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty), m_silentFailureObserver);
             Assert.That(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" INT 5 10;", customPropertyLineParsers, builder, nextLineProvider), Is.True);
             Assert.That(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 7;", customPropertyLineParsers, builder, nextLineProvider), Is.True);
         }
@@ -58,12 +58,12 @@ namespace DbcParserLib.Tests
         [Test]
         public void IntDefinitionCustomPropertyNoBoundariesIsParsedTest()
         {
-            var builder = new DbcBuilder(new SilentFailureObserver());
+            var builder = new DbcBuilder(m_silentFailureObserver);
             var message = new Message { ID = 2394947585 };
             builder.AddMessage(message);
 
             var msgCycleTimeLineParser = CreateParser();
-            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty), m_silentFailureObserver);
             Assert.That(ParseLine(@"BA_DEF_ BO_ ""AttributeName"" INT 0 0;", msgCycleTimeLineParser, builder, nextLineProvider), Is.True);
             Assert.That(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 150;", msgCycleTimeLineParser, builder, nextLineProvider), Is.True);
             Assert.That(ParseLine(@"BA_ ""AttributeName"" BO_ 2394947585 100;", msgCycleTimeLineParser, builder, nextLineProvider), Is.True);
@@ -76,10 +76,10 @@ namespace DbcParserLib.Tests
         [Test]
         public void HexDefinitionCustomPropertyIsParsedTest()
         {
-            var builder = new DbcBuilder(new SilentFailureObserver());
+            var builder = new DbcBuilder(m_silentFailureObserver);
 
             var customPropertyLineParsers = CreateParser();
-            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty), m_silentFailureObserver);
             Assert.That(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" HEX 5 10;", customPropertyLineParsers, builder, nextLineProvider), Is.True);
             Assert.That(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 7;", customPropertyLineParsers, builder, nextLineProvider), Is.True);
         }
@@ -87,12 +87,12 @@ namespace DbcParserLib.Tests
         [Test]
         public void HexDefinitionCustomPropertyNoBoundariesIsParsedTest()
         {
-            var builder = new DbcBuilder(new SilentFailureObserver());
+            var builder = new DbcBuilder(m_silentFailureObserver);
             var message = new Message { ID = 2394947585 };
             builder.AddMessage(message);
 
             var msgCycleTimeLineParser = CreateParser();
-            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty), m_silentFailureObserver);
             Assert.That(ParseLine(@"BA_DEF_ BO_ ""AttributeName"" HEX 0 0;", msgCycleTimeLineParser, builder, nextLineProvider), Is.True);
             Assert.That(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 150;", msgCycleTimeLineParser, builder, nextLineProvider), Is.True);
 
@@ -104,10 +104,10 @@ namespace DbcParserLib.Tests
         [Test]
         public void FloatDefinitionCustomPropertyIsParsedTest()
         {
-            var builder = new DbcBuilder(new SilentFailureObserver());
+            var builder = new DbcBuilder(m_silentFailureObserver);
 
             var customPropertyLineParsers = CreateParser();
-            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty), m_silentFailureObserver);
             Assert.That(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" FLOAT 5 10.5;", customPropertyLineParsers, builder, nextLineProvider), Is.True);
             Assert.That(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 7.5;", customPropertyLineParsers, builder, nextLineProvider), Is.True);
         }
@@ -115,12 +115,12 @@ namespace DbcParserLib.Tests
         [Test]
         public void FloatDefinitionCustomPropertyNoBoundariesIsParsedTest()
         {
-            var builder = new DbcBuilder(new SilentFailureObserver());
+            var builder = new DbcBuilder(m_silentFailureObserver);
             var message = new Message { ID = 2394947585 };
             builder.AddMessage(message);
 
             var msgCycleTimeLineParser = CreateParser();
-            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty), m_silentFailureObserver);
             Assert.That(ParseLine(@"BA_DEF_ BO_ ""AttributeName"" FLOAT 0 0;", msgCycleTimeLineParser, builder, nextLineProvider), Is.True);
             Assert.That(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 150.0;", msgCycleTimeLineParser, builder, nextLineProvider), Is.True);
 
@@ -151,10 +151,10 @@ namespace DbcParserLib.Tests
         [Test]
         public void StringDefinitionCustomPropertyIsParsedTest()
         {
-            var builder = new DbcBuilder(new SilentFailureObserver());
+            var builder = new DbcBuilder(m_silentFailureObserver);
 
             var customPropertyLineParsers = CreateParser();
-            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty), m_silentFailureObserver);
             Assert.That(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" STRING;", customPropertyLineParsers, builder, nextLineProvider), Is.True);
             Assert.That(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" ""DefaultString"";", customPropertyLineParsers, builder, nextLineProvider), Is.True);
         }
@@ -222,12 +222,12 @@ namespace DbcParserLib.Tests
         [Test]
         public void MsgCycleTimePropertyIsParsedTest()
         {
-            var builder = new DbcBuilder(new SilentFailureObserver());
+            var builder = new DbcBuilder(m_silentFailureObserver);
             var message = new Message { ID = 2394947585 };
             builder.AddMessage(message);
 
             var msgCycleTimeLineParser = CreateParser();
-            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty), m_silentFailureObserver);
             Assert.That(ParseLine(@"BA_DEF_ BO_ ""GenMsgCycleTime"" INT 0 0;", msgCycleTimeLineParser, builder, nextLineProvider), Is.True);
             Assert.That(ParseLine(@"BA_DEF_DEF_ ""GenMsgCycleTime"" 150;", msgCycleTimeLineParser, builder, nextLineProvider), Is.True);
             Assert.That(ParseLine(@"BA_ ""GenMsgCycleTime"" BO_ 2394947585 100;", msgCycleTimeLineParser, builder, nextLineProvider), Is.True);
@@ -240,14 +240,14 @@ namespace DbcParserLib.Tests
         [Test]
         public void SigInitialValueIntegerPropertyIsParsedTest()
         {
-            var builder = new DbcBuilder(new SilentFailureObserver());
+            var builder = new DbcBuilder(m_silentFailureObserver);
             var message = new Message { ID = 2394947585 };
             builder.AddMessage(message);
             var signal = new Signal { Name = "sig_name" };
             builder.AddSignal(signal);
 
             var sigInitialValueLineParser = CreateParser();
-            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty), m_silentFailureObserver);
             Assert.That(ParseLine(@"BA_DEF_ SG_ ""GenSigStartValue"" INT 0 200;", sigInitialValueLineParser, builder, nextLineProvider), Is.True);
             Assert.That(ParseLine(@"BA_DEF_DEF_ ""GenSigStartValue"" 150;", sigInitialValueLineParser, builder, nextLineProvider), Is.True);
             Assert.That(ParseLine(@"BA_ ""GenSigStartValue"" SG_ 2394947585 sig_name 40;", sigInitialValueLineParser, builder, nextLineProvider), Is.True);
@@ -261,14 +261,14 @@ namespace DbcParserLib.Tests
         [Test]
         public void SigInitialValueHexPropertyIsParsedTest()
         {
-            var builder = new DbcBuilder(new SilentFailureObserver());
+            var builder = new DbcBuilder(m_silentFailureObserver);
             var message = new Message { ID = 2394947585 };
             builder.AddMessage(message);
             var signal = new Signal { Name = "sig_name" };
             builder.AddSignal(signal);
 
             var sigInitialValueLineParser = CreateParser();
-            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty), m_silentFailureObserver);
             Assert.That(ParseLine(@"BA_DEF_ SG_ ""GenSigStartValue"" HEX 0 200;", sigInitialValueLineParser, builder, nextLineProvider), Is.True);
             Assert.That(ParseLine(@"BA_DEF_DEF_ ""GenSigStartValue"" 150;", sigInitialValueLineParser, builder, nextLineProvider), Is.True);
             Assert.That(ParseLine(@"BA_ ""GenSigStartValue"" SG_ 2394947585 sig_name 40;", sigInitialValueLineParser, builder, nextLineProvider), Is.True);
@@ -282,12 +282,12 @@ namespace DbcParserLib.Tests
         [Test]
         public void NodeCustomPropertyIsParsedTest()
         {
-            var builder = new DbcBuilder(new SilentFailureObserver());
+            var builder = new DbcBuilder(m_silentFailureObserver);
             var node = new Node { Name = "Node1" };
             builder.AddNode(node);
 
             var customPropertyLineParsers = CreateParser();
-            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty), m_silentFailureObserver);
             Assert.That(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" HEX 0 200;", customPropertyLineParsers, builder, nextLineProvider), Is.True);
             Assert.That(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 150;", customPropertyLineParsers, builder, nextLineProvider), Is.True);
             Assert.That(ParseLine(@"BA_ ""AttributeName"" BU_ Node1 40;", customPropertyLineParsers, builder, nextLineProvider), Is.True);
@@ -300,13 +300,13 @@ namespace DbcParserLib.Tests
         [Test]
         public void NodeScientificNotationCustomPropertyIsParsedTest()
         {
-            var builder = new DbcBuilder(new SilentFailureObserver());
+            var builder = new DbcBuilder(m_silentFailureObserver);
             var node = new Node { Name = "Node1" };
             builder.AddNode(node);
 
             var dbc = builder.Build();
             var customPropertyLineParsers = CreateParser();
-            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty), m_silentFailureObserver);
             Assert.That(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" FLOAT 0 10;", customPropertyLineParsers, builder, nextLineProvider), Is.True);
             Assert.That(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 5;", customPropertyLineParsers, builder, nextLineProvider), Is.True);
             Assert.That(ParseLine(@"BA_ ""AttributeName"" BU_ Node1 0.7e1;", customPropertyLineParsers, builder, nextLineProvider), Is.True);
@@ -316,12 +316,12 @@ namespace DbcParserLib.Tests
         [Test]
         public void NodeMultipleCustomPropertyAreParsedTest()
         {
-            var builder = new DbcBuilder(new SilentFailureObserver());
+            var builder = new DbcBuilder(m_silentFailureObserver);
             var node = new Node { Name = "Node1" };
             builder.AddNode(node);
 
             var customPropertyLineParsers = CreateParser();
-            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty), m_silentFailureObserver);
             Assert.That(ParseLine(@"BA_DEF_ BU_ ""AttributeName1"" INT 0 200;", customPropertyLineParsers, builder, nextLineProvider), Is.True);
             Assert.That(ParseLine(@"BA_DEF_DEF_ ""AttributeName1"" 100;", customPropertyLineParsers, builder, nextLineProvider), Is.True);
 
@@ -338,14 +338,14 @@ namespace DbcParserLib.Tests
         [Test]
         public void CustomPropertyIsAssignedToDifferentNodesTest()
         {
-            var builder = new DbcBuilder(new SilentFailureObserver());
+            var builder = new DbcBuilder(m_silentFailureObserver);
             var node1 = new Node { Name = "Node1" };
             var node2 = new Node { Name = "Node2" };
             builder.AddNode(node1);
             builder.AddNode(node2);
 
             var customPropertyLineParsers = CreateParser();
-            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty), m_silentFailureObserver);
             Assert.That(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" INT 0 200;", customPropertyLineParsers, builder, nextLineProvider), Is.True);
             Assert.That(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" 100;", customPropertyLineParsers, builder, nextLineProvider), Is.True);
 
