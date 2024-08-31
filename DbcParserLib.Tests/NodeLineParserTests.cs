@@ -35,7 +35,7 @@ namespace DbcParserLib.Tests
             var nodeLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsFalse(nodeLineParser.TryParse(string.Empty, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(nodeLineParser.TryParse(string.Empty, dbcBuilderMock.Object, nextLineProviderMock.Object), Is.False);
         }
 
         [Test]
@@ -45,7 +45,7 @@ namespace DbcParserLib.Tests
             var nodeLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsFalse(nodeLineParser.TryParse("CF_", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(nodeLineParser.TryParse("CF_", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.False);
         }
 
         [Test]
@@ -55,7 +55,7 @@ namespace DbcParserLib.Tests
             var nodeLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(nodeLineParser.TryParse("BU_:", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(nodeLineParser.TryParse("BU_:", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [Test]
@@ -65,7 +65,7 @@ namespace DbcParserLib.Tests
             var nodeLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(nodeLineParser.TryParse("BU_:        ", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(nodeLineParser.TryParse("BU_:        ", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [Test]
@@ -81,16 +81,16 @@ namespace DbcParserLib.Tests
             dbcBuilderMock.Setup(mock => mock.AddNode(It.IsAny<Node>()))
                 .Callback<Node>(node => 
                 {
-                    Assert.IsFalse(string.IsNullOrWhiteSpace(node.Name));
-                    Assert.IsTrue(string.IsNullOrWhiteSpace(node.Comment));
+                    Assert.That(string.IsNullOrWhiteSpace(node.Name), Is.False);
+                    Assert.That(string.IsNullOrWhiteSpace(node.Comment), Is.True);
                     results.Add(node.Name);
                 });
 
             var nodeLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(nodeLineParser.TryParse(@"BU_: NODE_1 NODE_2    NODE_4   ", dbcBuilderMock.Object, nextLineProviderMock.Object));
-            CollectionAssert.AreEquivalent(expectations, results);
+            Assert.That(nodeLineParser.TryParse(@"BU_: NODE_1 NODE_2    NODE_4   ", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
+            Assert.That(results, Is.EquivalentTo(expectations));
         }
 
         [TestCase("BU_: 0nodeName")]

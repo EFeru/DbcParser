@@ -34,7 +34,7 @@ namespace DbcParserLib.Tests
             var messageLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsFalse(messageLineParser.TryParse(string.Empty, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(messageLineParser.TryParse(string.Empty, dbcBuilderMock.Object, nextLineProviderMock.Object), Is.False);
         }
 
         [Test]
@@ -44,7 +44,7 @@ namespace DbcParserLib.Tests
             var messageLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsFalse(messageLineParser.TryParse("CF_", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(messageLineParser.TryParse("CF_", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.False);
         }
 
         [Test]
@@ -54,7 +54,7 @@ namespace DbcParserLib.Tests
             var messageLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsFalse(messageLineParser.TryParse("BO_ ", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(messageLineParser.TryParse("BO_ ", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.False);
         }
 
         [Test]
@@ -62,9 +62,9 @@ namespace DbcParserLib.Tests
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             var messageLineParser = CreateParser();
-            var nextLineProviderMock = m_repository.Create<INextLineProvider>(); 
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(messageLineParser.TryParse("BO_ 234 xxx", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(messageLineParser.TryParse("BO_ 234 xxx", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [Test]
@@ -74,17 +74,17 @@ namespace DbcParserLib.Tests
             dbcBuilderMock.Setup(mock => mock.AddMessage(It.IsAny<Message>()))
                 .Callback<Message>(message => 
                 {
-                    Assert.AreEqual(1041, message.ID);
-                    Assert.AreEqual("DOORS_SEATBELTS", message.Name);
-                    Assert.AreEqual(8, message.DLC);
-                    Assert.AreEqual("TRX", message.Transmitter);
-                    Assert.IsFalse(message.IsExtID);
+                    Assert.That(message.ID, Is.EqualTo(1041));
+                    Assert.That(message.Name, Is.EqualTo("DOORS_SEATBELTS"));
+                    Assert.That(message.DLC, Is.EqualTo(8));
+                    Assert.That(message.Transmitter, Is.EqualTo("TRX"));
+                    Assert.That(message.IsExtID, Is.False);
                 });
 
             var messageLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(messageLineParser.TryParse(@"BO_ 1041 DOORS_SEATBELTS: 8 TRX", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(messageLineParser.TryParse(@"BO_ 1041 DOORS_SEATBELTS: 8 TRX", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [Test]
@@ -94,17 +94,17 @@ namespace DbcParserLib.Tests
             dbcBuilderMock.Setup(mock => mock.AddMessage(It.IsAny<Message>()))
                 .Callback<Message>(message =>
                 {
-                    Assert.AreEqual(1041, message.ID);
-                    Assert.AreEqual("DOORS_SEATBELTS", message.Name);
-                    Assert.AreEqual(8, message.DLC);
-                    Assert.AreEqual("TRX", message.Transmitter);
-                    Assert.IsFalse(message.IsExtID);
+                    Assert.That(message.ID, Is.EqualTo(1041));
+                    Assert.That(message.Name, Is.EqualTo("DOORS_SEATBELTS"));
+                    Assert.That(message.DLC, Is.EqualTo(8));
+                    Assert.That(message.Transmitter, Is.EqualTo("TRX"));
+                    Assert.That(message.IsExtID, Is.False);
                 });
 
             var messageLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(messageLineParser.TryParse(@"BO_ 1041    DOORS_SEATBELTS  :    8  TRX   ", dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(messageLineParser.TryParse(@"BO_ 1041    DOORS_SEATBELTS  :    8  TRX   ", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [TestCase("BO_ 123 msgName : -32 transmitter")]

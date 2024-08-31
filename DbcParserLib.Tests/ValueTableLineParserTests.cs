@@ -48,7 +48,7 @@ namespace DbcParserLib.Tests
             var valueTableLineParsers = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsFalse(ParseLine(string.Empty, valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(ParseLine(string.Empty, valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object), Is.False);
         }
 
         [Test]
@@ -58,7 +58,7 @@ namespace DbcParserLib.Tests
             var valueTableLineParsers = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsFalse(ParseLine("CF_", valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(ParseLine("CF_", valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object), Is.False);
         }
 
         [Test]
@@ -68,7 +68,7 @@ namespace DbcParserLib.Tests
             var valueTableLineParsers = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsFalse(ParseLine("VAL_TABLE_", valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(ParseLine("VAL_TABLE_", valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object), Is.False);
         }
 
         [Test]
@@ -78,7 +78,7 @@ namespace DbcParserLib.Tests
             var valueTableLineParsers = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsFalse(ParseLine("VAL_TABLE_        ", valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(ParseLine("VAL_TABLE_        ", valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object), Is.False);
         }
 
         [Test]
@@ -88,7 +88,7 @@ namespace DbcParserLib.Tests
             var valueTableLineParsers = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(ParseLine("VAL_TABLE_ name       ", valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(ParseLine("VAL_TABLE_ name       ", valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [Test]
@@ -98,7 +98,7 @@ namespace DbcParserLib.Tests
             var valueTableLineParsers = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsFalse(ParseLine("VAL_", valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(ParseLine("VAL_", valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object), Is.False);
         }
 
         [Test]
@@ -108,7 +108,7 @@ namespace DbcParserLib.Tests
             var valueTableLineParsers = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsFalse(ParseLine("VAL_        ", valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(ParseLine("VAL_        ", valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object), Is.False);
         }
 
         [Test]
@@ -118,7 +118,7 @@ namespace DbcParserLib.Tests
             var valueTableLineParsers = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(ParseLine("VAL_ 470       ", valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(ParseLine("VAL_ 470       ", valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [Test]
@@ -128,7 +128,7 @@ namespace DbcParserLib.Tests
             var valueTableLineParsers = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(ParseLine("VAL_ xxx       ", valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(ParseLine("VAL_ xxx       ", valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [Test]
@@ -140,7 +140,7 @@ namespace DbcParserLib.Tests
             var valueTableLineParsers = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(ParseLine(@"VAL_TABLE_ DI_aebLockState 3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 ""AEB_LOCK_STATE_UNLOCKED"" 0 ""AEB_LOCK_STATE_LOCKED"" ;", valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(ParseLine(@"VAL_TABLE_ DI_aebLockState 3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 ""AEB_LOCK_STATE_UNLOCKED"" 0 ""AEB_LOCK_STATE_LOCKED"" ;", valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [Test]
@@ -151,7 +151,7 @@ namespace DbcParserLib.Tests
             var valueTableLineParsers = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(ParseLine(@"VAL_ 470 channelName tableName;", valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(ParseLine(@"VAL_ 470 channelName tableName;", valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
 
         }
 
@@ -174,7 +174,7 @@ namespace DbcParserLib.Tests
             var valueTableLineParsers = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(ParseLine(@"VAL_ 470 channelName 3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 ""AEB_LOCK_STATE_UNLOCKED"" 0 ""AEB_LOCK_STATE_LOCKED"" ;", valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(ParseLine(@"VAL_ 470 channelName 3 ""AEB_LOCK_STATE_SNA"" 2 ""AEB_LOCK_STATE_UNUSED"" 1 ""AEB_LOCK_STATE_UNLOCKED"" 0 ""AEB_LOCK_STATE_LOCKED"" ;", valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [Test]
@@ -193,7 +193,7 @@ namespace DbcParserLib.Tests
             var valueTableLineParsers = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(ParseLine(@"VAL_ 470 channelName 0 ""AEB_LOCK_STATE_LOCKED"" ;", valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object));
+            Assert.That(ParseLine(@"VAL_ 470 channelName 0 ""AEB_LOCK_STATE_LOCKED"" ;", valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
         }
 
         [TestCase("VAL_TABLE_ TableName 0 \"Running\" 1 \"  Idle\" ;")]
@@ -216,8 +216,8 @@ namespace DbcParserLib.Tests
             var valueTableLineParsers = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(ParseLine(line, valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object));
-            Assert.AreEqual(2, finalDict.Count);
+            Assert.That(ParseLine(line, valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
+            Assert.That(finalDict.Count, Is.EqualTo(2));
         }
 
         [TestCase("VAL_ 869 qGearboxOil 0 \"Running\" 1 \"  Idle\" ;")]
@@ -241,8 +241,8 @@ namespace DbcParserLib.Tests
             var valueTableLineParsers = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.IsTrue(ParseLine(line, valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object));
-            Assert.AreEqual(2, finalDict.Count);
+            Assert.That(ParseLine(line, valueTableLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
+            Assert.That(finalDict.Count, Is.EqualTo(2));
         }
 
         [TestCase("VAL_ 869 qGearboxOil 0 \"Running\" 1 \"Idle\" ")]
@@ -359,8 +359,8 @@ namespace DbcParserLib.Tests
             var dbcBuilder = new DbcBuilder(observerMock.Object);
 
             var lineParser = new ValueTableDefinitionLineParser(observerMock.Object);
-            
-            Assert.IsTrue(lineParser.TryParse(line, dbcBuilder, nextLineProviderMock.Object));
+
+            Assert.That(lineParser.TryParse(line, dbcBuilder, nextLineProviderMock.Object), Is.True);
         }
     }
 }
