@@ -21,10 +21,12 @@ namespace DbcParserLib.Parsers
 
         public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
-            if (line.TrimStart().StartsWith(SignalLineStarter) == false)
+            var cleanLine = line.Trim().ReplaceNewlinesWithSpace();
+
+            if (cleanLine.StartsWith(SignalLineStarter) == false)
                 return false;
 
-            var match = Regex.Match(line, SignalRegex);
+            var match = Regex.Match(cleanLine, SignalRegex);
             if (match.Success)
             {
                 var factorStr = match.Groups[7].Value;

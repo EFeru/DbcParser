@@ -21,34 +21,36 @@ namespace DbcParserLib.Parsers
 
         public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
-            if (line.StartsWith(CommentLineStarter) == false)
+            var cleanLine = line.Trim();
+
+            if (cleanLine.StartsWith(CommentLineStarter) == false)
                 return false;
 
-            if (line.StartsWith("CM_ SG_"))
+            if (cleanLine.StartsWith("CM_ SG_"))
             {
-                SetSignalComment(line, m_observer, builder, nextLineProvider);
+                SetSignalComment(cleanLine, m_observer, builder, nextLineProvider);
                 return true;
             }
 
-            if (line.StartsWith("CM_ BU_"))
+            if (cleanLine.StartsWith("CM_ BU_"))
             {
-                SetNodeComment(line, m_observer, builder, nextLineProvider);
+                SetNodeComment(cleanLine, m_observer, builder, nextLineProvider);
                 return true;
             }
 
-            if (line.StartsWith("CM_ BO_"))
+            if (cleanLine.StartsWith("CM_ BO_"))
             {
-                SetMessageComment(line, m_observer, builder, nextLineProvider);
+                SetMessageComment(cleanLine, m_observer, builder, nextLineProvider);
                 return true;
             }
 
-            if (line.StartsWith("CM_ EV_"))
+            if (cleanLine.StartsWith("CM_ EV_"))
             {
-                SetEnvironmentVariableComment(line, m_observer, builder);
+                SetEnvironmentVariableComment(cleanLine, m_observer, builder);
                 return true;
             }
 
-            var match = Regex.Match((string)line, GenericCommentParsingRegex);
+            var match = Regex.Match((string)cleanLine, GenericCommentParsingRegex);
             if (match.Success)
                 return true;
 

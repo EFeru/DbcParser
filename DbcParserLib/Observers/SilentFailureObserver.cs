@@ -128,7 +128,7 @@ namespace DbcParserLib.Observers
         {
         }
 
-        public void UnknownLine()
+        public void UnknownLine(string line)
         {
         }
 

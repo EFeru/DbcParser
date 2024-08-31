@@ -169,9 +169,9 @@ namespace DbcParserLib.Observers
             AddError($"Out of index value [{index}] for '{propertyName}' property");
         }
 
-        public void UnknownLine()
+        public void UnknownLine(string line)
         {
-            AddError("Unknown syntax");
+            AddError($"Unknown syntax in line: '{line}'");
         }
 
         public void NoMessageFound()

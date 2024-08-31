@@ -35,7 +35,7 @@
         void TableMapNameNotFound(string tableName);
         void PropertyValueOutOfBound(string propertyName, string value);
         void PropertyValueOutOfIndex(string propertyName, string index);
-        void UnknownLine();
+        void UnknownLine(string line);
         void NoMessageFound();
         void Clear();
     }

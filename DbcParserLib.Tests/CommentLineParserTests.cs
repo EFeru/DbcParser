@@ -50,24 +50,13 @@ namespace DbcParserLib.Tests
         }
 
         [Test]
-        // Should parse as it is a comment but should be observed as error
-        // This however would be catched previously by the IgnoreLineParser
         public void OnlyPrefixIsIgnored()
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
-
-            var counter = 0;
-            var failureObserverMock = new Mock<IParseFailureObserver>();
-            failureObserverMock
-                .Setup(observer => observer.CommentSyntaxError())
-                .Callback(() => counter++);
-
-            var commentLineParser = new CommentLineParser(failureObserverMock.Object);
-
+            var commentLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.That(commentLineParser.TryParse("CM_ ", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
-            Assert.That(counter, Is.EqualTo(1));
+            Assert.That(commentLineParser.TryParse("CM_ ", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.False);
         }
 
         [Test]

@@ -123,6 +123,11 @@ namespace DbcParserLib
         {
             return value.Split(SpaceArray, System.StringSplitOptions.RemoveEmptyEntries);
         }
+
+        public static string ReplaceNewlinesWithSpace(this string input)
+        {
+            return input.Replace("\r\n", " ");
+        }
     }
 
     internal class StringToDictionaryParser

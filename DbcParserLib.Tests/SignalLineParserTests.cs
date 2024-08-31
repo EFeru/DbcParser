@@ -49,13 +49,13 @@ namespace DbcParserLib.Tests
         }
 
         [Test]
-        public void OnlyPrefixWithSpacesIsAcceptedWithNoInteractions()
+        public void OnlyPrefixIsIgnored()
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             var signalLineParser = CreateParser();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
 
-            Assert.That(signalLineParser.TryParse("SG_        ", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
+            Assert.That(signalLineParser.TryParse("SG_ ", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.False);
         }
 
         [Test]
@@ -192,7 +192,6 @@ BO_ 200 SENSOR: 39 SENSOR
         [TestCase("SG_ qGearboxOilMin : 0|16@1+ (0.1,0) [0|6553.5] l/min NATEC")]
         [TestCase("SG_ \"qGearboxOilMin\" : 0|16@1+ (0.1,0) [0|6553.5] \"l/min\" NATEC")]
         [TestCase("SG_ qGearboxOilMin 0|16@1+ (0.1,0) [0|6553.5] \"l/min\" NATEC")]
-        [TestCase("SG_ ")]
         public void SignalSyntaxErrorIsObserved(string line)
         {
             var observerMock = m_repository.Create<IParseFailureObserver>();

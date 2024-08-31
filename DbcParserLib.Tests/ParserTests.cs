@@ -441,7 +441,7 @@ Default value: 0x0"";";
             Assert.That(dbc.Messages.First().Signals.Count(), Is.EqualTo(1));
             Assert.That(dbc.Messages.First().Signals.First().ValueTableMap.Count, Is.EqualTo(4));
             Assert.That(dbc.Messages.First().Signals.First().ValueTableMap.Last().Key, Is.EqualTo(3));
-            Assert.That(dbc.Messages.First().Signals.First().ValueTableMap.Last().Value, Is.EqualTo("Not Used\r\nDefault value: 0x0"));
+            Assert.That(dbc.Messages.First().Signals.First().ValueTableMap.Last().Value, Is.EqualTo("Not Used Default value: 0x0"));
         }
 
         [Test]

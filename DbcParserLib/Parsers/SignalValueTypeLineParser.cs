@@ -18,7 +18,7 @@ namespace DbcParserLib.Parsers
 
         public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
-            var cleanLine = line.Trim(' ');
+            var cleanLine = line.Trim().ReplaceNewlinesWithSpace();
 
             if (cleanLine.StartsWith(SignalValueTypeStarter) == false)
                 return false;

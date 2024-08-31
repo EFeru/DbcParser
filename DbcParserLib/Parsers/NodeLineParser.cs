@@ -18,10 +18,12 @@ namespace DbcParserLib.Parsers
 
         public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
-            if (line.TrimStart().StartsWith(NodeLineStarter) == false)
+            var cleanLine = line.Trim().ReplaceNewlinesWithSpace();
+
+            if (cleanLine.StartsWith(NodeLineStarter) == false)
                 return false;
 
-            var match = Regex.Match(line, NodeLineParsingRegex);
+            var match = Regex.Match(cleanLine, NodeLineParsingRegex);
             if (match.Success)
             {
                 foreach (var nodeName in match.Groups[1].Value.TrimStart().SplitBySpace())
