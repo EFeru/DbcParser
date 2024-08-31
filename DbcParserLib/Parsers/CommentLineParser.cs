@@ -22,13 +22,13 @@ namespace DbcParserLib.Parsers
 
         public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
-            var cleanLine = line.Trim();
+            var cleanLine = line; //line.Trim();
 
             if (cleanLine.StartsWith(CommentLineStarter) == false)
                 return false;
 
-            if (!cleanLine.EndsWith(";"))
-                cleanLine = GetNextLines(cleanLine, m_observer, nextLineProvider);
+            /*if (!cleanLine.EndsWith(";"))
+                cleanLine = GetNextLines(cleanLine, m_observer, nextLineProvider);*/
 
             if (cleanLine.StartsWith("CM_ SG_"))
             {
@@ -102,7 +102,7 @@ namespace DbcParserLib.Parsers
                 observer.CommentSyntaxError();
         }
 
-        private static string GetNextLines(string currentLine, IParseFailureObserver observer, INextLineProvider nextLineProvider)
+        /*private static string GetNextLines(string currentLine, IParseFailureObserver observer, INextLineProvider nextLineProvider)
         {
             var stringBuilder = new StringBuilder();
             stringBuilder.AppendLine(currentLine);
@@ -114,7 +114,6 @@ namespace DbcParserLib.Parsers
                     break;
             }
             return stringBuilder.ToString();
-        }
-
+        }*/
     }
 }
