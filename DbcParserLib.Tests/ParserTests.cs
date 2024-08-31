@@ -445,6 +445,24 @@ Default value: 0x0"";";
         }
 
         [Test]
+        public void MultilineValueTableTestWithOnlyNewLine()
+        {
+            var dbcString = "BO_ 134 TestMessage: 1 Test \n SG_ TEST_BuckleSwitch : 0|8@0+ (1,0) [0|0] \"\" Receiver\n VAL_ 134 TEST_BuckleSwitch 0 \"Buckled \" 1 \" Unbuckle \" 2 \"Not Used\" 3 \"Not Used \nDefault value: 0x0\";";
+
+            var failureObserver = new SimpleFailureObserver();
+            Parser.SetParsingFailuresObserver(failureObserver);
+            var dbc = Parser.Parse(dbcString);
+            var errorList = failureObserver.GetErrorList();
+
+            Assert.That(errorList, Has.Count.EqualTo(0));
+            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+            Assert.That(dbc.Messages.First().Signals.Count(), Is.EqualTo(1));
+            Assert.That(dbc.Messages.First().Signals.First().ValueTableMap.Count, Is.EqualTo(4));
+            Assert.That(dbc.Messages.First().Signals.First().ValueTableMap.Last().Key, Is.EqualTo(3));
+            Assert.That(dbc.Messages.First().Signals.First().ValueTableMap.Last().Value, Is.EqualTo("Not Used Default value: 0x0"));
+        }
+
+        [Test]
         public void MultilineSignalTestEOF()
         {
             var dbcString = @"BO_ 1160 DAS_steeringControl: 4 NEO

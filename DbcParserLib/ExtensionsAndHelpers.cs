@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using DbcParserLib.Model;
+using System.Text.RegularExpressions;
 
 namespace DbcParserLib
 {
@@ -124,9 +125,15 @@ namespace DbcParserLib
             return value.Split(SpaceArray, System.StringSplitOptions.RemoveEmptyEntries);
         }
 
+        // Sequence of return codes was taken from the internals of "String.ReplaceLineEndings" method.
+        private const string NewLineCharsExceptLineFeed = "\r\f\u0085\u2028\u2029\n";
+        private static readonly string pattern = $"[{Regex.Escape(NewLineCharsExceptLineFeed)}]+";
+
         public static string ReplaceNewlinesWithSpace(this string input)
         {
-            return input.Replace("\r\n", " ");
+            // Would like to use "String.ReplaceLineEndings" but its unavailable because of the target frameworks
+            // Feel free to optimate
+            return Regex.Replace(input, pattern, " ");
         }
     }
 
