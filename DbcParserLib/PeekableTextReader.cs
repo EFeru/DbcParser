@@ -39,9 +39,9 @@ namespace DbcParserLib
                 m_virtualLineMemory = null;
                 return temp;
             }
+            m_observer.CurrentLine++;
             if (m_bufferedLines.Count > 0)
                 return m_bufferedLines.Dequeue();
-            m_observer.CurrentLine++;
             return m_underlying.ReadLine();
         }
     }

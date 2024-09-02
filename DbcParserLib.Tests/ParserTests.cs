@@ -674,5 +674,35 @@ second line""";
             Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
             Assert.That(dbc.Messages.First().Comment, Is.EqualTo($"Message comment first line{Environment.NewLine}second line"));
         }
+
+        [Test]
+        public void HandleMultiDefinitionLineAfterMultiLine()
+        {
+            var dbcString = @"
+BO_ 1160 DAS_steeringControl: 4 NEO
+ SG_ DAS_steeringControlType : 23|2@0+ (1,0) [0|0] """"  EPAS
+ SG_ DAS_steeringAngleRequest : 0|16@0+ (1,0) [0|0] """"  EPAS
+ 
+CM_ BO_ 1160 ""Message comment first line
+second line""; VAL_ 1160 DAS_steeringControlType 1 ""ANGLE_CONTROL"" 3 ""DISABLED"" 0 ""NONE"" 2 ""RESERVED""; VAL_ 1160 DAS_steeringAngleRequest 16384 ""ZERO_ANGLE""; ";
+
+
+            var failureObserver = new SimpleFailureObserver();
+            Parser.SetParsingFailuresObserver(failureObserver);
+            var dbc = Parser.Parse(dbcString);
+            var errorList = failureObserver.GetErrorList();
+
+            Assert.That(errorList, Has.Count.EqualTo(0));
+            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+            Assert.That(dbc.Messages.First().Comment, Is.EqualTo($"Message comment first line{Environment.NewLine}second line"));
+
+            Assert.That(dbc.Messages.First().Signals.Count(), Is.EqualTo(2));
+            Assert.That(dbc.Messages.First().Signals.First().ValueTableMap.Count, Is.EqualTo(4));
+            Assert.That(dbc.Messages.First().Signals.First().ValueTableMap.Last().Key, Is.EqualTo(2));
+            Assert.That(dbc.Messages.First().Signals.First().ValueTableMap.Last().Value, Is.EqualTo("RESERVED"));
+            Assert.That(dbc.Messages.First().Signals.Last().ValueTableMap.Count, Is.EqualTo(1));
+            Assert.That(dbc.Messages.First().Signals.Last().ValueTableMap.Last().Key, Is.EqualTo(16384));
+            Assert.That(dbc.Messages.First().Signals.Last().ValueTableMap.Last().Value, Is.EqualTo("ZERO_ANGLE"));
+        }
     }
 }

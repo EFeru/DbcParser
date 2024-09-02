@@ -88,7 +88,8 @@ namespace DbcParserLib
                 line = HandleMultipleDefinitionsPerLine(line);
                 line = HandleMultiline(line);
 
-                if (line.EndsWith(lineTermination) == false) //correct missing terminations
+                var test = line;
+                if (line.EndsWith(lineTermination) == false && keywords.Any(prefix => test.Equals(prefix)) == false) //correct missing terminations
                 {
                     line = line + lineTermination;
                 }
@@ -138,20 +139,26 @@ namespace DbcParserLib
                     break;
                 }
 
-                if (string.IsNullOrEmpty(checkLine.Trim()))
+                checkLine = checkLine.Trim();
+
+                if (string.IsNullOrEmpty(checkLine))
                 {
                     numEmptyLines++;
                     continue;
                 }
 
-                if (CheckNextLineParsing(checkLine.Trim()) == false)
+                if (CheckNextLineParsing(checkLine) == false)
                 {
                     for (int i = 0; i < numEmptyLines; i++)
                     {
                         stringsList.Add(m_reader.ReadLine().Trim());
                     }
                     numEmptyLines = 0;
-                    stringsList.Add(m_reader.ReadLine().Trim());
+
+                    var lineToAdd = m_reader.ReadLine().Trim();
+                    lineToAdd = HandleMultipleDefinitionsPerLine(lineToAdd);
+
+                    stringsList.Add(lineToAdd);
                     continue;
                 }
 
