@@ -249,6 +249,37 @@ namespace DbcParserLib.Tests
         }
 
         [Test]
+        public void EnumDefinitionCustomPropertyWithWhiteSpaceNetweenEntriesIsParsedTest()
+        {
+            var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+
+            dbcBuilderMock.Setup(mock => mock.AddCustomProperty(It.IsAny<CustomPropertyObjectType>(), It.IsAny<CustomPropertyDefinition>()))
+                .Callback<CustomPropertyObjectType, CustomPropertyDefinition>((_, customProperty) =>
+                {
+                    Assert.That(customProperty.Name, Is.EqualTo("AttributeName"));
+                    Assert.That(customProperty.DataType, Is.EqualTo(CustomPropertyDataType.Enum));
+                    Assert.That(customProperty.EnumCustomProperty.Values.Length, Is.EqualTo(4));
+                    Assert.That(customProperty.EnumCustomProperty.Values[0], Is.EqualTo("Val1"));
+                    Assert.That(customProperty.EnumCustomProperty.Values[1], Is.EqualTo("Val2"));
+                    Assert.That(customProperty.EnumCustomProperty.Values[2], Is.EqualTo("Val3"));
+                    Assert.That(customProperty.EnumCustomProperty.Values[3], Is.EqualTo("Val4"));
+                });
+
+            dbcBuilderMock.Setup(mock => mock.AddCustomPropertyDefaultValue(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .Callback<string, string, bool>((propertyName, value, isNumeric) =>
+                {
+                    Assert.That(propertyName, Is.EqualTo("AttributeName"));
+                    Assert.That(value, Is.EqualTo("Val2"));
+                    Assert.That(isNumeric, Is.EqualTo(false));
+                });
+
+            var customPropertyLineParsers = CreateParser();
+            Assert.That(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" ENUM  ""Val1"",  ""Val2"",      ""Val3"",""Val4"" ;", customPropertyLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
+            Assert.That(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" ""Val2"";", customPropertyLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
+        }
+
+        [Test]
         public void MsgCycleTimePropertyIsParsedTest()
         {
             var builder = new DbcBuilder(new SilentFailureObserver());

@@ -5,9 +5,11 @@ namespace DbcParserLib
 {
     public static class Helpers
     {
-        private static readonly string[] SpaceArray = new[] { " " };
         public const string Space = " ";
         public const string Comma = ",";
+        public const string DoubleQuotes = "\"";
+
+        private static readonly string[] SpaceArray = new[] { Space };
 
         public static string[] SplitBySpace(this string value)
         {

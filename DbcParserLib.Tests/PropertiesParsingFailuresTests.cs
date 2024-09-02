@@ -129,7 +129,6 @@ namespace DbcParserLib.Tests
         [TestCase("BA_DEF_ BU_ \"attributeName\" STRING 0;")]
         [TestCase("BA_DEF_ attributeName STRING")]
         [TestCase("BA_DEF_ BU_ \"Ciao\" ENUM  \"Cyclic\"\"Event\",\"CyclicIfActive\",\"SpontanWithDelay\",\"CyclicAndSpontan\";")]
-        [TestCase("BA_DEF_ BU_ \"Ciao\" ENUM  \"Cyclic\",\"Event\", \"CyclicIfActive\",\"SpontanWithDelay\",\"CyclicAndSpontan\";")]
         public void PropertyDefinitionSyntaxErrorIsObserved(string line)
         {
             var observerMock = m_repository.Create<IParseFailureObserver>();
