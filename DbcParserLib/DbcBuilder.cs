@@ -15,6 +15,7 @@ namespace DbcParserLib
         private readonly IParseFailureObserver m_observer;
 
         private readonly ISet<Node> m_nodes = new HashSet<Node>(new NodeEqualityComparer());
+
         private readonly IDictionary<uint, Message> m_messages = new Dictionary<uint, Message>();
         private readonly IDictionary<uint, IDictionary<string, Signal>> m_signals = new Dictionary<uint, IDictionary<string, Signal>>();
         private readonly IDictionary<string, EnvironmentVariable> m_environmentVariables = new Dictionary<string, EnvironmentVariable>();
@@ -361,6 +362,18 @@ namespace DbcParserLib
                     {
                         envVariable.CustomProperties[customProperty.Key] = new CustomProperty(customProperty.Value);
                         envVariable.CustomProperties[customProperty.Key].SetCustomPropertyValueFromDefault();
+                    }
+                }
+
+                foreach (var node in m_nodes)
+                {
+                    foreach (var envVariable in node.EnvironmentVariables.Values)
+                    {
+                        if (envVariable.CustomProperties.TryGetValue(customProperty.Key, out _) == false)
+                        {
+                            envVariable.CustomProperties[customProperty.Key] = new CustomProperty(customProperty.Value);
+                            envVariable.CustomProperties[customProperty.Key].SetCustomPropertyValueFromDefault();
+                        }
                     }
                 }
             }
