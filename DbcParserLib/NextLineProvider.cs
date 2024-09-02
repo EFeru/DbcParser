@@ -1,5 +1,6 @@
 ﻿using DbcParserLib.Observers;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -8,10 +9,8 @@ namespace DbcParserLib
 {
     public class NextLineProvider : INextLineProvider
     {
-        private TextReader m_reader;
-        private IParseFailureObserver m_observer;
-        private string m_lineMemory;
-        private bool m_isVirtualLine;
+        private PeekableTextReader m_reader;
+        private string m_virtualLineMemory;
 
         private string lineTermination = ";";
 
@@ -69,33 +68,26 @@ namespace DbcParserLib
 
         public NextLineProvider(TextReader reader, IParseFailureObserver observer)
         {
-            m_reader = reader;
-            m_observer = observer;
+            m_reader = new PeekableTextReader(reader, observer);
         }
 
         public bool TryGetLine(out string line)
         {
             line = null;
-            if (m_lineMemory != null)
+            if (m_virtualLineMemory != null)
             {
-                if (m_isVirtualLine == false)
-                {
-                    m_observer.CurrentLine++;
-                }
-                line = m_lineMemory;    
-                line = line.Trim();
-                m_lineMemory = null;
+                line = m_virtualLineMemory.Trim();    
+                m_virtualLineMemory = null;
                 line = HandleMultipleDefinitionsPerLine(line);
                 line = HandleMultiline(line);
 
                 return true;
             }
 
-            if (m_reader.Peek() >= 0)
+            var readLine = m_reader.ReadLine();
+            if (readLine != null)
             {
-                m_observer.CurrentLine++;
-                line = m_reader.ReadLine();
-                line = line.Trim();
+                line = readLine.Trim();
                 line = HandleMultipleDefinitionsPerLine(line);
                 line = HandleMultiline(line);
 
@@ -114,66 +106,62 @@ namespace DbcParserLib
                 {
                     return line;
                 }
-                var firstLinePart = line.Substring(0, definitionTerminationLocation + 1);
-                m_lineMemory = line.Substring(definitionTerminationLocation + 2, line.Length - 1 - firstLinePart.Length).Trim();
-                m_isVirtualLine = true;
 
-                return firstLinePart;
+                var partAfterTermination = line.Substring(definitionTerminationLocation + 2, line.Length - 2 - definitionTerminationLocation).Trim();
+                
+                if (CheckNextLineParsing(partAfterTermination)) // check if the remaining line is a new definition. otherwise assume your reading a comment
+                {
+                    m_virtualLineMemory = partAfterTermination;
+                    return line.Substring(0, definitionTerminationLocation + 1);
+                }
+
+                // Assuming the line is a comment now => dont check for further occurences of the termination for now as they most likely will also just be comment or end of line
+                // Would be a very special case were a comment is followed by a definition in the very same line. Could be handled but not for now
             }
             return line;
         }
 
         private string HandleMultiline(string line)
         {
-            if (line.EndsWith(lineTermination))
+            // This check is not verified yet. A comment is allowed to contain termination char. Why not at end of line?
+            // Current comment parsing would fail in this condition
+            /*if (line.EndsWith(lineTermination))
             {
                 return line;
-            }
-            var nextLine = PeakNextLine();
-            if (string.IsNullOrWhiteSpace(nextLine))
+            }*/
+            var stringsList = new List<string> { line };
+            var nextLine = m_reader.PeekLine();
+
+            while (nextLine != null && CheckNextLineParsing(nextLine.Trim()) == false)
             {
-                return line;
-            }
-            if (CheckNextLineParsing(PeakNextLine()))
-            {
-                return line;
+                //Just add line for the moment; Dont assume that a following line contains the end of the first definition + an additional definition
+                stringsList.Add(m_reader.ReadLine().Trim());
+                nextLine = m_reader.PeekLine();
             }
 
-            TryGetLine(out var actualNextLine);
-            return CombineLines(line, actualNextLine);
-        }
-
-        private string PeakNextLine()
-        {
-            if (m_lineMemory == null)
+            //Remove trailing empty lines but never the first line; return empty string initial line was empty;
+            for (int i = stringsList.Count - 1; i > 0; i--)
             {
-                var nextLine = m_reader.ReadLine();
-                if (nextLine is null)
+                if (string.IsNullOrEmpty(stringsList[i]))
                 {
-                    return nextLine;
+                    stringsList.RemoveAt(i);
                 }
-                m_lineMemory = nextLine;
-                m_isVirtualLine = false;
-                return m_lineMemory;
             }
-            else
+
+            var stringBuilder = new StringBuilder();
+            for (int i = 0; i < stringsList.Count - 1; i++)
             {
-                return m_lineMemory;
+                stringBuilder.AppendLine(stringsList[i]);
             }
+            stringBuilder.Append(stringsList.Last());
+
+            return stringBuilder.ToString();
         }
 
         private bool CheckNextLineParsing(string nextLine)
         {
             nextLine = nextLine.TrimStart();
             return keywords.Any(prefix => nextLine.StartsWith(prefix));
-        }
-
-        private string CombineLines(string currentLine, string nextLine)
-        {
-            var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine(currentLine);
-            stringBuilder.Append(nextLine);
-            return stringBuilder.ToString();
         }
     }
 }
