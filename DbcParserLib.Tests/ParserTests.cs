@@ -434,7 +434,7 @@ ENVVAR_DATA_ EnvVarName3: 5;";
             Assert.That(dbName.CustomPropertyDefinition.StringCustomProperty, Is.Not.Null);
             Assert.That(dbName.CustomPropertyDefinition.StringCustomProperty.Default, Is.EqualTo(string.Empty));
             Assert.That(dbName.StringCustomProperty, Is.Not.Null);
-            //Assert.That(dbName.StringCustomProperty.Value, Is.EqualTo("z_mx"));
+            Assert.That(dbName.StringCustomProperty.Value, Is.EqualTo("z_mx"));
 
             var busType = dbc.GlobalProperties.FirstOrDefault(x => x.CustomPropertyDefinition.Name.Equals("BusType"));
             Assert.That(busType, Is.Not.Null);
