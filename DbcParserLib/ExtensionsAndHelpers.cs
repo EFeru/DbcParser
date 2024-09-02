@@ -8,6 +8,9 @@ namespace DbcParserLib
 {
     public static class ExtensionsAndHelpers
     {
+        public const string DoubleQuotes = "\"";
+        public const string Space = " ";
+
         public static bool Motorola(this Signal signal)
         {
             return signal.Msb();
@@ -161,7 +164,7 @@ namespace DbcParserLib
         
         private bool ParseKey(string text, int offset)
         {
-            var index = text.IndexOf(Helpers.DoubleQuotes, offset, StringComparison.InvariantCulture);
+            var index = text.IndexOf(ExtensionsAndHelpers.DoubleQuotes, offset, StringComparison.InvariantCulture);
             if(index == -1)
                 return true;
 
@@ -172,7 +175,7 @@ namespace DbcParserLib
 
         private bool ParseValue(string text, int offset, int key)
         {
-            var index = text.IndexOf(Helpers.DoubleQuotes, offset, StringComparison.InvariantCulture);
+            var index = text.IndexOf(ExtensionsAndHelpers.DoubleQuotes, offset, StringComparison.InvariantCulture);
             if (index == -1)
                 return false;
 

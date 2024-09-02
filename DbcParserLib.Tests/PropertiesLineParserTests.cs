@@ -162,10 +162,10 @@ namespace DbcParserLib.Tests
         [Test]
         public void StringDefinitionCustomPropertyOnEnvironmentVariableIsParsedTest()
         {
-            var builder = new DbcBuilder(new SilentFailureObserver());
+            var builder = new DbcBuilder(m_silentFailureObserver);
 
             var customPropertyLineParsers = CreateParser();
-            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty), m_silentFailureObserver);
             Assert.That(ParseLine(@"BA_DEF_ EV_ ""AttributeName"" STRING;", customPropertyLineParsers, builder, nextLineProvider), Is.True);
             Assert.That(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" ""DefaultString"";", customPropertyLineParsers, builder, nextLineProvider), Is.True);
         }
@@ -173,10 +173,10 @@ namespace DbcParserLib.Tests
         [Test]
         public void StringDefinitionCustomPropertyAsGlobalIsParsedTest()
         {
-            var builder = new DbcBuilder(new SilentFailureObserver());
+            var builder = new DbcBuilder(m_silentFailureObserver);
 
             var customPropertyLineParsers = CreateParser();
-            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty), m_silentFailureObserver);
             Assert.That(ParseLine(@"BA_DEF_ ""AttributeName"" STRING;", customPropertyLineParsers, builder, nextLineProvider), Is.True);
             Assert.That(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" ""DefaultString"";", customPropertyLineParsers, builder, nextLineProvider), Is.True);
 

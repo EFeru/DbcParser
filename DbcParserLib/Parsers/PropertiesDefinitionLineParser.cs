@@ -32,7 +32,7 @@ namespace DbcParserLib.Parsers
             {
                 var match = Regex.Match(cleanLine, PropertyDefinitionDefaultParsingRegex);
                 if (match.Success)
-                    builder.AddCustomPropertyDefaultValue(match.Groups[1].Value, match.Groups[2].Value.Replace(Helpers.DoubleQuotes, ""), !match.Groups[2].Value.StartsWith(Helpers.DoubleQuotes));
+                    builder.AddCustomPropertyDefaultValue(match.Groups[1].Value, match.Groups[2].Value.Replace(ExtensionsAndHelpers.DoubleQuotes, ""), !match.Groups[2].Value.StartsWith(ExtensionsAndHelpers.DoubleQuotes));
                 else
                     m_observer.PropertyDefaultSyntaxError();
                 return true;
@@ -100,8 +100,8 @@ namespace DbcParserLib.Parsers
                         {
                             Values = match.Groups[11]
                                 .Value
-                                .Replace(Helpers.DoubleQuotes, string.Empty)
-                                .Replace(Helpers.Space, string.Empty)
+                                .Replace(ExtensionsAndHelpers.DoubleQuotes, string.Empty)
+                                .Replace(ExtensionsAndHelpers.Space, string.Empty)
                                 .Split(',')
                         };
                     }

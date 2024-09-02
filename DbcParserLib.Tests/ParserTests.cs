@@ -422,6 +422,53 @@ ENVVAR_DATA_ EnvVarName3: 5;";
         }
 
         [Test]
+        public void CheckGlobalPropertiesTest()
+        {
+            var file = @"..\..\..\..\DbcFiles\ext_multiplexed.dbc";
+            var dbc = Parser.ParseFromPath(file);
+
+            Assert.That(dbc.GlobalProperties.Count(), Is.EqualTo(3));
+
+            var dbName = dbc.GlobalProperties.FirstOrDefault(x => x.CustomPropertyDefinition.Name.Equals("DBName"));
+            Assert.That(dbName, Is.Not.Null);
+            Assert.That(dbName.CustomPropertyDefinition.DataType, Is.EqualTo(CustomPropertyDataType.String));
+            Assert.That(dbName.CustomPropertyDefinition.StringCustomProperty, Is.Not.Null);
+            Assert.That(dbName.CustomPropertyDefinition.StringCustomProperty.Default, Is.EqualTo(string.Empty));
+            Assert.That(dbName.StringCustomProperty, Is.Not.Null);
+            Assert.That(dbName.StringCustomProperty.Value, Is.EqualTo("z_mx"));
+
+            var busType = dbc.GlobalProperties.FirstOrDefault(x => x.CustomPropertyDefinition.Name.Equals("BusType"));
+            Assert.That(busType, Is.Not.Null);
+            Assert.That(busType.CustomPropertyDefinition.DataType, Is.EqualTo(CustomPropertyDataType.String));
+            Assert.That(busType.CustomPropertyDefinition.StringCustomProperty, Is.Not.Null);
+            Assert.That(busType.CustomPropertyDefinition.StringCustomProperty.Default, Is.EqualTo("CAN"));
+            Assert.That(busType.StringCustomProperty, Is.Not.Null);
+            Assert.That(busType.StringCustomProperty.Value, Is.EqualTo("CAN"));
+
+            var protocolType = dbc.GlobalProperties.FirstOrDefault(x => x.CustomPropertyDefinition.Name.Equals("ProtocolType"));
+            Assert.That(protocolType, Is.Not.Null);
+            Assert.That(protocolType.CustomPropertyDefinition.DataType, Is.EqualTo(CustomPropertyDataType.String));
+            Assert.That(protocolType.CustomPropertyDefinition.StringCustomProperty, Is.Not.Null);
+            Assert.That(protocolType.CustomPropertyDefinition.StringCustomProperty.Default, Is.EqualTo("J1939"));
+            Assert.That(protocolType.StringCustomProperty, Is.Not.Null);
+            Assert.That(protocolType.StringCustomProperty.Value, Is.EqualTo("J1939"));
+
+
+            var targetMessage = dbc.Messages.FirstOrDefault(x => x.ID == 201391870); // Extended ID
+            Assert.That(targetMessage, Is.Not.Null);
+            Assert.That(targetMessage.CustomProperties, Has.Count.EqualTo(10));
+            Assert.That(targetMessage.CustomProperties["VFrameFormat"].EnumCustomProperty.Value, Is.EqualTo("J1939PG"));
+
+            Assert.That(targetMessage.Signals.Count, Is.EqualTo(8));
+
+            var floatSignal = targetMessage.Signals.FirstOrDefault(x => x.Name.Equals("S6"));
+            Assert.That(floatSignal, Is.Not.Null);
+            Assert.That(floatSignal.ValueType, Is.EqualTo(DbcValueType.IEEEFloat)); // Set with a property
+
+            // Should check the extended multiplexing stuff once implemented
+        }
+
+        [Test]
         public void MultilineValueTableTest()
         {
             var dbcString = @"
@@ -545,53 +592,6 @@ VAL_ 1160 DAS_steeringControlType 1 ""ANGLE_CONTROL"" 3 ""DISABLED"" 0 ""NONE"" 
             Assert.That(dbc.Messages.First().Signals.Last().ValueTableMap.Count, Is.EqualTo(1));
             Assert.That(dbc.Messages.First().Signals.Last().ValueTableMap.Last().Key, Is.EqualTo(16384));
             Assert.That(dbc.Messages.First().Signals.Last().ValueTableMap.Last().Value, Is.EqualTo("ZERO_ANGLE"));
-        }
-
-        [Test]
-        public void CheckGlobalPropertiesTest()
-        {
-            var file = @"..\..\..\..\DbcFiles\ext_multiplexed.dbc";
-            var dbc = Parser.ParseFromPath(file);
-
-            Assert.That(dbc.GlobalProperties.Count(), Is.EqualTo(3));
-
-            var dbName = dbc.GlobalProperties.FirstOrDefault(x => x.CustomPropertyDefinition.Name.Equals("DBName"));
-            Assert.That(dbName, Is.Not.Null);
-            Assert.That(dbName.CustomPropertyDefinition.DataType, Is.EqualTo(CustomPropertyDataType.String));
-            Assert.That(dbName.CustomPropertyDefinition.StringCustomProperty, Is.Not.Null);
-            Assert.That(dbName.CustomPropertyDefinition.StringCustomProperty.Default, Is.EqualTo(string.Empty));
-            Assert.That(dbName.StringCustomProperty, Is.Not.Null);
-            Assert.That(dbName.StringCustomProperty.Value, Is.EqualTo("z_mx"));
-
-            var busType = dbc.GlobalProperties.FirstOrDefault(x => x.CustomPropertyDefinition.Name.Equals("BusType"));
-            Assert.That(busType, Is.Not.Null);
-            Assert.That(busType.CustomPropertyDefinition.DataType, Is.EqualTo(CustomPropertyDataType.String));
-            Assert.That(busType.CustomPropertyDefinition.StringCustomProperty, Is.Not.Null);
-            Assert.That(busType.CustomPropertyDefinition.StringCustomProperty.Default, Is.EqualTo("CAN"));
-            Assert.That(busType.StringCustomProperty, Is.Not.Null);
-            Assert.That(busType.StringCustomProperty.Value, Is.EqualTo("CAN"));
-
-            var protocolType = dbc.GlobalProperties.FirstOrDefault(x => x.CustomPropertyDefinition.Name.Equals("ProtocolType"));
-            Assert.That(protocolType, Is.Not.Null);
-            Assert.That(protocolType.CustomPropertyDefinition.DataType, Is.EqualTo(CustomPropertyDataType.String));
-            Assert.That(protocolType.CustomPropertyDefinition.StringCustomProperty, Is.Not.Null);
-            Assert.That(protocolType.CustomPropertyDefinition.StringCustomProperty.Default, Is.EqualTo("J1939"));
-            Assert.That(protocolType.StringCustomProperty, Is.Not.Null);
-            Assert.That(protocolType.StringCustomProperty.Value, Is.EqualTo("J1939"));
-
-
-            var targetMessage = dbc.Messages.FirstOrDefault(x => x.ID == 201391870); // Extended ID
-            Assert.That(targetMessage, Is.Not.Null);
-            Assert.That(targetMessage.CustomProperties, Has.Count.EqualTo(10));
-            Assert.That(targetMessage.CustomProperties["VFrameFormat"].EnumCustomProperty.Value, Is.EqualTo("J1939PG"));
-
-            Assert.That(targetMessage.Signals.Count, Is.EqualTo(8));
-
-            var floatSignal = targetMessage.Signals.FirstOrDefault(x => x.Name.Equals("S6"));
-            Assert.That(floatSignal, Is.Not.Null);
-            Assert.That(floatSignal.ValueType, Is.EqualTo(DbcValueType.IEEEFloat)); // Set with a property
-
-            // Should check the extended multiplexing stuff once implemented
         }
     }
 }
