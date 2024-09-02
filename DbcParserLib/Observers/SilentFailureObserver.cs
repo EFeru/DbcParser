@@ -36,6 +36,10 @@ namespace DbcParserLib.Observers
         {
         }
 
+        public void DuplicatedGlobalProperty(string propertyName)
+        {
+        }
+
         public void DuplicatedPropertyInMessage(string propertyName, uint messageId)
         {
         }
