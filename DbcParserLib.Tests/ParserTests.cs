@@ -712,7 +712,7 @@ second line""; VAL_ 1160 DAS_steeringControlType 1 ""ANGLE_CONTROL"" 3 ""DISABLE
 BO_ 1160 DAS_steeringControl: 4 NEO
  SG_ DAS_steeringControlType : 23|2@0+ (1,0) [0|0] """"  EPAS
  SG_ DAS_steeringAngleRequest : 0|16@0+ (1,0) [0|0] """"  EPAS
- 
+
 CM_ BO_ 1160 ""This is a very fine comment; Right?""; VAL_ 1160 DAS_steeringControlType 1 ""ANGLE_CONTROL"" 3 ""DISABLED"" 0 ""NONE"" 2 ""RESERVED""; 
 VAL_ 1160 DAS_steeringAngleRequest 16384 ""ZERO_ANGLE""; ";
 

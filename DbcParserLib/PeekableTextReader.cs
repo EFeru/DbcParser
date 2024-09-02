@@ -26,7 +26,8 @@ namespace DbcParserLib
             m_bufferedLines.Enqueue(line);
             return line;
         }
-        public void AddVirtualLine(string line)
+
+        public void SetVirtualLine(string line)
         {
             m_virtualLineMemory = line;
         }

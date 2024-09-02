@@ -81,7 +81,6 @@ namespace DbcParserLib
 
                 if (string.IsNullOrEmpty(line))
                 {
-                    Console.WriteLine($"Line: '{line}'"); //ToDo: remove
                     return true;
                 }
 
@@ -94,7 +93,6 @@ namespace DbcParserLib
                     line = line + lineTermination;
                 }
 
-                Console.WriteLine($"Line: '{line}'"); //ToDo: remove
                 return true;
             }
             return false;
@@ -104,7 +102,8 @@ namespace DbcParserLib
         {
             int definitionTerminationLocation = line.IndexOf(lineTermination, StringComparison.Ordinal);
 
-            if (definitionTerminationLocation >= 0)
+            var lastTerminationLocation = -1;
+            while (definitionTerminationLocation > lastTerminationLocation)
             {
                 if (definitionTerminationLocation + 1 == line.Length)
                 {
@@ -112,15 +111,15 @@ namespace DbcParserLib
                 }
 
                 var partAfterTermination = line.Substring(definitionTerminationLocation + 2, line.Length - 2 - definitionTerminationLocation);
-                
-                if (CheckNextLineParsing(partAfterTermination.TrimStart())) // check if the remaining line is a new definition. otherwise assume your reading a comment
+
+                if (CheckNextLineParsing(partAfterTermination.TrimStart()))
                 {
-                    m_reader.AddVirtualLine(partAfterTermination);
+                    m_reader.SetVirtualLine(partAfterTermination);
                     return line.Substring(0, definitionTerminationLocation + 1);
                 }
 
-                // Assuming the line is a comment now => dont check for further occurences of the termination for now as they most likely will also just be comment or end of line
-                // Would be a very special case were a comment is followed by a definition in the very same line. Could be handled but not for now
+                lastTerminationLocation = definitionTerminationLocation;
+                definitionTerminationLocation = definitionTerminationLocation + 1 + partAfterTermination.IndexOf(lineTermination, StringComparison.Ordinal);
             }
             return line;
         }
