@@ -1,6 +1,7 @@
 ﻿using DbcParserLib.Model;
 using DbcParserLib.Observers;
 using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace DbcParserLib.Parsers
@@ -9,7 +10,7 @@ namespace DbcParserLib.Parsers
     {
         private const string PropertiesDefinitionLineStarter = "BA_DEF_ ";
         private const string PropertiesDefinitionDefaultLineStarter = "BA_DEF_DEF_ ";
-        private const string PropertyDefinitionParsingRegex = @"BA_DEF_(?:\s+(BU_|BO_|SG_|EV_))?\s+""([a-zA-Z_][\w]*)""\s+(?:(?:(INT|HEX)\s+(-?\d+)\s+(-?\d+))|(?:(FLOAT)\s+([\d\+\-eE.]+)\s+([\d\+\-eE.]+))|(STRING)|(?:(ENUM)\s+((?:""[^""]*"",+)*(?:""[^""]*""))))\s*;";
+        private const string PropertyDefinitionParsingRegex = @"BA_DEF_(?:\s+(BU_|BO_|SG_|EV_))?\s+""([a-zA-Z_][\w]*)""\s+(?:(?:(INT|HEX)\s+(-?\d+)\s+(-?\d+))|(?:(FLOAT)\s+([\d\+\-eE.]+)\s+([\d\+\-eE.]+))|(STRING)|(?:(ENUM)\s+((?:""[^""]*"",\s*)*(?:""[^""]*""))))\s*;";
         private const string PropertyDefinitionDefaultParsingRegex = @"BA_DEF_DEF_\s+""([a-zA-Z_][\w]*)""\s+(-?\d+|[\d\+\-eE.]+|""[^""]*"")\s*;";
 
         private readonly IParseFailureObserver m_observer;
@@ -31,7 +32,7 @@ namespace DbcParserLib.Parsers
             {
                 var match = Regex.Match(cleanLine, PropertyDefinitionDefaultParsingRegex);
                 if (match.Success)
-                    builder.AddCustomPropertyDefaultValue(match.Groups[1].Value, match.Groups[2].Value.Replace("\"", ""), !match.Groups[2].Value.StartsWith("\""));
+                    builder.AddCustomPropertyDefaultValue(match.Groups[1].Value, match.Groups[2].Value.Replace(Helpers.DoubleQuotes, ""), !match.Groups[2].Value.StartsWith(Helpers.DoubleQuotes));
                 else
                     m_observer.PropertyDefaultSyntaxError();
                 return true;
@@ -47,9 +48,11 @@ namespace DbcParserLib.Parsers
                         Name = match.Groups[2].Value,
                     };
 
-                    CustomPropertyObjectType objectType = CustomPropertyObjectType.Node;
+                    CustomPropertyObjectType objectType = CustomPropertyObjectType.Global;
                     switch (match.Groups[1].Value)
                     {
+                        case "BU_":
+                            objectType = CustomPropertyObjectType.Node; break;
                         case "BO_":
                             objectType = CustomPropertyObjectType.Message; break;
                         case "SG_":
@@ -95,7 +98,11 @@ namespace DbcParserLib.Parsers
                         dataType = CustomPropertyDataType.Enum;
                         customProperty.EnumCustomProperty = new EnumCustomPropertyDefinition
                         {
-                            Values = match.Groups[11].Value.Replace("\"", "").Split(',')
+                            Values = match.Groups[11]
+                                .Value
+                                .Replace(Helpers.DoubleQuotes, string.Empty)
+                                .Replace(Helpers.Space, string.Empty)
+                                .Split(',')
                         };
                     }
                     customProperty.DataType = dataType;

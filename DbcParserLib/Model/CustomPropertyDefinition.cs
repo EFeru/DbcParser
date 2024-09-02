@@ -231,7 +231,7 @@ namespace DbcParserLib.Model
 
     public enum CustomPropertyObjectType
     {
-        Node, Message, Signal, Environment
+        Global, Node, Message, Signal, Environment
     }
 
     public enum CustomPropertyDataType

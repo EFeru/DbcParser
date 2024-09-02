@@ -37,7 +37,7 @@ namespace DbcParserLib.Parsers
 
                 if (!string.IsNullOrEmpty(dictionary) && dictionary.TryParseToDict(out var valueTableDictionary))
                 {
-                    if (match.Groups[3].Value != "")
+                    if (match.Groups[3].Value != string.Empty)
                         builder.LinkTableValuesToEnvironmentVariable(match.Groups[3].Value, valueTableDictionary);
                     else
                         builder.LinkTableValuesToSignal(uint.Parse(match.Groups[1].Value), match.Groups[2].Value,

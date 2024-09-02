@@ -12,6 +12,7 @@
         void DuplicatedProperty(string propertyName);
         void DuplicatedPropertyInNode(string propertyName, string nodeName);
         void DuplicatedPropertyInEnvironmentVariable(string propertyName, string environmentVariableName);
+        void DuplicatedGlobalProperty(string propertyName);
         void DuplicatedPropertyInMessage(string propertyName, uint messageId);
         void DuplicatedPropertyInSignal(string propertyName, string signalName);
         void DuplicatedEnvironmentVariableInNode(string environmentVariableName, string nodeName);

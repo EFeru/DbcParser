@@ -26,8 +26,8 @@ namespace DbcParserLib.Parsers
             var match = Regex.Match(cleanLine, PropertyParsingRegex);
             if (match.Success)
             {
-                var isNumeric = !match.Groups[9].Value.StartsWith("\"");
-                var stringValue = match.Groups[9].Value.Replace("\"", "");
+                var isNumeric = !match.Groups[9].Value.StartsWith(Helpers.DoubleQuotes);
+                var stringValue = match.Groups[9].Value.Replace(Helpers.DoubleQuotes, string.Empty);
 
                 if (match.Groups[2].Value == "BU_")
                     builder.AddNodeCustomProperty(match.Groups[1].Value, match.Groups[3].Value, stringValue, isNumeric);
@@ -37,6 +37,10 @@ namespace DbcParserLib.Parsers
                     builder.AddMessageCustomProperty(match.Groups[1].Value, uint.Parse(match.Groups[5].Value, CultureInfo.InvariantCulture), stringValue, isNumeric);
                 else if (match.Groups[6].Value == "SG_")
                     builder.AddSignalCustomProperty(match.Groups[1].Value, uint.Parse(match.Groups[7].Value, CultureInfo.InvariantCulture), match.Groups[8].Value, stringValue, isNumeric);
+                else
+                {
+                    builder.AddGlobalCustomProperty(match.Groups[1].Value, stringValue, isNumeric);
+                }
             }
             else
                 m_observer.PropertySyntaxError();

@@ -54,6 +54,11 @@ namespace DbcParserLib.Observers
             AddError($"Duplicated custom property '{propertyName}' in environment variable '{environmentVariableName}'");
         }
 
+        public void DuplicatedGlobalProperty(string propertyName)
+        {
+            AddError($"Duplicated custom property '{propertyName}' among global properties");
+        }
+
         public void DuplicatedPropertyInMessage(string propertyName, uint messageId)
         {
             AddError($"Duplicated custom property '{propertyName}' in message (ID {messageId})");

@@ -139,7 +139,7 @@ namespace DbcParserLib
 
     internal class StringToDictionaryParser
     {
-        private IDictionary<int, string> m_dictionary;
+        private readonly IDictionary<int, string> m_dictionary;
 
         private StringToDictionaryParser(IDictionary<int, string> dict)
         {
@@ -161,18 +161,18 @@ namespace DbcParserLib
         
         private bool ParseKey(string text, int offset)
         {
-            var index = text.IndexOf("\"", offset, StringComparison.InvariantCulture);
+            var index = text.IndexOf(Helpers.DoubleQuotes, offset, StringComparison.InvariantCulture);
             if(index == -1)
                 return true;
 
             var key = text.Substring(offset, index - offset);
             offset = index + 1;
-            return int.TryParse(key, out var intKey) ? ParseValue(text, offset, intKey) : false;
+            return int.TryParse(key, out var intKey) && ParseValue(text, offset, intKey);
         }
 
         private bool ParseValue(string text, int offset, int key)
         {
-            var index = text.IndexOf("\"", offset, StringComparison.InvariantCulture);
+            var index = text.IndexOf(Helpers.DoubleQuotes, offset, StringComparison.InvariantCulture);
             if (index == -1)
                 return false;
 
