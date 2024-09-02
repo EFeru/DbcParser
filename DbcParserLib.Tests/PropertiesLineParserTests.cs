@@ -160,6 +160,35 @@ namespace DbcParserLib.Tests
         }
 
         [Test]
+        public void StringDefinitionCustomPropertyOnEnvironmentVariableIsParsedTest()
+        {
+            var builder = new DbcBuilder(new SilentFailureObserver());
+
+            var customPropertyLineParsers = CreateParser();
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            Assert.That(ParseLine(@"BA_DEF_ EV_ ""AttributeName"" STRING;", customPropertyLineParsers, builder, nextLineProvider), Is.True);
+            Assert.That(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" ""DefaultString"";", customPropertyLineParsers, builder, nextLineProvider), Is.True);
+        }
+
+        [Test]
+        public void StringDefinitionCustomPropertyAsGlobalIsParsedTest()
+        {
+            var builder = new DbcBuilder(new SilentFailureObserver());
+
+            var customPropertyLineParsers = CreateParser();
+            var nextLineProvider = new NextLineProvider(new StringReader(string.Empty));
+            Assert.That(ParseLine(@"BA_DEF_ ""AttributeName"" STRING;", customPropertyLineParsers, builder, nextLineProvider), Is.True);
+            Assert.That(ParseLine(@"BA_DEF_DEF_ ""AttributeName"" ""DefaultString"";", customPropertyLineParsers, builder, nextLineProvider), Is.True);
+
+            var dbc = builder.Build();
+
+            var globalProperty = dbc.GlobalProperties.FirstOrDefault(x => x.CustomPropertyDefinition.Name.Equals("AttributeName"));
+            Assert.That(globalProperty, Is.Not.Null);
+            Assert.That(globalProperty.StringCustomProperty, Is.Not.Null);
+            Assert.That(globalProperty.StringCustomProperty.Value, Is.EqualTo("DefaultString"));
+        }
+
+        [Test]
         public void EnumDefinitionCustomPropertyIsParsedTest()
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
