@@ -78,9 +78,17 @@ namespace DbcParserLib
             {
                 line = m_virtualLineMemory.Trim();    
                 m_virtualLineMemory = null;
+
+                if (string.IsNullOrEmpty(line))
+                {
+                    Console.WriteLine($"Line: '{line}'"); //ToDo: remove
+                    return true;
+                }
+
                 line = HandleMultipleDefinitionsPerLine(line);
                 line = HandleMultiline(line);
 
+                Console.WriteLine($"Line: '{line}'"); //ToDo: remove
                 return true;
             }
 
@@ -88,9 +96,17 @@ namespace DbcParserLib
             if (readLine != null)
             {
                 line = readLine.Trim();
+
+                if (string.IsNullOrEmpty(line))
+                {
+                    Console.WriteLine($"Line: '{line}'"); //ToDo: remove
+                    return true;
+                }
+
                 line = HandleMultipleDefinitionsPerLine(line);
                 line = HandleMultiline(line);
 
+                Console.WriteLine($"Line: '{line}'"); //ToDo: remove
                 return true;
             }
             return false;
@@ -123,29 +139,36 @@ namespace DbcParserLib
 
         private string HandleMultiline(string line)
         {
-            // This check is not verified yet. A comment is allowed to contain termination char. Why not at end of line?
-            // Current comment parsing would fail in this condition
-            /*if (line.EndsWith(lineTermination))
-            {
-                return line;
-            }*/
             var stringsList = new List<string> { line };
-            var nextLine = m_reader.PeekLine();
 
-            while (nextLine != null && CheckNextLineParsing(nextLine.Trim()) == false)
+            var numEmptyLines = 0;
+            while (true)
             {
-                //Just add line for the moment; Dont assume that a following line contains the end of the first definition + an additional definition
-                stringsList.Add(m_reader.ReadLine().Trim());
-                nextLine = m_reader.PeekLine();
-            }
+                var checkLine = m_reader.PeekLine();
 
-            //Remove trailing empty lines but never the first line; return empty string initial line was empty;
-            for (int i = stringsList.Count - 1; i > 0; i--)
-            {
-                if (string.IsNullOrEmpty(stringsList[i]))
+                if (checkLine is null)
                 {
-                    stringsList.RemoveAt(i);
+                    break;
                 }
+
+                if (string.IsNullOrEmpty(checkLine.Trim()))
+                {
+                    numEmptyLines++;
+                    continue;
+                }
+
+                if (CheckNextLineParsing(checkLine.Trim()) == false)
+                {
+                    for (int i = 0; i < numEmptyLines; i++)
+                    {
+                        stringsList.Add(m_reader.ReadLine().Trim());
+                    }
+                    numEmptyLines = 0;
+                    stringsList.Add(m_reader.ReadLine().Trim());
+                    continue;
+                }
+
+                break;
             }
 
             var stringBuilder = new StringBuilder();

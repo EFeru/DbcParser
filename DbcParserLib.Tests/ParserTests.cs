@@ -593,5 +593,66 @@ VAL_ 1160 DAS_steeringControlType 1 ""ANGLE_CONTROL"" 3 ""DISABLED"" 0 ""NONE"" 
             Assert.That(dbc.Messages.First().Signals.Last().ValueTableMap.Last().Key, Is.EqualTo(16384));
             Assert.That(dbc.Messages.First().Signals.Last().ValueTableMap.Last().Value, Is.EqualTo("ZERO_ANGLE"));
         }
+
+        [Test]
+        public void CommentWithEmptyLines()
+        {
+            var dbcString = @"
+BO_ 1043 BLINKERS: 8 XXX
+ 
+CM_ BO_ 1043 ""Message comment first line
+
+third line"";";
+
+
+            var failureObserver = new SimpleFailureObserver();
+            Parser.SetParsingFailuresObserver(failureObserver);
+            var dbc = Parser.Parse(dbcString);
+            var errorList = failureObserver.GetErrorList();
+
+            Assert.That(errorList, Has.Count.EqualTo(0));
+            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+            Assert.That(dbc.Messages.First().Comment, Is.EqualTo($"Message comment first line{Environment.NewLine}{Environment.NewLine}third line"));
+        }
+
+        [Test]
+        public void CommentEndLineWithTermination()
+        {
+            var dbcString = @"
+BO_ 1043 BLINKERS: 8 XXX
+ 
+CM_ BO_ 1043 ""Message comment first line;
+second line"";";
+
+
+            var failureObserver = new SimpleFailureObserver();
+            Parser.SetParsingFailuresObserver(failureObserver);
+            var dbc = Parser.Parse(dbcString);
+            var errorList = failureObserver.GetErrorList();
+
+            Assert.That(errorList, Has.Count.EqualTo(0));
+            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+            Assert.That(dbc.Messages.First().Comment, Is.EqualTo($"Message comment first line;{Environment.NewLine}second line"));
+        }
+
+        [Test]
+        public void CommentContainingTermination()
+        {
+            var dbcString = @"
+BO_ 1043 BLINKERS: 8 XXX
+ 
+CM_ BO_ 1043 ""Message; comment; first; line
+second; line"";";
+
+
+            var failureObserver = new SimpleFailureObserver();
+            Parser.SetParsingFailuresObserver(failureObserver);
+            var dbc = Parser.Parse(dbcString);
+            var errorList = failureObserver.GetErrorList();
+
+            Assert.That(errorList, Has.Count.EqualTo(0));
+            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+            Assert.That(dbc.Messages.First().Comment, Is.EqualTo($"Message; comment; first; line{Environment.NewLine}second; line"));
+        }
     }
 }
