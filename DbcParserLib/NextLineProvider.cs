@@ -88,6 +88,11 @@ namespace DbcParserLib
                 line = HandleMultipleDefinitionsPerLine(line);
                 line = HandleMultiline(line);
 
+                if (line.EndsWith(lineTermination) == false) //correct missing terminations
+                {
+                    line = line + lineTermination;
+                }
+
                 Console.WriteLine($"Line: '{line}'"); //ToDo: remove
                 return true;
             }

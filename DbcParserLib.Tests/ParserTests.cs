@@ -654,5 +654,25 @@ second; line"";";
             Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
             Assert.That(dbc.Messages.First().Comment, Is.EqualTo($"Message; comment; first; line{Environment.NewLine}second; line"));
         }
+
+        [Test]
+        public void CommentMissingTerminationGetsCorrected()
+        {
+            var dbcString = @"
+BO_ 1043 BLINKERS: 8 XXX
+ 
+CM_ BO_ 1043 ""Message comment first line
+second line""";
+
+
+            var failureObserver = new SimpleFailureObserver();
+            Parser.SetParsingFailuresObserver(failureObserver);
+            var dbc = Parser.Parse(dbcString);
+            var errorList = failureObserver.GetErrorList();
+
+            Assert.That(errorList, Has.Count.EqualTo(0));
+            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+            Assert.That(dbc.Messages.First().Comment, Is.EqualTo($"Message comment first line{Environment.NewLine}second line"));
+        }
     }
 }
