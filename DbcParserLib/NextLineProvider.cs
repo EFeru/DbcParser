@@ -10,9 +10,8 @@ namespace DbcParserLib
     public class NextLineProvider : INextLineProvider
     {
         private PeekableTextReader m_reader;
-        private string m_virtualLineMemory;
 
-        private string lineTermination = ";";
+        private const string lineTermination = ";";
 
         private readonly string[] keywords = new[]
         {
@@ -74,23 +73,6 @@ namespace DbcParserLib
         public bool TryGetLine(out string line)
         {
             line = null;
-            if (m_virtualLineMemory != null)
-            {
-                line = m_virtualLineMemory.Trim();    
-                m_virtualLineMemory = null;
-
-                if (string.IsNullOrEmpty(line))
-                {
-                    Console.WriteLine($"Line: '{line}'"); //ToDo: remove
-                    return true;
-                }
-
-                line = HandleMultipleDefinitionsPerLine(line);
-                line = HandleMultiline(line);
-
-                Console.WriteLine($"Line: '{line}'"); //ToDo: remove
-                return true;
-            }
 
             var readLine = m_reader.ReadLine();
             if (readLine != null)
@@ -123,11 +105,11 @@ namespace DbcParserLib
                     return line;
                 }
 
-                var partAfterTermination = line.Substring(definitionTerminationLocation + 2, line.Length - 2 - definitionTerminationLocation).Trim();
+                var partAfterTermination = line.Substring(definitionTerminationLocation + 2, line.Length - 2 - definitionTerminationLocation);
                 
-                if (CheckNextLineParsing(partAfterTermination)) // check if the remaining line is a new definition. otherwise assume your reading a comment
+                if (CheckNextLineParsing(partAfterTermination.TrimStart())) // check if the remaining line is a new definition. otherwise assume your reading a comment
                 {
-                    m_virtualLineMemory = partAfterTermination;
+                    m_reader.AddVirtualLine(partAfterTermination);
                     return line.Substring(0, definitionTerminationLocation + 1);
                 }
 

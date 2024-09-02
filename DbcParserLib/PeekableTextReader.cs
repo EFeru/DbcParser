@@ -9,6 +9,7 @@ namespace DbcParserLib
         private IParseFailureObserver m_observer;
         private readonly TextReader m_underlying;
         private readonly Queue<string> m_bufferedLines;
+        private string m_virtualLineMemory;
 
         public PeekableTextReader(TextReader underlying, IParseFailureObserver observer)
         {
@@ -25,10 +26,19 @@ namespace DbcParserLib
             m_bufferedLines.Enqueue(line);
             return line;
         }
-
+        public void AddVirtualLine(string line)
+        {
+            m_virtualLineMemory = line;
+        }
 
         public string ReadLine()
         {
+            if (m_virtualLineMemory != null)
+            {
+                var temp = m_virtualLineMemory;
+                m_virtualLineMemory = null;
+                return temp;
+            }
             if (m_bufferedLines.Count > 0)
                 return m_bufferedLines.Dequeue();
             m_observer.CurrentLine++;
