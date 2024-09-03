@@ -8,10 +8,25 @@ namespace DbcParserLib.Parsers
 {
     internal class SignalLineParser : ILineParser
     {
+        private const string NameGroup = "Name";
+        private const string MultiplexerGroup = "Multiplexer";
+        private const string StartBirGroup = "StartBit";
+        private const string SizeGroup = "Size";
+        private const string ByteOrderGroup = "ByteOrder";
+        private const string ValueTypeGroup = "ValueType";
+        private const string FactorGroup = "Factor";
+        private const string OffsetGroup = "Offset";
+        private const string MinGroup = "Min";
+        private const string MaxGroup = "Max";
+        private const string UnitGroup = "Unit";
+        private const string ReceiverGroup = "Receiver";
         private const string SignalLineStarter = "SG_ ";
         private const string SignedSymbol = "-";
-        private static readonly string[] m_commaSpaceSeparator = new string[] { Helpers.Space, Helpers.Comma };
-        private const string SignalRegex = @"\s*SG_\s+([\w]+)\s*([Mm\d]*)\s*:\s*(\d+)\|(\d+)@([01])([+-])\s+\(([\d\+\-eE.]+),([\d\+\-eE.]+)\)\s+\[([\d\+\-eE.]+)\|([\d\+\-eE.]+)\]\s+""(.*)""\s+([\w\s,]+)";
+        private static readonly string[] CommaSpaceSeparator = { Helpers.Space, Helpers.Comma };
+
+        private readonly string m_signalRegex = $@"\s*SG_\s+(?<{NameGroup}>[\w]+)\s*(?<{MultiplexerGroup}>[Mm\d]*)\s*:\s*(?<{StartBirGroup}>\d+)\|(?<{SizeGroup}>\d+)@(?<{ByteOrderGroup}>[01])" +
+                                                $@"(?<{ValueTypeGroup}>[+-])\s+\((?<{FactorGroup}>[\d\+\-eE.]+),(?<{OffsetGroup}>[\d\+\-eE.]+)\)\s+\[(?<{MinGroup}>[\d\+\-eE.]+)\|(?<{MaxGroup}>[\d\+\-eE.]+)\]" +
+                                                $@"\s+""(?<{UnitGroup}>.*)""\s+(?<{ReceiverGroup}>[\w\s,]+)";
 
         private readonly IParseFailureObserver m_observer;
 
@@ -25,25 +40,25 @@ namespace DbcParserLib.Parsers
             if (line.TrimStart().StartsWith(SignalLineStarter) == false)
                 return false;
 
-            var match = Regex.Match(line, SignalRegex);
+            var match = Regex.Match(line, m_signalRegex);
             if (match.Success)
             {
-                var factorStr = match.Groups[7].Value;
+                var factorStr = match.Groups[FactorGroup].Value;
                 var sig = new Signal
                 {
-                    Multiplexing = match.Groups[2].Value,
-                    Name = match.Groups[1].Value,
-                    StartBit = ushort.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture),
-                    Length = ushort.Parse(match.Groups[4].Value, CultureInfo.InvariantCulture),
-                    ByteOrder = byte.Parse(match.Groups[5].Value, CultureInfo.InvariantCulture),   // 0 = MSB (Motorola), 1 = LSB (Intel)
-                    ValueType = (match.Groups[6].Value == SignedSymbol ? DbcValueType.Signed : DbcValueType.Unsigned),
+                    Multiplexing = match.Groups[MultiplexerGroup].Value,
+                    Name = match.Groups[NameGroup].Value,
+                    StartBit = ushort.Parse(match.Groups[StartBirGroup].Value, CultureInfo.InvariantCulture),
+                    Length = ushort.Parse(match.Groups[SizeGroup].Value, CultureInfo.InvariantCulture),
+                    ByteOrder = byte.Parse(match.Groups[ByteOrderGroup].Value, CultureInfo.InvariantCulture),   // 0 = MSB (Motorola), 1 = LSB (Intel)
+                    ValueType = (match.Groups[ValueTypeGroup].Value == SignedSymbol ? DbcValueType.Signed : DbcValueType.Unsigned),
                     IsInteger = IsInteger(factorStr),
-                    Factor = double.Parse(match.Groups[7].Value, CultureInfo.InvariantCulture),
-                    Offset = double.Parse(match.Groups[8].Value, CultureInfo.InvariantCulture),
-                    Minimum = double.Parse(match.Groups[9].Value, CultureInfo.InvariantCulture),
-                    Maximum = double.Parse(match.Groups[10].Value, CultureInfo.InvariantCulture),
-                    Unit = match.Groups[11].Value,
-                    Receiver = match.Groups[12].Value.Split(m_commaSpaceSeparator, StringSplitOptions.RemoveEmptyEntries)  // can be multiple receivers splitted by ","
+                    Factor = double.Parse(match.Groups[FactorGroup].Value, CultureInfo.InvariantCulture),
+                    Offset = double.Parse(match.Groups[OffsetGroup].Value, CultureInfo.InvariantCulture),
+                    Minimum = double.Parse(match.Groups[MinGroup].Value, CultureInfo.InvariantCulture),
+                    Maximum = double.Parse(match.Groups[MaxGroup].Value, CultureInfo.InvariantCulture),
+                    Unit = match.Groups[UnitGroup].Value,
+                    Receiver = match.Groups[ReceiverGroup].Value.Split(CommaSpaceSeparator, StringSplitOptions.RemoveEmptyEntries)  // can be multiple receivers splitted by ","
                 };
 
                 builder.AddSignal(sig);

@@ -6,8 +6,12 @@ namespace DbcParserLib.Parsers
 {
     internal class SignalValueTypeLineParser : ILineParser
     {
+        private const string MessageIdGroup = "MessageId";
+        private const string SignalNameGroup = "SignalName";
+        private const string SignalTypeGroup = "SignalType";
         private const string SignalValueTypeStarter = "SIG_VALTYPE_ ";
-        private const string SignalValueTypeParsingRegex = @"SIG_VALTYPE_\s+(\d+)\s+([a-zA-Z_][\w]*)\s+[:]*\s*([0123])\s*;";
+
+        private readonly string m_signalValueTypeParsingRegex = $@"SIG_VALTYPE_\s+(?<{MessageIdGroup}>\d+)\s+(?<{SignalNameGroup}>[a-zA-Z_][\w]*)\s+[:]*\s*(?<{SignalTypeGroup}>[0123])\s*;";
 
         private readonly IParseFailureObserver m_observer;
 
@@ -23,19 +27,19 @@ namespace DbcParserLib.Parsers
             if (cleanLine.StartsWith(SignalValueTypeStarter) == false)
                 return false;
 
-            var match = Regex.Match(cleanLine, SignalValueTypeParsingRegex);
+            var match = Regex.Match(cleanLine, m_signalValueTypeParsingRegex);
             if (match.Success)
             {
-                var valueType = uint.Parse(match.Groups[3].Value);
+                var valueType = uint.Parse(match.Groups[SignalTypeGroup].Value);
                 if (valueType == 1 || valueType == 2)
                 {
-                    builder.AddSignalValueType(uint.Parse(match.Groups[1].Value), match.Groups[2].Value,
+                    builder.AddSignalValueType(uint.Parse(match.Groups[MessageIdGroup].Value), match.Groups[SignalNameGroup].Value,
                         valueType == 1 ? DbcValueType.IEEEFloat : DbcValueType.IEEEDouble);
                 }
             }
             else
                 m_observer.SignalValueTypeSyntaxError();
-            
+
             return true;
         }
     }
