@@ -38,7 +38,7 @@ namespace DbcParserLib.Parsers
 
         public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
-            var cleanLine = line.Trim(' ');
+            var cleanLine = line.ReplaceNewlinesWithSpace().Trim();
 
             if (cleanLine.StartsWith(PropertiesDefinitionLineStarter) == false
                 && cleanLine.StartsWith(PropertiesDefinitionDefaultLineStarter) == false)
@@ -48,7 +48,7 @@ namespace DbcParserLib.Parsers
             {
                 var match = Regex.Match(cleanLine, m_propertyDefinitionDefaultParsingRegex);
                 if (match.Success)
-                    builder.AddCustomPropertyDefaultValue(match.Groups[AttributeNameGroup].Value, match.Groups[AttributeValueGroup].Value.Replace(Helpers.DoubleQuotes, ""), !match.Groups[AttributeValueGroup].Value.StartsWith(Helpers.DoubleQuotes));
+                    builder.AddCustomPropertyDefaultValue(match.Groups[AttributeNameGroup].Value, match.Groups[AttributeValueGroup].Value.Replace(ExtensionsAndHelpers.DoubleQuotes, ""), !match.Groups[AttributeValueGroup].Value.StartsWith(ExtensionsAndHelpers.DoubleQuotes));
                 else
                     m_observer.PropertyDefaultSyntaxError();
                 return true;
@@ -116,8 +116,8 @@ namespace DbcParserLib.Parsers
                         {
                             Values = match.Groups[EnumValueGroup]
                                 .Value
-                                .Replace(Helpers.DoubleQuotes, string.Empty)
-                                .Replace(Helpers.Space, string.Empty)
+                                .Replace(ExtensionsAndHelpers.DoubleQuotes, string.Empty)
+                                .Replace(ExtensionsAndHelpers.Space, string.Empty)
                                 .Split(',')
                         };
                     }

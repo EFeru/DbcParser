@@ -10,6 +10,8 @@ namespace DbcParserLib
     {
         public const string DoubleQuotes = "\"";
         public const string Space = " ";
+        public static readonly string[] CommaSpaceSeparator = { " ", "," };
+        private static readonly string[] SpaceArray = { " " };
 
         public static bool Motorola(this Signal signal)
         {
@@ -119,9 +121,6 @@ namespace DbcParserLib
             else
                 return false;
         }
-
-        private static readonly string[] SpaceArray = { " " };
-        public static readonly string[] CommaSpaceSeparator = { " ", "," };
 
         public static string[] SplitBySpace(this string value)
         {

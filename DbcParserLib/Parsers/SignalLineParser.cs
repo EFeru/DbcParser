@@ -22,7 +22,6 @@ namespace DbcParserLib.Parsers
         private const string ReceiverGroup = "Receiver";
         private const string SignalLineStarter = "SG_ ";
         private const string SignedSymbol = "-";
-        private static readonly string[] CommaSpaceSeparator = { Helpers.Space, Helpers.Comma };
 
         private readonly string m_signalRegex = $@"\s*SG_\s+(?<{NameGroup}>[\w]+)\s*(?<{MultiplexerGroup}>[Mm\d]*)\s*:\s*(?<{StartBirGroup}>\d+)\|(?<{SizeGroup}>\d+)@(?<{ByteOrderGroup}>[01])" +
                                                 $@"(?<{ValueTypeGroup}>[+-])\s+\((?<{FactorGroup}>[\d\+\-eE.]+),(?<{OffsetGroup}>[\d\+\-eE.]+)\)\s+\[(?<{MinGroup}>[\d\+\-eE.]+)\|(?<{MaxGroup}>[\d\+\-eE.]+)\]" +
@@ -37,10 +36,12 @@ namespace DbcParserLib.Parsers
 
         public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
-            if (line.TrimStart().StartsWith(SignalLineStarter) == false)
+            var cleanLine = line.ReplaceNewlinesWithSpace().Trim();
+
+            if (cleanLine.StartsWith(SignalLineStarter) == false)
                 return false;
 
-            var match = Regex.Match(line, m_signalRegex);
+            var match = Regex.Match(cleanLine, m_signalRegex);
             if (match.Success)
             {
                 var factorStr = match.Groups[FactorGroup].Value;
@@ -58,7 +59,7 @@ namespace DbcParserLib.Parsers
                     Minimum = double.Parse(match.Groups[MinGroup].Value, CultureInfo.InvariantCulture),
                     Maximum = double.Parse(match.Groups[MaxGroup].Value, CultureInfo.InvariantCulture),
                     Unit = match.Groups[UnitGroup].Value,
-                    Receiver = match.Groups[ReceiverGroup].Value.Split(CommaSpaceSeparator, StringSplitOptions.RemoveEmptyEntries)  // can be multiple receivers splitted by ","
+                    Receiver = match.Groups[ReceiverGroup].Value.Split(ExtensionsAndHelpers.CommaSpaceSeparator, StringSplitOptions.RemoveEmptyEntries)  // can be multiple receivers splitted by ","
                 };
 
                 builder.AddSignal(sig);

@@ -29,7 +29,7 @@ namespace DbcParserLib.Parsers
 
         public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
-            var cleanLine = line.Trim(' ');
+            var cleanLine = line.ReplaceNewlinesWithSpace().Trim();
 
             if (cleanLine.StartsWith(PropertiesLineStarter) == false)
                 return false;
@@ -37,8 +37,8 @@ namespace DbcParserLib.Parsers
             var match = Regex.Match(cleanLine, m_propertyParsingRegex);
             if (match.Success)
             {
-                var isNumeric = !match.Groups[AttributeValueGroup].Value.StartsWith(Helpers.DoubleQuotes);
-                var stringValue = match.Groups[AttributeValueGroup].Value.Replace(Helpers.DoubleQuotes, string.Empty);
+                var isNumeric = !match.Groups[AttributeValueGroup].Value.StartsWith(ExtensionsAndHelpers.DoubleQuotes);
+                var stringValue = match.Groups[AttributeValueGroup].Value.Replace(ExtensionsAndHelpers.DoubleQuotes, string.Empty);
 
                 if (match.Groups[IsNodeEnvGroup].Value.Equals(string.Empty) == false)
                     builder.AddNodeCustomProperty(match.Groups[AttributeNameGroup].Value, match.Groups[NodeEnvNameGroup].Value, stringValue, isNumeric);

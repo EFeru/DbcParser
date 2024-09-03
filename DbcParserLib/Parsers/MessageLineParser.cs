@@ -24,10 +24,12 @@ namespace DbcParserLib.Parsers
 
         public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
-            if (line.Trim().StartsWith(MessageLineStarter) == false)
+            var cleanLine = line.ReplaceNewlinesWithSpace().Trim();
+
+            if (cleanLine.StartsWith(MessageLineStarter) == false)
                 return false;
 
-            var match = Regex.Match(line, m_messageRegex);
+            var match = Regex.Match(cleanLine, m_messageRegex);
             if (match.Success)
             {
                 var msg = new Message()
