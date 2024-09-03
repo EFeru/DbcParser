@@ -13,7 +13,7 @@ namespace DbcParserLib
 
         private const string lineTermination = ";";
 
-        private readonly string[] keywords = new[]
+        private readonly string[] keywords =
         {
             "VERSION",
             "FILTER",
@@ -47,9 +47,9 @@ namespace DbcParserLib
             "SIG_VALTYPE_",
             "SIG_TYPE_REF_",
 
-            "EV_",
             "EV_DATA_",
             "ENVVAR_DATA_",
+            "EV_",
 
             "BO_TX_BU_",
             "BO_",
@@ -112,7 +112,7 @@ namespace DbcParserLib
 
                 var partAfterTermination = line.Substring(definitionTerminationLocation + 2, line.Length - 2 - definitionTerminationLocation);
 
-                if (CheckNextLineParsing(partAfterTermination.TrimStart()))
+                if (CheckLineIsDefinition(partAfterTermination.TrimStart()))
                 {
                     m_reader.SetVirtualLine(partAfterTermination);
                     return line.Substring(0, definitionTerminationLocation + 1);
@@ -146,7 +146,7 @@ namespace DbcParserLib
                     continue;
                 }
 
-                if (CheckNextLineParsing(checkLine) == false)
+                if (CheckLineIsDefinition(checkLine) == false)
                 {
                     for (int i = 0; i < numEmptyLines; i++)
                     {
@@ -174,10 +174,9 @@ namespace DbcParserLib
             return stringBuilder.ToString();
         }
 
-        private bool CheckNextLineParsing(string nextLine)
+        private bool CheckLineIsDefinition(string line)
         {
-            nextLine = nextLine.TrimStart();
-            return keywords.Any(prefix => nextLine.StartsWith(prefix));
+            return keywords.Any(keywordPrefix => line.StartsWith(keywordPrefix));
         }
     }
 }
