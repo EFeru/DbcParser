@@ -74,27 +74,29 @@ namespace DbcParserLib
             line = null;
 
             var readLine = m_reader.ReadLine();
-            if (readLine != null)
+
+            if (readLine is null)
             {
-                line = readLine.Trim();
+                return false;
+            }
 
-                if (string.IsNullOrEmpty(line))
-                {
-                    return true;
-                }
+            line = readLine.Trim();
 
-                line = HandleMultipleDefinitionsPerLine(line);
-                line = HandleMultiline(line);
-
-                var test = line;
-                if (line.EndsWith(lineTermination) == false && keywords.Any(prefix => test.Equals(prefix)) == false) //correct missing terminations
-                {
-                    line = line + lineTermination;
-                }
-
+            if (string.IsNullOrEmpty(line))
+            {
                 return true;
             }
-            return false;
+
+            line = HandleMultipleDefinitionsPerLine(line);
+            line = HandleMultiline(line);
+
+            var test = line;
+            if (line.EndsWith(lineTermination) == false && keywords.Any(prefix => test.Equals(prefix)) == false) //correct missing terminations
+            {
+                line = line + lineTermination;
+            }
+
+            return true;
         }
 
         private string HandleMultipleDefinitionsPerLine(string line)

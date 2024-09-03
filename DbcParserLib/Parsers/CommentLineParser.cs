@@ -33,9 +33,6 @@ namespace DbcParserLib.Parsers
             if (cleanLine.StartsWith(CommentLineStarter) == false)
                 return false;
 
-            if (!cleanLine.EndsWith(";"))
-                cleanLine = GetNextLines(cleanLine, m_observer, nextLineProvider);
-
             if (cleanLine.StartsWith("CM_ SG_"))
             {
                 SetSignalComment(cleanLine, m_observer, builder, nextLineProvider);
