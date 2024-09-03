@@ -126,7 +126,8 @@ namespace DbcParserLib
 
         private string HandleMultiline(string line)
         {
-            var stringsList = new List<string> { line };
+            var stringBuilder = new StringBuilder();
+            stringBuilder.AppendLine(line);
 
             var numEmptyLines = 0;
             while (true)
@@ -150,26 +151,19 @@ namespace DbcParserLib
                 {
                     for (int i = 0; i < numEmptyLines; i++)
                     {
-                        stringsList.Add(m_reader.ReadLine().Trim());
+                        stringBuilder.AppendLine(m_reader.ReadLine().Trim());
                     }
                     numEmptyLines = 0;
 
                     var lineToAdd = m_reader.ReadLine().Trim();
                     lineToAdd = HandleMultipleDefinitionsPerLine(lineToAdd);
 
-                    stringsList.Add(lineToAdd);
+                    stringBuilder.AppendLine(lineToAdd);
                     continue;
                 }
 
                 break;
             }
-
-            var stringBuilder = new StringBuilder();
-            for (int i = 0; i < stringsList.Count - 1; i++)
-            {
-                stringBuilder.AppendLine(stringsList[i]);
-            }
-            stringBuilder.Append(stringsList.Last());
 
             return stringBuilder.ToString();
         }
