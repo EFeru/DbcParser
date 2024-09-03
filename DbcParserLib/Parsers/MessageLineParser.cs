@@ -7,8 +7,13 @@ namespace DbcParserLib.Parsers
 {
     internal class MessageLineParser : ILineParser
     {
+        private const string IdGroup = "Id";
+        private const string NameGroup = "Name";
+        private const string SizeGroup = "Size";
+        private const string TransmitterGroup = "Transmitter";
         private const string MessageLineStarter = "BO_ ";
-        private const string MessageRegex = @"BO_ (\d+)\s+([a-zA-Z_][\w]*)\s*:\s*(\d+)\s+([a-zA-Z_][\w]*)";
+
+        private readonly string m_messageRegex = $@"BO_ (?<{IdGroup}>\d+)\s+(?<{NameGroup}>[a-zA-Z_][\w]*)\s*:\s*(?<{SizeGroup}>\d+)\s+(?<{TransmitterGroup}>[a-zA-Z_][\w]*)";
 
         private readonly IParseFailureObserver m_observer;
 
@@ -19,27 +24,25 @@ namespace DbcParserLib.Parsers
 
         public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
-            var cleanLine = line.ReplaceNewlinesWithSpace().Trim();
-
-            if (cleanLine.StartsWith(MessageLineStarter) == false)
+            if (line.Trim().StartsWith(MessageLineStarter) == false)
                 return false;
-            
-            var match = Regex.Match(cleanLine, MessageRegex);
-            if(match.Success)
+
+            var match = Regex.Match(line, m_messageRegex);
+            if (match.Success)
             {
                 var msg = new Message()
                 {
-                    Name = match.Groups[2].Value,
-                    DLC = ushort.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture),
-                    Transmitter = match.Groups[4].Value,
-                    ID = uint.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture)
+                    Name = match.Groups[NameGroup].Value,
+                    DLC = ushort.Parse(match.Groups[SizeGroup].Value, CultureInfo.InvariantCulture),
+                    Transmitter = match.Groups[TransmitterGroup].Value,
+                    ID = uint.Parse(match.Groups[IdGroup].Value, CultureInfo.InvariantCulture)
                 };
-                
+
                 builder.AddMessage(msg);
             }
             else
                 m_observer.MessageSyntaxError();
-            
+
             return true;
         }
     }

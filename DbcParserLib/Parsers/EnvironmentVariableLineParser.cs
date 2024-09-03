@@ -6,8 +6,21 @@ namespace DbcParserLib.Parsers
 {
     internal class EnvironmentVariableLineParser : ILineParser
     {
+        private const string NameGroup = "Name";
+        private const string VarTypeGroup = "VarType";
+        private const string MinGroup = "Min";
+        private const string MaxGroup = "Max";
+        private const string UnitGroup = "Unit";
+        private const string InitialValueGroup = "InitialValue";
+        private const string VarId = "VarId";
+        private const string StringDataTypeGroup = "StringDataType";
+        private const string AccessibilityGroup = "Accessibility2";
+        private const string NodeGroup = "Node";
         private const string EnvironmentVariableLineStarter = "EV_ ";
-        private const string EnvironmentVariableParsingRegex = @"EV_\s+([a-zA-Z_][\w]*)\s*:\s+([012])\s+\[([\d\+\-eE.]+)\|([\d\+\-eE.]+)\]\s+""([^""]*)""\s+([\d\+\-eE.]+)\s+(\d+)\s+DUMMY_NODE_VECTOR(800){0,1}([0123])\s+((?:[a-zA-Z_][\w]*)(?:,[a-zA-Z_][\w]*)*)\s*;";
+
+        private readonly string m_environmentVariableParsingRegex = $@"EV_\s+(?<{NameGroup}>[a-zA-Z_][\w]*)\s*:\s+(?<{VarTypeGroup}>[012])\s+\[(?<{MinGroup}>[\d\+\-eE.]+)\|(?<{MaxGroup}>[\d\+\-eE.]+)\]" +
+                                                                    $@"\s+""(?<{UnitGroup}>[^""]*)""\s+(?<{InitialValueGroup}>[\d\+\-eE.]+)\s+(?<{VarId}>\d+)\s+DUMMY_NODE_VECTOR(?<{StringDataTypeGroup}>800){{0,1}}" +
+                                                                    $@"(?<{AccessibilityGroup}>[0123])\s+(?<{NodeGroup}>(?:[a-zA-Z_][\w]*)(?:,[a-zA-Z_][\w]*)*)\s*;";
 
         private readonly IParseFailureObserver m_observer;
 
@@ -23,16 +36,16 @@ namespace DbcParserLib.Parsers
             if (cleanLine.StartsWith(EnvironmentVariableLineStarter) == false)
                 return false;
 
-            var match = Regex.Match(cleanLine, EnvironmentVariableParsingRegex);
+            var match = Regex.Match(cleanLine, m_environmentVariableParsingRegex);
             if (match.Success)
             {
                 var environmentVariable = new EnvironmentVariable()
                 {
-                    Name = match.Groups[1].Value,
-                    Unit = match.Groups[5].Value,
+                    Name = match.Groups[NameGroup].Value,
+                    Unit = match.Groups[UnitGroup].Value,
                 };
 
-                switch (uint.Parse(match.Groups[9].Value))
+                switch (uint.Parse(match.Groups[AccessibilityGroup].Value))
                 {
                     case 0:
                         environmentVariable.Access = EnvAccessibility.Unrestricted;
@@ -48,30 +61,30 @@ namespace DbcParserLib.Parsers
                         break;
                 }
 
-                if (match.Groups[8].Value == "800")
+                if (match.Groups[StringDataTypeGroup].Value == "800")
                 {
                     environmentVariable.Type = EnvDataType.String;
                 }
                 else
                 {
-                    switch (uint.Parse(match.Groups[2].Value))
+                    switch (uint.Parse(match.Groups[VarTypeGroup].Value))
                     {
                         case 0:
                             environmentVariable.Type = EnvDataType.Integer;
                             environmentVariable.IntegerEnvironmentVariable = new NumericEnvironmentVariable<int>()
                             {
-                                Minimum = int.Parse(match.Groups[3].Value),
-                                Maximum = int.Parse(match.Groups[4].Value),
-                                Default = int.Parse(match.Groups[6].Value)
+                                Minimum = int.Parse(match.Groups[MinGroup].Value),
+                                Maximum = int.Parse(match.Groups[MaxGroup].Value),
+                                Default = int.Parse(match.Groups[InitialValueGroup].Value)
                             };
                             break;
                         case 1:
                             environmentVariable.Type = EnvDataType.Float;
                             environmentVariable.FloatEnvironmentVariable = new NumericEnvironmentVariable<double>()
                             {
-                                Minimum = double.Parse(match.Groups[3].Value),
-                                Maximum = double.Parse(match.Groups[4].Value),
-                                Default = double.Parse(match.Groups[6].Value)
+                                Minimum = double.Parse(match.Groups[MinGroup].Value),
+                                Maximum = double.Parse(match.Groups[MaxGroup].Value),
+                                Default = double.Parse(match.Groups[InitialValueGroup].Value)
                             };
                             break;
                         case 2:
@@ -80,17 +93,17 @@ namespace DbcParserLib.Parsers
                     }
                 }
 
-                builder.AddEnvironmentVariable(match.Groups[1].Value, environmentVariable);
+                builder.AddEnvironmentVariable(match.Groups[NameGroup].Value, environmentVariable);
 
-                var nodes = match.Groups[10].Value.Split(',');
+                var nodes = match.Groups[NodeGroup].Value.Split(',');
                 foreach (var node in nodes)
                 {
-                    builder.AddNodeEnvironmentVariable(node, match.Groups[1].Value);
+                    builder.AddNodeEnvironmentVariable(node, match.Groups[NameGroup].Value);
                 }
             }
             else
                 m_observer.EnvironmentVariableSyntaxError();
-            
+
             return true;
         }
     }

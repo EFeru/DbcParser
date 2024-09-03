@@ -5,8 +5,11 @@ namespace DbcParserLib.Parsers
 {
     internal class EnvironmentDataVariableLineParser : ILineParser
     {
+        private const string NameGroup = "Name";
+        private const string DataSizeGroup = "DataSize";
         private const string EnvironmentDataVariableLineStarter = "ENVVAR_DATA_ ";
-        private const string EnvironmentDataVariableParsingRegex = @"ENVVAR_DATA_\s+([a-zA-Z_][\w]*)\s*:\s+(\d+)\s*;";
+
+        private readonly string m_environmentDataVariableParsingRegex = $@"ENVVAR_DATA_\s+(?<{NameGroup}>[a-zA-Z_][\w]*)\s*:\s+(?<{DataSizeGroup}>\d+)\s*;";
 
         private readonly IParseFailureObserver m_observer;
 
@@ -22,12 +25,12 @@ namespace DbcParserLib.Parsers
             if (cleanLine.StartsWith(EnvironmentDataVariableLineStarter) == false)
                 return false;
 
-            var match = Regex.Match(cleanLine, EnvironmentDataVariableParsingRegex);
+            var match = Regex.Match(cleanLine, m_environmentDataVariableParsingRegex);
             if (match.Success)
-                builder.AddEnvironmentDataVariable(match.Groups[1].Value, uint.Parse(match.Groups[2].Value));
+                builder.AddEnvironmentDataVariable(match.Groups[NameGroup].Value, uint.Parse(match.Groups[DataSizeGroup].Value));
             else
                 m_observer.EnvironmentDataVariableSyntaxError();
-    
+
             return true;
         }
     }

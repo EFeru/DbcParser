@@ -29,6 +29,16 @@ namespace DbcParserLib.Tests
         }
 
         [Test]
+        public void EmptyNodeListIsAccepted()
+        {
+            var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
+            var nodeLineParser = CreateParser();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+
+            Assert.That(nodeLineParser.TryParse(" BU_:  ", dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
+        }
+
+        [Test]
         public void EmptyCommentLineIsIgnored()
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
@@ -95,7 +105,6 @@ namespace DbcParserLib.Tests
 
         [TestCase("BU_: 0nodeName")]
         [TestCase("BU_:nodeName")]
-        [TestCase("BU_:")]
         public void NodeSyntaxErrorIsObserved(string line)
         {
             var observerMock = m_repository.Create<IParseFailureObserver>();
