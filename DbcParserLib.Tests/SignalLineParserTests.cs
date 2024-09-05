@@ -66,18 +66,24 @@ namespace DbcParserLib.Tests
             dbcBuilderMock.Setup(mock => mock.AddSignal(It.IsAny<Signal>()))
                 .Callback<Signal>(signal =>
                 {
-                    Assert.That(signal.Name, Is.EqualTo("MCU_longitude"));
-                    Assert.That(signal.StartBit, Is.EqualTo(28));
-                    Assert.That(signal.Length, Is.EqualTo(29));
-                    Assert.That(signal.ByteOrder, Is.EqualTo(1));
-                    Assert.That(signal.ValueType, Is.EqualTo(DbcValueType.Signed));
-                    Assert.That(signal.Factor, Is.EqualTo(1E-006));
-                    Assert.That(signal.Offset, Is.EqualTo(0));
-                    Assert.That(signal.Minimum, Is.EqualTo(-10));
-                    Assert.That(signal.Maximum, Is.EqualTo(35.6));
-                    Assert.That(string.IsNullOrWhiteSpace(signal.Multiplexing), Is.True);
-                    Assert.That(signal.Unit, Is.EqualTo("deg"));
-                    Assert.That(signal.Receiver.FirstOrDefault(), Is.EqualTo("NEO"));
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(signal.Name, Is.EqualTo("MCU_longitude"));
+                        Assert.That(signal.StartBit, Is.EqualTo(28));
+                        Assert.That(signal.Length, Is.EqualTo(29));
+                    });
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(signal.ByteOrder, Is.EqualTo(1));
+                        Assert.That(signal.ValueType, Is.EqualTo(DbcValueType.Signed));
+                        Assert.That(signal.Factor, Is.EqualTo(1E-006));
+                        Assert.That(signal.Offset, Is.EqualTo(0));
+                        Assert.That(signal.Minimum, Is.EqualTo(-10));
+                        Assert.That(signal.Maximum, Is.EqualTo(35.6));
+                        Assert.That(string.IsNullOrWhiteSpace(signal.Multiplexing), Is.True);
+                        Assert.That(signal.Unit, Is.EqualTo("deg"));
+                        Assert.That(signal.Receiver.FirstOrDefault(), Is.EqualTo("NEO"));
+                    });
                 });
 
             var signalLineParser = CreateParser();
@@ -94,18 +100,24 @@ namespace DbcParserLib.Tests
             dbcBuilderMock.Setup(mock => mock.AddSignal(It.IsAny<Signal>()))
                 .Callback<Signal>(signal =>
                 {
-                    Assert.That(signal.Name, Is.EqualTo("MCU_longitude"));
-                    Assert.That(signal.StartBit, Is.EqualTo(28));
-                    Assert.That(signal.Length, Is.EqualTo(29));
-                    Assert.That(signal.ByteOrder, Is.EqualTo(1));
-                    Assert.That(signal.ValueType, Is.EqualTo(DbcValueType.Signed));
-                    Assert.That(signal.Factor, Is.EqualTo(1E-006));
-                    Assert.That(signal.Offset, Is.EqualTo(0));
-                    Assert.That(signal.Minimum, Is.EqualTo(-10));
-                    Assert.That(signal.Maximum, Is.EqualTo(35.6));
-                    Assert.That(signal.Multiplexing, Is.EqualTo("m7"));
-                    Assert.That(signal.Unit, Is.EqualTo("deg"));
-                    Assert.That(signal.Receiver.FirstOrDefault(), Is.EqualTo("NEO"));
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(signal.Name, Is.EqualTo("MCU_longitude"));
+                        Assert.That(signal.StartBit, Is.EqualTo(28));
+                        Assert.That(signal.Length, Is.EqualTo(29));
+                    });
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(signal.ByteOrder, Is.EqualTo(1));
+                        Assert.That(signal.ValueType, Is.EqualTo(DbcValueType.Signed));
+                        Assert.That(signal.Factor, Is.EqualTo(1E-006));
+                        Assert.That(signal.Offset, Is.EqualTo(0));
+                        Assert.That(signal.Minimum, Is.EqualTo(-10));
+                        Assert.That(signal.Maximum, Is.EqualTo(35.6));
+                        Assert.That(signal.Multiplexing, Is.EqualTo("m7"));
+                        Assert.That(signal.Unit, Is.EqualTo("deg"));
+                        Assert.That(signal.Receiver.FirstOrDefault(), Is.EqualTo("NEO"));
+                    });
                 });
 
             var signalLineParser = CreateParser();
@@ -122,18 +134,24 @@ namespace DbcParserLib.Tests
             dbcBuilderMock.Setup(mock => mock.AddSignal(It.IsAny<Signal>()))
                 .Callback<Signal>(signal =>
                 {
-                    Assert.That(signal.Name, Is.EqualTo("MCU_longitude"));
-                    Assert.That(signal.StartBit, Is.EqualTo(28));
-                    Assert.That(signal.Length, Is.EqualTo(29));
-                    Assert.That(signal.ByteOrder, Is.EqualTo(1));
-                    Assert.That(signal.ValueType, Is.EqualTo(DbcValueType.Signed));
-                    Assert.That(signal.Factor, Is.EqualTo(1E-006));
-                    Assert.That(signal.Offset, Is.EqualTo(0));
-                    Assert.That(signal.Minimum, Is.EqualTo(-10));
-                    Assert.That(signal.Maximum, Is.EqualTo(35.6));
-                    Assert.That(signal.Multiplexing, Is.EqualTo("m7"));
-                    Assert.That(signal.Unit, Is.EqualTo("deg"));
-                    Assert.That(signal.Receiver, Is.EqualTo(new[] { "NEO", "WHEEL", "TOP" }).AsCollection);
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(signal.Name, Is.EqualTo("MCU_longitude"));
+                        Assert.That(signal.StartBit, Is.EqualTo(28));
+                        Assert.That(signal.Length, Is.EqualTo(29));
+                    });
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(signal.ByteOrder, Is.EqualTo(1));
+                        Assert.That(signal.ValueType, Is.EqualTo(DbcValueType.Signed));
+                        Assert.That(signal.Factor, Is.EqualTo(1E-006));
+                        Assert.That(signal.Offset, Is.EqualTo(0));
+                        Assert.That(signal.Minimum, Is.EqualTo(-10));
+                        Assert.That(signal.Maximum, Is.EqualTo(35.6));
+                        Assert.That(signal.Multiplexing, Is.EqualTo("m7"));
+                        Assert.That(signal.Unit, Is.EqualTo("deg"));
+                        Assert.That(signal.Receiver, Is.EqualTo(new[] { "NEO", "WHEEL", "TOP" }).AsCollection);
+                    });
 
                 });
 
@@ -151,18 +169,24 @@ namespace DbcParserLib.Tests
             dbcBuilderMock.Setup(mock => mock.AddSignal(It.IsAny<Signal>()))
                 .Callback<Signal>(signal =>
                 {
-                    Assert.That(signal.Name, Is.EqualTo("MCU_longitude"));
-                    Assert.That(signal.StartBit, Is.EqualTo(28));
-                    Assert.That(signal.Length, Is.EqualTo(29));
-                    Assert.That(signal.ByteOrder, Is.EqualTo(1));
-                    Assert.That(signal.ValueType, Is.EqualTo(DbcValueType.Signed));
-                    Assert.That(signal.Factor, Is.EqualTo(1E-006));
-                    Assert.That(signal.Offset, Is.EqualTo(0));
-                    Assert.That(signal.Minimum, Is.EqualTo(-10));
-                    Assert.That(signal.Maximum, Is.EqualTo(35.6));
-                    Assert.That(signal.Multiplexing, Is.EqualTo("m7"));
-                    Assert.That(signal.Unit, Is.EqualTo("deg"));
-                    Assert.That(signal.Receiver, Is.EqualTo(new[] { "NEO", "WHEEL", "TOP" }).AsCollection);
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(signal.Name, Is.EqualTo("MCU_longitude"));
+                        Assert.That(signal.StartBit, Is.EqualTo(28));
+                        Assert.That(signal.Length, Is.EqualTo(29));
+                    });
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(signal.ByteOrder, Is.EqualTo(1));
+                        Assert.That(signal.ValueType, Is.EqualTo(DbcValueType.Signed));
+                        Assert.That(signal.Factor, Is.EqualTo(1E-006));
+                        Assert.That(signal.Offset, Is.EqualTo(0));
+                        Assert.That(signal.Minimum, Is.EqualTo(-10));
+                        Assert.That(signal.Maximum, Is.EqualTo(35.6));
+                        Assert.That(signal.Multiplexing, Is.EqualTo("m7"));
+                        Assert.That(signal.Unit, Is.EqualTo("deg"));
+                        Assert.That(signal.Receiver, Is.EqualTo(new[] { "NEO", "WHEEL", "TOP" }).AsCollection);
+                    });
 
                 });
 
@@ -184,8 +208,11 @@ BO_ 200 SENSOR: 39 SENSOR
 
             var dbc = Parser.Parse(dbcString);
 
-            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
-            Assert.That(dbc.Messages.SelectMany(m => m.Signals).Count(), Is.EqualTo(3));
+            Assert.Multiple(() =>
+            {
+                Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+                Assert.That(dbc.Messages.SelectMany(m => m.Signals).Count(), Is.EqualTo(3));
+            });
         }
 
         [TestCase("SG_ qGearboxOilMin : 0|16@1+ (0.1,0) [0|6553.5] \"l/min\" \"NATEC\"")]

@@ -74,11 +74,14 @@ namespace DbcParserLib.Tests
             dbcBuilderMock.Setup(mock => mock.AddMessage(It.IsAny<Message>()))
                 .Callback<Message>(message => 
                 {
-                    Assert.That(message.ID, Is.EqualTo(1041));
-                    Assert.That(message.Name, Is.EqualTo("DOORS_SEATBELTS"));
-                    Assert.That(message.DLC, Is.EqualTo(8));
-                    Assert.That(message.Transmitter, Is.EqualTo("TRX"));
-                    Assert.That(message.IsExtID, Is.False);
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(message.ID, Is.EqualTo(1041));
+                        Assert.That(message.Name, Is.EqualTo("DOORS_SEATBELTS"));
+                        Assert.That(message.DLC, Is.EqualTo(8));
+                        Assert.That(message.Transmitter, Is.EqualTo("TRX"));
+                        Assert.That(message.IsExtID, Is.False);
+                    });
                 });
 
             var messageLineParser = CreateParser();
@@ -94,11 +97,14 @@ namespace DbcParserLib.Tests
             dbcBuilderMock.Setup(mock => mock.AddMessage(It.IsAny<Message>()))
                 .Callback<Message>(message =>
                 {
-                    Assert.That(message.ID, Is.EqualTo(1041));
-                    Assert.That(message.Name, Is.EqualTo("DOORS_SEATBELTS"));
-                    Assert.That(message.DLC, Is.EqualTo(8));
-                    Assert.That(message.Transmitter, Is.EqualTo("TRX"));
-                    Assert.That(message.IsExtID, Is.False);
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(message.ID, Is.EqualTo(1041));
+                        Assert.That(message.Name, Is.EqualTo("DOORS_SEATBELTS"));
+                        Assert.That(message.DLC, Is.EqualTo(8));
+                        Assert.That(message.Transmitter, Is.EqualTo("TRX"));
+                        Assert.That(message.IsExtID, Is.False);
+                    });
                 });
 
             var messageLineParser = CreateParser();

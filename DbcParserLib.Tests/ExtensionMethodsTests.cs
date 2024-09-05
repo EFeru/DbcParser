@@ -15,10 +15,13 @@ namespace DbcParserLib.Tests
                 ByteOrder = 0, // 0 = Big Endian (Motorola), 1 = Little Endian (Intel)
             };
 
-            Assert.That(sig.Motorola(), Is.True);
-            Assert.That(sig.Msb(), Is.True);
-            Assert.That(sig.Intel(), Is.False);
-            Assert.That(sig.Lsb(), Is.False);
+            Assert.Multiple(() =>
+            {
+                Assert.That(sig.Motorola(), Is.True);
+                Assert.That(sig.Msb(), Is.True);
+                Assert.That(sig.Intel(), Is.False);
+                Assert.That(sig.Lsb(), Is.False);
+            });
         }
 
         [Test]
@@ -29,10 +32,13 @@ namespace DbcParserLib.Tests
                 ByteOrder = 1, // 0 = Big Endian (Motorola), 1 = Little Endian (Intel)
             };
 
-            Assert.That(sig.Motorola(), Is.False);
-            Assert.That(sig.Msb(), Is.False);
-            Assert.That(sig.Intel(), Is.True);
-            Assert.That(sig.Lsb(), Is.True);
+            Assert.Multiple(() =>
+            {
+                Assert.That(sig.Motorola(), Is.False);
+                Assert.That(sig.Msb(), Is.False);
+                Assert.That(sig.Intel(), Is.True);
+                Assert.That(sig.Lsb(), Is.True);
+            });
         }
 
         [Test]
@@ -44,8 +50,11 @@ namespace DbcParserLib.Tests
             };
 
             var multiplexing = sig.MultiplexingInfo();
-            Assert.That(multiplexing.Role, Is.EqualTo(MultiplexingRole.None));
-            Assert.That(multiplexing.Group, Is.EqualTo(0));
+            Assert.Multiple(() =>
+            {
+                Assert.That(multiplexing.Role, Is.EqualTo(MultiplexingRole.None));
+                Assert.That(multiplexing.Group, Is.EqualTo(0));
+            });
         }
 
         [Test]
@@ -57,8 +66,11 @@ namespace DbcParserLib.Tests
             };
 
             var multiplexing = sig.MultiplexingInfo();
-            Assert.That(multiplexing.Role, Is.EqualTo(MultiplexingRole.Multiplexor));
-            Assert.That(multiplexing.Group, Is.EqualTo(0));
+            Assert.Multiple(() =>
+            {
+                Assert.That(multiplexing.Role, Is.EqualTo(MultiplexingRole.Multiplexor));
+                Assert.That(multiplexing.Group, Is.EqualTo(0));
+            });
         }
 
         [Test]
@@ -70,8 +82,11 @@ namespace DbcParserLib.Tests
             };
 
             var multiplexing = sig.MultiplexingInfo();
-            Assert.That(multiplexing.Role, Is.EqualTo(MultiplexingRole.Multiplexed));
-            Assert.That(multiplexing.Group, Is.EqualTo(3));
+            Assert.Multiple(() =>
+            {
+                Assert.That(multiplexing.Role, Is.EqualTo(MultiplexingRole.Multiplexed));
+                Assert.That(multiplexing.Group, Is.EqualTo(3));
+            });
         }
 
         [Test]
@@ -83,8 +98,11 @@ namespace DbcParserLib.Tests
             };
 
             var multiplexing = sig.MultiplexingInfo();
-            Assert.That(multiplexing.Role, Is.EqualTo(MultiplexingRole.Multiplexed));
-            Assert.That(multiplexing.Group, Is.EqualTo(3));
+            Assert.Multiple(() =>
+            {
+                Assert.That(multiplexing.Role, Is.EqualTo(MultiplexingRole.Multiplexed));
+                Assert.That(multiplexing.Group, Is.EqualTo(3));
+            });
         }
 
         [Test]
@@ -96,8 +114,11 @@ namespace DbcParserLib.Tests
             };
 
             var multiplexing = sig.MultiplexingInfo();
-            Assert.That(multiplexing.Role, Is.EqualTo(MultiplexingRole.Multiplexed));
-            Assert.That(multiplexing.Group, Is.EqualTo(12));
+            Assert.Multiple(() =>
+            {
+                Assert.That(multiplexing.Role, Is.EqualTo(MultiplexingRole.Multiplexed));
+                Assert.That(multiplexing.Group, Is.EqualTo(12));
+            });
         }
 
         [Test]
@@ -170,8 +191,11 @@ namespace DbcParserLib.Tests
                 { 3, "Third" }
             };
 
-            Assert.That(operation, Is.True);
-            Assert.That(dict, Is.EqualTo(expectedDict));
+            Assert.Multiple(() =>
+            {
+                Assert.That(operation, Is.True);
+                Assert.That(dict, Is.EqualTo(expectedDict));
+            });
         }
 
         [Test]
@@ -186,8 +210,11 @@ namespace DbcParserLib.Tests
                 { 3, " T h i r d " }
             };
 
-            Assert.That(operation, Is.True);
-            Assert.That(dict, Is.EqualTo(expectedDict));
+            Assert.Multiple(() =>
+            {
+                Assert.That(operation, Is.True);
+                Assert.That(dict, Is.EqualTo(expectedDict));
+            });
         }
 
         [Test]
@@ -201,8 +228,11 @@ namespace DbcParserLib.Tests
                 { 2, " " }
             };
 
-            Assert.That(operation, Is.True);
-            Assert.That(dict, Is.EqualTo(expectedDict));
+            Assert.Multiple(() =>
+            {
+                Assert.That(operation, Is.True);
+                Assert.That(dict, Is.EqualTo(expectedDict));
+            });
         }
 
         [Test]
@@ -216,8 +246,11 @@ namespace DbcParserLib.Tests
                 { 2, "2" }
             };
 
-            Assert.That(operation, Is.True);
-            Assert.That(dict, Is.EqualTo(expectedDict));
+            Assert.Multiple(() =>
+            {
+                Assert.That(operation, Is.True);
+                Assert.That(dict, Is.EqualTo(expectedDict));
+            });
         }
 
         [Test]
@@ -226,8 +259,11 @@ namespace DbcParserLib.Tests
             var text = "1 \"First with spaces\" 2 \" Second \" 3 T h i r d \"";
             var operation = text.TryParseToDict(out var dict);
 
-            Assert.That(operation, Is.False);
-            Assert.That(dict, Is.Null);
+            Assert.Multiple(() =>
+            {
+                Assert.That(operation, Is.False);
+                Assert.That(dict, Is.Null);
+            });
         }
     }
 }

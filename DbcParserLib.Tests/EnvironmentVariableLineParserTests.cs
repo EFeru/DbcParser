@@ -52,13 +52,16 @@ namespace DbcParserLib.Tests
             dbcBuilderMock.Setup(mock => mock.AddEnvironmentVariable("EnvKlemme45", It.IsAny<EnvironmentVariable>()))
                 .Callback<string, EnvironmentVariable>((_, envVariable) =>
                 {
-                    Assert.That(envVariable.Name, Is.EqualTo("EnvKlemme45"));
-                    Assert.That(envVariable.Unit, Is.EqualTo(""));
-                    Assert.That(envVariable.Access, Is.EqualTo(EnvAccessibility.Unrestricted));
-                    Assert.That(envVariable.Type, Is.EqualTo(EnvDataType.Integer));
-                    Assert.That(envVariable.IntegerEnvironmentVariable.Minimum, Is.EqualTo(0));
-                    Assert.That(envVariable.IntegerEnvironmentVariable.Maximum, Is.EqualTo(1));
-                    Assert.That(envVariable.IntegerEnvironmentVariable.Default, Is.EqualTo(0));
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(envVariable.Name, Is.EqualTo("EnvKlemme45"));
+                        Assert.That(envVariable.Unit, Is.EqualTo(""));
+                        Assert.That(envVariable.Access, Is.EqualTo(EnvAccessibility.Unrestricted));
+                        Assert.That(envVariable.Type, Is.EqualTo(EnvDataType.Integer));
+                        Assert.That(envVariable.IntegerEnvironmentVariable.Minimum, Is.EqualTo(0));
+                        Assert.That(envVariable.IntegerEnvironmentVariable.Maximum, Is.EqualTo(1));
+                        Assert.That(envVariable.IntegerEnvironmentVariable.Default, Is.EqualTo(0));
+                    });
                 }
             );
             dbcBuilderMock.Setup(mock => mock.AddNodeEnvironmentVariable("ENTtest", "EnvKlemme45"));
@@ -77,10 +80,13 @@ namespace DbcParserLib.Tests
             dbcBuilderMock.Setup(mock => mock.AddEnvironmentVariable("EnvKlemme45", It.IsAny<EnvironmentVariable>()))
                 .Callback<string, EnvironmentVariable>((_, envVariable) =>
                 {
-                    Assert.That(envVariable.Name, Is.EqualTo("EnvKlemme45"));
-                    Assert.That(envVariable.Unit, Is.EqualTo(""));
-                    Assert.That(envVariable.Access, Is.EqualTo(EnvAccessibility.Unrestricted));
-                    Assert.That(envVariable.Type, Is.EqualTo(EnvDataType.String));
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(envVariable.Name, Is.EqualTo("EnvKlemme45"));
+                        Assert.That(envVariable.Unit, Is.EqualTo(""));
+                        Assert.That(envVariable.Access, Is.EqualTo(EnvAccessibility.Unrestricted));
+                        Assert.That(envVariable.Type, Is.EqualTo(EnvDataType.String));
+                    });
                 }
                 );
             dbcBuilderMock.Setup(mock => mock.AddNodeEnvironmentVariable("ENTtest", "EnvKlemme45"));
@@ -99,13 +105,16 @@ namespace DbcParserLib.Tests
             dbcBuilderMock.Setup(mock => mock.AddEnvironmentVariable("EnvKlemme45", It.IsAny<EnvironmentVariable>()))
                 .Callback<string, EnvironmentVariable>((_, envVariable) =>
                 {
-                    Assert.That(envVariable.Name, Is.EqualTo("EnvKlemme45"));
-                    Assert.That(envVariable.Unit, Is.EqualTo(""));
-                    Assert.That(envVariable.Access, Is.EqualTo(EnvAccessibility.Unrestricted));
-                    Assert.That(envVariable.Type, Is.EqualTo(EnvDataType.Float));
-                    Assert.That(envVariable.FloatEnvironmentVariable.Minimum, Is.EqualTo(0));
-                    Assert.That(envVariable.FloatEnvironmentVariable.Maximum, Is.EqualTo(10));
-                    Assert.That(envVariable.FloatEnvironmentVariable.Default, Is.EqualTo(5));
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(envVariable.Name, Is.EqualTo("EnvKlemme45"));
+                        Assert.That(envVariable.Unit, Is.EqualTo(""));
+                        Assert.That(envVariable.Access, Is.EqualTo(EnvAccessibility.Unrestricted));
+                        Assert.That(envVariable.Type, Is.EqualTo(EnvDataType.Float));
+                        Assert.That(envVariable.FloatEnvironmentVariable.Minimum, Is.EqualTo(0));
+                        Assert.That(envVariable.FloatEnvironmentVariable.Maximum, Is.EqualTo(10));
+                        Assert.That(envVariable.FloatEnvironmentVariable.Default, Is.EqualTo(5));
+                    });
                 }
                 );
             dbcBuilderMock.Setup(mock => mock.AddNodeEnvironmentVariable("ENTtest", "EnvKlemme45"));
@@ -124,13 +133,16 @@ namespace DbcParserLib.Tests
             dbcBuilderMock.Setup(mock => mock.AddEnvironmentVariable("EnvKlemme45", It.IsAny<EnvironmentVariable>()))
                 .Callback<string, EnvironmentVariable>((_, envVariable) =>
                 {
-                    Assert.That(envVariable.Name, Is.EqualTo("EnvKlemme45"));
-                    Assert.That(envVariable.Unit, Is.EqualTo(""));
-                    Assert.That(envVariable.Access, Is.EqualTo(EnvAccessibility.Unrestricted));
-                    Assert.That(envVariable.Type, Is.EqualTo(EnvDataType.Float));
-                    Assert.That(envVariable.FloatEnvironmentVariable.Minimum, Is.EqualTo(0));
-                    Assert.That(envVariable.FloatEnvironmentVariable.Maximum, Is.EqualTo(10));
-                    Assert.That(envVariable.FloatEnvironmentVariable.Default, Is.EqualTo(5));
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(envVariable.Name, Is.EqualTo("EnvKlemme45"));
+                        Assert.That(envVariable.Unit, Is.EqualTo(""));
+                        Assert.That(envVariable.Access, Is.EqualTo(EnvAccessibility.Unrestricted));
+                        Assert.That(envVariable.Type, Is.EqualTo(EnvDataType.Float));
+                        Assert.That(envVariable.FloatEnvironmentVariable.Minimum, Is.EqualTo(0));
+                        Assert.That(envVariable.FloatEnvironmentVariable.Maximum, Is.EqualTo(10));
+                        Assert.That(envVariable.FloatEnvironmentVariable.Default, Is.EqualTo(5));
+                    });
                 }
                 );
             dbcBuilderMock.Setup(mock => mock.AddNodeEnvironmentVariable("ENTtest", "EnvKlemme45"));
