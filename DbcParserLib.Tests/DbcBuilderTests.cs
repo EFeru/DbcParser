@@ -30,8 +30,11 @@ namespace DbcParserLib.Tests
             var builder = new DbcBuilder(new SilentFailureObserver());
             var dbc = builder.Build();
 
-            Assert.That(dbc.Nodes, Is.Empty);
-            Assert.That(dbc.Messages, Is.Empty);
+            Assert.Multiple(() =>
+            {
+                Assert.That(dbc.Nodes, Is.Empty);
+                Assert.That(dbc.Messages, Is.Empty);
+            });
         }
 
         [Test]
@@ -43,8 +46,11 @@ namespace DbcParserLib.Tests
 
             var dbc = builder.Build();
 
-            Assert.That(dbc.Nodes.Count(), Is.EqualTo(1));
-            Assert.That(dbc.Nodes.First().Name, Is.EqualTo("nodeName"));
+            Assert.Multiple(() =>
+            {
+                Assert.That(dbc.Nodes.Count(), Is.EqualTo(1));
+                Assert.That(dbc.Nodes.First().Name, Is.EqualTo("nodeName"));
+            });
         }
 
         [Test]
@@ -60,9 +66,12 @@ namespace DbcParserLib.Tests
 
             var dbc = builder.Build();
 
-            Assert.That(dbc.Nodes.Count(), Is.EqualTo(2));
-            Assert.That(dbc.Nodes.First().Name, Is.EqualTo("nodeName"));
-            Assert.That(dbc.Nodes.Skip(1).First().Name, Is.EqualTo("nodeName2"));
+            Assert.Multiple(() =>
+            {
+                Assert.That(dbc.Nodes.Count(), Is.EqualTo(2));
+                Assert.That(dbc.Nodes.First().Name, Is.EqualTo("nodeName"));
+                Assert.That(dbc.Nodes.Skip(1).First().Name, Is.EqualTo("nodeName2"));
+            });
         }
 
         [Test]
@@ -75,9 +84,12 @@ namespace DbcParserLib.Tests
 
             var dbc = builder.Build();
 
-            Assert.That(dbc.Nodes.Count(), Is.EqualTo(1));
-            Assert.That(dbc.Nodes.First().Name, Is.EqualTo("nodeName"));
-            Assert.That(dbc.Nodes.First().Comment, Is.EqualTo("this is a comment"));
+            Assert.Multiple(() =>
+            {
+                Assert.That(dbc.Nodes.Count(), Is.EqualTo(1));
+                Assert.That(dbc.Nodes.First().Name, Is.EqualTo("nodeName"));
+                Assert.That(dbc.Nodes.First().Comment, Is.EqualTo("this is a comment"));
+            });
         }
 
         [Test]
@@ -90,9 +102,12 @@ namespace DbcParserLib.Tests
 
             var dbc = builder.Build();
 
-            Assert.That(dbc.Nodes.Count(), Is.EqualTo(1));
-            Assert.That(dbc.Nodes.First().Name, Is.EqualTo("nodeName"));
-            Assert.That(dbc.Nodes.First().Comment, Is.Null);
+            Assert.Multiple(() =>
+            {
+                Assert.That(dbc.Nodes.Count(), Is.EqualTo(1));
+                Assert.That(dbc.Nodes.First().Name, Is.EqualTo("nodeName"));
+                Assert.That(dbc.Nodes.First().Comment, Is.Null);
+            });
         }
 
         [Test]
@@ -103,10 +118,13 @@ namespace DbcParserLib.Tests
             builder.AddMessage(message);
             var dbc = builder.Build();
 
-            Assert.That(dbc.Nodes, Is.Empty);
-            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
-            Assert.That(dbc.Messages.First().ID, Is.EqualTo(1));
-            Assert.That(dbc.Messages.First().IsExtID, Is.False);
+            Assert.Multiple(() =>
+            {
+                Assert.That(dbc.Nodes, Is.Empty);
+                Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+                Assert.That(dbc.Messages.First().ID, Is.EqualTo(1));
+                Assert.That(dbc.Messages.First().IsExtID, Is.False);
+            });
         }
 
         [Test]
@@ -117,10 +135,13 @@ namespace DbcParserLib.Tests
             builder.AddMessage(message);
             var dbc = builder.Build();
 
-            Assert.That(dbc.Nodes, Is.Empty);
-            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
-            Assert.That(dbc.Messages.First().ID, Is.EqualTo(1));
-            Assert.That(dbc.Messages.First().IsExtID, Is.True);
+            Assert.Multiple(() =>
+            {
+                Assert.That(dbc.Nodes, Is.Empty);
+                Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+                Assert.That(dbc.Messages.First().ID, Is.EqualTo(1));
+                Assert.That(dbc.Messages.First().IsExtID, Is.True);
+            });
         }
 
         [Test]
@@ -132,10 +153,13 @@ namespace DbcParserLib.Tests
             builder.AddMessageComment(234, "comment");
             var dbc = builder.Build();
 
-            Assert.That(dbc.Nodes, Is.Empty);
-            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
-            Assert.That(dbc.Messages.First().ID, Is.EqualTo(234));
-            Assert.That(dbc.Messages.First().Comment, Is.EqualTo("comment"));
+            Assert.Multiple(() =>
+            {
+                Assert.That(dbc.Nodes, Is.Empty);
+                Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+                Assert.That(dbc.Messages.First().ID, Is.EqualTo(234));
+                Assert.That(dbc.Messages.First().Comment, Is.EqualTo("comment"));
+            });
         }
 
         [Test]
@@ -147,10 +171,13 @@ namespace DbcParserLib.Tests
             builder.AddMessageComment(235, "comment");
             var dbc = builder.Build();
 
-            Assert.That(dbc.Nodes, Is.Empty);
-            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
-            Assert.That(dbc.Messages.First().ID, Is.EqualTo(234));
-            Assert.That(dbc.Messages.First().Comment, Is.Null);
+            Assert.Multiple(() =>
+            {
+                Assert.That(dbc.Nodes, Is.Empty);
+                Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+                Assert.That(dbc.Messages.First().ID, Is.EqualTo(234));
+                Assert.That(dbc.Messages.First().Comment, Is.Null);
+            });
         }
 
         [Test]
@@ -174,18 +201,24 @@ namespace DbcParserLib.Tests
 
             var dbc = builder.Build();
 
-            Assert.That(dbc.Nodes, Is.Empty);
-            Assert.That(dbc.Messages.Count(), Is.EqualTo(2));
+            Assert.Multiple(() =>
+            {
+                Assert.That(dbc.Nodes, Is.Empty);
+                Assert.That(dbc.Messages.Count(), Is.EqualTo(2));
+            });
 
             var messagesToArray = dbc.Messages.ToArray();
-            Assert.That(messagesToArray[0].ID, Is.EqualTo(234));
-            Assert.That(messagesToArray[0].Signals.Count(), Is.EqualTo(1));
-            Assert.That(messagesToArray[0].Signals.First().Name, Is.EqualTo("name1"));
+            Assert.Multiple(() =>
+            {
+                Assert.That(messagesToArray[0].ID, Is.EqualTo(234));
+                Assert.That(messagesToArray[0].Signals.Count(), Is.EqualTo(1));
+                Assert.That(messagesToArray[0].Signals.First().Name, Is.EqualTo("name1"));
 
-            Assert.That(messagesToArray[1].ID, Is.EqualTo(235));
-            Assert.That(messagesToArray[1].Signals.Count(), Is.EqualTo(2));
-            Assert.That(messagesToArray[1].Signals.First().Name, Is.EqualTo("name2"));
-            Assert.That(messagesToArray[1].Signals.Skip(1).First().Name, Is.EqualTo("name3"));
+                Assert.That(messagesToArray[1].ID, Is.EqualTo(235));
+                Assert.That(messagesToArray[1].Signals.Count(), Is.EqualTo(2));
+                Assert.That(messagesToArray[1].Signals.First().Name, Is.EqualTo("name2"));
+                Assert.That(messagesToArray[1].Signals.Skip(1).First().Name, Is.EqualTo("name3"));
+            });
         }
 
         [Test]
@@ -195,8 +228,11 @@ namespace DbcParserLib.Tests
             builder.AddSignal(new Signal { });
             var dbc = builder.Build();
 
-            Assert.That(dbc.Nodes, Is.Empty);
-            Assert.That(dbc.Messages, Is.Empty);
+            Assert.Multiple(() =>
+            {
+                Assert.That(dbc.Nodes, Is.Empty);
+                Assert.That(dbc.Messages, Is.Empty);
+            });
         }
 
         [Test]
@@ -211,11 +247,14 @@ namespace DbcParserLib.Tests
             builder.AddSignalComment(234, "name1", "comment");
             var dbc = builder.Build();
 
-            Assert.That(dbc.Nodes, Is.Empty);
-            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
-            Assert.That(dbc.Messages.First().ID, Is.EqualTo(234));
-            Assert.That(dbc.Messages.First().Signals.First().Name, Is.EqualTo("name1"));
-            Assert.That(dbc.Messages.First().Signals.First().Comment, Is.EqualTo("comment"));
+            Assert.Multiple(() =>
+            {
+                Assert.That(dbc.Nodes, Is.Empty);
+                Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+                Assert.That(dbc.Messages.First().ID, Is.EqualTo(234));
+                Assert.That(dbc.Messages.First().Signals.First().Name, Is.EqualTo("name1"));
+                Assert.That(dbc.Messages.First().Signals.First().Comment, Is.EqualTo("comment"));
+            });
         }
 
         [Test]
@@ -230,11 +269,14 @@ namespace DbcParserLib.Tests
             builder.AddSignalComment(235, "name1", "comment");
             var dbc = builder.Build();
 
-            Assert.That(dbc.Nodes, Is.Empty);
-            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
-            Assert.That(dbc.Messages.First().ID, Is.EqualTo(234));
-            Assert.That(dbc.Messages.First().Signals.First().Name, Is.EqualTo("name1"));
-            Assert.That(dbc.Messages.First().Signals.First().Comment, Is.Null);
+            Assert.Multiple(() =>
+            {
+                Assert.That(dbc.Nodes, Is.Empty);
+                Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+                Assert.That(dbc.Messages.First().ID, Is.EqualTo(234));
+                Assert.That(dbc.Messages.First().Signals.First().Name, Is.EqualTo("name1"));
+                Assert.That(dbc.Messages.First().Signals.First().Comment, Is.Null);
+            });
         }
 
         [Test]
@@ -249,11 +291,14 @@ namespace DbcParserLib.Tests
             builder.AddSignalComment(234, "name2", "comment");
             var dbc = builder.Build();
 
-            Assert.That(dbc.Nodes, Is.Empty);
-            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
-            Assert.That(dbc.Messages.First().ID, Is.EqualTo(234));
-            Assert.That(dbc.Messages.First().Signals.First().Name, Is.EqualTo("name1"));
-            Assert.That(dbc.Messages.First().Signals.First().Comment, Is.Null);
+            Assert.Multiple(() =>
+            {
+                Assert.That(dbc.Nodes, Is.Empty);
+                Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+                Assert.That(dbc.Messages.First().ID, Is.EqualTo(234));
+                Assert.That(dbc.Messages.First().Signals.First().Name, Is.EqualTo("name1"));
+                Assert.That(dbc.Messages.First().Signals.First().Comment, Is.Null);
+            });
         }
 
         [Test]
@@ -269,13 +314,19 @@ namespace DbcParserLib.Tests
             builder.LinkTableValuesToSignal(234, "name1", testValuesDict);
             var dbc = builder.Build();
 
-            Assert.That(dbc.Nodes, Is.Empty);
-            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
-            Assert.That(dbc.Messages.First().ID, Is.EqualTo(234));
-            Assert.That(dbc.Messages.First().Signals.First().Name, Is.EqualTo("name1"));
-            Assert.That(dbc.Messages.First().Signals.First().ValueTableMap, Is.EqualTo(testValuesDict));
-            Assert.That(dbc.Messages.First().Signals.First().ValueTableMap.Keys.First(), Is.EqualTo(1));
-            Assert.That(dbc.Messages.First().Signals.First().ValueTableMap.Values.First(), Is.EqualTo("fake"));
+            Assert.Multiple(() =>
+            {
+                Assert.That(dbc.Nodes, Is.Empty);
+                Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+                Assert.That(dbc.Messages.First().ID, Is.EqualTo(234));
+                Assert.That(dbc.Messages.First().Signals.First().Name, Is.EqualTo("name1"));
+                Assert.That(dbc.Messages.First().Signals.First().ValueTableMap, Is.EqualTo(testValuesDict));
+            });
+            Assert.Multiple(() =>
+            {
+                Assert.That(dbc.Messages.First().Signals.First().ValueTableMap.Keys.First(), Is.EqualTo(1));
+                Assert.That(dbc.Messages.First().Signals.First().ValueTableMap.Values.First(), Is.EqualTo("fake"));
+            });
         }
 
         [Test]
@@ -291,13 +342,19 @@ namespace DbcParserLib.Tests
             builder.LinkTableValuesToSignal(2566896411, "name1", testValuesDict);
             var dbc = builder.Build();
 
-            Assert.That(dbc.Nodes, Is.Empty);
-            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
-            Assert.That(dbc.Messages.First().ID, Is.EqualTo(message.ID));
-            Assert.That(dbc.Messages.First().Signals.First().Name, Is.EqualTo("name1"));
-            Assert.That(dbc.Messages.First().Signals.First().ValueTableMap, Is.EqualTo(testValuesDict));
-            Assert.That(dbc.Messages.First().Signals.First().ValueTableMap.Keys.First(), Is.EqualTo(1));
-            Assert.That(dbc.Messages.First().Signals.First().ValueTableMap.Values.First(), Is.EqualTo("fake"));
+            Assert.Multiple(() =>
+            {
+                Assert.That(dbc.Nodes, Is.Empty);
+                Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+                Assert.That(dbc.Messages.First().ID, Is.EqualTo(message.ID));
+                Assert.That(dbc.Messages.First().Signals.First().Name, Is.EqualTo("name1"));
+                Assert.That(dbc.Messages.First().Signals.First().ValueTableMap, Is.EqualTo(testValuesDict));
+            });
+            Assert.Multiple(() =>
+            {
+                Assert.That(dbc.Messages.First().Signals.First().ValueTableMap.Keys.First(), Is.EqualTo(1));
+                Assert.That(dbc.Messages.First().Signals.First().ValueTableMap.Values.First(), Is.EqualTo("fake"));
+            });
         }
 
         [Test]
@@ -313,11 +370,14 @@ namespace DbcParserLib.Tests
             builder.LinkTableValuesToSignal(235, "name1", testValuesDict);
             var dbc = builder.Build();
 
-            Assert.That(dbc.Nodes, Is.Empty);
-            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
-            Assert.That(dbc.Messages.First().ID, Is.EqualTo(234));
-            Assert.That(dbc.Messages.First().Signals.First().Name, Is.EqualTo("name1"));
-            Assert.That(dbc.Messages.First().Signals.First().ValueTableMap, Is.Empty);
+            Assert.Multiple(() =>
+            {
+                Assert.That(dbc.Nodes, Is.Empty);
+                Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+                Assert.That(dbc.Messages.First().ID, Is.EqualTo(234));
+                Assert.That(dbc.Messages.First().Signals.First().Name, Is.EqualTo("name1"));
+                Assert.That(dbc.Messages.First().Signals.First().ValueTableMap, Is.Empty);
+            });
         }
 
         [Test]
@@ -333,11 +393,14 @@ namespace DbcParserLib.Tests
             builder.LinkTableValuesToSignal(234, "name2", testValuesDict);
             var dbc = builder.Build();
 
-            Assert.That(dbc.Nodes, Is.Empty);
-            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
-            Assert.That(dbc.Messages.First().ID, Is.EqualTo(234));
-            Assert.That(dbc.Messages.First().Signals.First().Name, Is.EqualTo("name1"));
-            Assert.That(dbc.Messages.First().Signals.First().ValueTableMap, Is.Empty);
+            Assert.Multiple(() =>
+            {
+                Assert.That(dbc.Nodes, Is.Empty);
+                Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+                Assert.That(dbc.Messages.First().ID, Is.EqualTo(234));
+                Assert.That(dbc.Messages.First().Signals.First().Name, Is.EqualTo("name1"));
+                Assert.That(dbc.Messages.First().Signals.First().ValueTableMap, Is.Empty);
+            });
         }
 
         [Test]
@@ -355,13 +418,19 @@ namespace DbcParserLib.Tests
             builder.LinkNamedTableToSignal(234, "name1", "aTableName");
             var dbc = builder.Build();
 
-            Assert.That(dbc.Nodes, Is.Empty);
-            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
-            Assert.That(dbc.Messages.First().ID, Is.EqualTo(234));
-            Assert.That(dbc.Messages.First().Signals.First().Name, Is.EqualTo("name1"));
-            Assert.That(dbc.Messages.First().Signals.First().ValueTableMap, Is.EqualTo(testValuesDict));
-            Assert.That(dbc.Messages.First().Signals.First().ValueTableMap.Keys.First(), Is.EqualTo(1));
-            Assert.That(dbc.Messages.First().Signals.First().ValueTableMap.Values.First(), Is.EqualTo("fake"));
+            Assert.Multiple(() =>
+            {
+                Assert.That(dbc.Nodes, Is.Empty);
+                Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+                Assert.That(dbc.Messages.First().ID, Is.EqualTo(234));
+                Assert.That(dbc.Messages.First().Signals.First().Name, Is.EqualTo("name1"));
+                Assert.That(dbc.Messages.First().Signals.First().ValueTableMap, Is.EqualTo(testValuesDict));
+            });
+            Assert.Multiple(() =>
+            {
+                Assert.That(dbc.Messages.First().Signals.First().ValueTableMap.Keys.First(), Is.EqualTo(1));
+                Assert.That(dbc.Messages.First().Signals.First().ValueTableMap.Values.First(), Is.EqualTo("fake"));
+            });
         }
 
         [Test]
@@ -379,11 +448,14 @@ namespace DbcParserLib.Tests
             builder.LinkNamedTableToSignal(235, "name1", "aTableName");
             var dbc = builder.Build();
 
-            Assert.That(dbc.Nodes, Is.Empty);
-            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
-            Assert.That(dbc.Messages.First().ID, Is.EqualTo(234));
-            Assert.That(dbc.Messages.First().Signals.First().Name, Is.EqualTo("name1"));
-            Assert.That(dbc.Messages.First().Signals.First().ValueTableMap, Is.Empty);
+            Assert.Multiple(() =>
+            {
+                Assert.That(dbc.Nodes, Is.Empty);
+                Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+                Assert.That(dbc.Messages.First().ID, Is.EqualTo(234));
+                Assert.That(dbc.Messages.First().Signals.First().Name, Is.EqualTo("name1"));
+                Assert.That(dbc.Messages.First().Signals.First().ValueTableMap, Is.Empty);
+            });
         }
 
         [Test]
@@ -401,11 +473,14 @@ namespace DbcParserLib.Tests
             builder.LinkNamedTableToSignal(234, "name2", "aTableName");
             var dbc = builder.Build();
 
-            Assert.That(dbc.Nodes, Is.Empty);
-            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
-            Assert.That(dbc.Messages.First().ID, Is.EqualTo(234));
-            Assert.That(dbc.Messages.First().Signals.First().Name, Is.EqualTo("name1"));
-            Assert.That(dbc.Messages.First().Signals.First().ValueTableMap, Is.Empty);
+            Assert.Multiple(() =>
+            {
+                Assert.That(dbc.Nodes, Is.Empty);
+                Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+                Assert.That(dbc.Messages.First().ID, Is.EqualTo(234));
+                Assert.That(dbc.Messages.First().Signals.First().Name, Is.EqualTo("name1"));
+                Assert.That(dbc.Messages.First().Signals.First().ValueTableMap, Is.Empty);
+            });
         }
 
         [Test]
@@ -420,11 +495,14 @@ namespace DbcParserLib.Tests
             builder.LinkNamedTableToSignal(234, "name1", "aTableName");
             var dbc = builder.Build();
 
-            Assert.That(dbc.Nodes, Is.Empty);
-            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
-            Assert.That(dbc.Messages.First().ID, Is.EqualTo(234));
-            Assert.That(dbc.Messages.First().Signals.First().Name, Is.EqualTo("name1"));
-            Assert.That(dbc.Messages.First().Signals.First().ValueTableMap, Is.Empty);
+            Assert.Multiple(() =>
+            {
+                Assert.That(dbc.Nodes, Is.Empty);
+                Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+                Assert.That(dbc.Messages.First().ID, Is.EqualTo(234));
+                Assert.That(dbc.Messages.First().Signals.First().Name, Is.EqualTo("name1"));
+                Assert.That(dbc.Messages.First().Signals.First().ValueTableMap, Is.Empty);
+            });
         }
 
         [Test]
@@ -438,8 +516,11 @@ namespace DbcParserLib.Tests
             builder.AddNamedValueTable("aTableName3", testValuesDict);
             var dbc = builder.Build();
 
-            Assert.That(dbc.Nodes, Is.Empty);
-            Assert.That(dbc.Messages, Is.Empty);
+            Assert.Multiple(() =>
+            {
+                Assert.That(dbc.Nodes, Is.Empty);
+                Assert.That(dbc.Messages, Is.Empty);
+            });
         }
 
         [Test]
@@ -453,8 +534,11 @@ namespace DbcParserLib.Tests
             builder.AddNamedValueTable("aTableName", testValuesDict);
             var dbc = builder.Build();
 
-            Assert.That(dbc.Nodes, Is.Empty);
-            Assert.That(dbc.Messages, Is.Empty);
+            Assert.Multiple(() =>
+            {
+                Assert.That(dbc.Nodes, Is.Empty);
+                Assert.That(dbc.Messages, Is.Empty);
+            });
         }
     }
 }
