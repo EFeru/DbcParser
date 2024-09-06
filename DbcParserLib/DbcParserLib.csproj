@@ -14,7 +14,7 @@
     <PackageReleaseNotes></PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>1.7.0</Version>
-    <PackageReleaseNotes>README.md</PackageReleaseNotes>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup> 
 
   <ItemGroup>
