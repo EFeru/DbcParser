@@ -174,6 +174,11 @@ namespace DbcParserLib.Observers
             AddError($"Out of index value [{index}] for '{propertyName}' property");
         }
 
+        public void ExtraMessageTransmittersSyntaxError()
+        {
+            AddError("[BO_TX_BU_] Extra message transmitters syntax error");
+        }
+
         public void UnknownLine()
         {
             AddError("Unknown syntax");

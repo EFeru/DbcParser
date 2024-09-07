@@ -132,6 +132,10 @@ namespace DbcParserLib.Observers
         {
         }
 
+        public void ExtraMessageTransmittersSyntaxError()
+        {
+        }
+
         public void UnknownLine()
         {
         }
