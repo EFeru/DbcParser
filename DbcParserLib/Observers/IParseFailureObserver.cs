@@ -36,6 +36,8 @@
         void TableMapNameNotFound(string tableName);
         void PropertyValueOutOfBound(string propertyName, string value);
         void PropertyValueOutOfIndex(string propertyName, string index);
+        void ExtraMessageTransmittersSyntaxError();
+        void ExtraMessageTransmittersDuplicate(uint messageId, string duplicateTransmitter);
         void UnknownLine();
         void NoMessageFound();
         void Clear();
