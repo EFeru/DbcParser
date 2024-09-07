@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
 	  <OutputType>Library</OutputType>
@@ -13,7 +13,11 @@
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <PackageReleaseNotes></PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.6.1</Version>
-  </PropertyGroup>
+    <Version>1.7.0</Version>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup> 
 
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 </Project>
