@@ -22,6 +22,7 @@ namespace DbcParserLib
         void AddGlobalCustomProperty(string propertyName, string value, bool isNumeric);
         void AddEnvironmentVariableCustomProperty(string propertyName, string variableName, string value, bool isNumeric);
         void AddMessageCustomProperty(string propertyName, uint messageId, string value, bool isNumeric);
+        void AddMessageAdditionalTransmitters(uint messageId, string[] additonalTransmitters);
         void AddSignalCustomProperty(string propertyName, uint messageId, string signalName, string value, bool isNumeric);
         void AddEnvironmentVariable(string variableName, EnvironmentVariable environmentVariable);
         void AddEnvironmentVariableComment(string variableName, string comment);

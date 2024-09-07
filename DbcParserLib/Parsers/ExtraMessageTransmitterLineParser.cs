@@ -1,5 +1,6 @@
 ﻿using DbcParserLib.Observers;
-using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace DbcParserLib.Parsers 
@@ -22,13 +23,28 @@ namespace DbcParserLib.Parsers
         public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
             if (line.TrimStart().StartsWith(ExtraMessageTransmitterLineStarter) == false)
+            {
                 return false;
+            }
 
             var match = Regex.Match(line, m_extraTransmitterRegex);
             if (match.Success)
             {
-                Console.WriteLine(match.Groups[MessageId]);
-                Console.WriteLine(match.Groups[TransmitterGroup].Value);
+                var messageId = uint.Parse(match.Groups[MessageId].Value, CultureInfo.InvariantCulture);
+                var transmitters = new List<string>();
+
+                foreach (var transmitter in match.Groups[TransmitterGroup].Value.Trim().Split(','))
+                {
+                    var transmitterClean = transmitter.Trim();
+                    if (transmitters.Contains(transmitterClean))
+                    {
+                        m_observer.ExtraMessageTransmittersDuplicate(messageId, transmitterClean);
+                        continue;
+                    }
+                    transmitters.Add(transmitterClean);
+                }
+
+                builder.AddMessageAdditionalTransmitters(messageId, transmitters.ToArray());
             }
             else
             {

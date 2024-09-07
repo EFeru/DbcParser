@@ -179,6 +179,11 @@ namespace DbcParserLib.Observers
             AddError("[BO_TX_BU_] Extra message transmitters syntax error");
         }
 
+        public void ExtraMessageTransmittersDuplicate(uint messageId, string duplicateTransmitter)
+        {
+            AddError($"Duplicate additional transmitter '{duplicateTransmitter}' in message '{messageId}'");
+        }
+
         public void UnknownLine()
         {
             AddError("Unknown syntax");
