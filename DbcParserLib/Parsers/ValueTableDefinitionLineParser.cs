@@ -7,9 +7,11 @@ namespace DbcParserLib.Parsers
     {
         private const string ValTableGroup = "ValTableName";
         private const string ValueDescriptionGroup = "ValueDescription";
+        private const string EndValeDescriptionGroup = "ValueDescriptionEnd";
         private const string ValueTableDefinitionLineStarter = "VAL_TABLE_ ";
 
-        private readonly string m_valueTableDefinitionParsingRegex = $@"VAL_TABLE_\s+(?<{ValTableGroup}>[a-zA-Z_][\w]*)\s+(?<{ValueDescriptionGroup}>(?:\d+\s+(?:""[^""]*"")\s+)*)\s*;";
+        private readonly string m_valueTableDefinitionParsingRegex = $@"VAL_TABLE_\s+(?<{ValTableGroup}>[a-zA-Z_][\w]*)\s+" +
+                                                                     $@"(?<{ValueDescriptionGroup}>(?:\d+\s+(?:""[^""]*"")\s+)*)(?<{EndValeDescriptionGroup}>(?:\d+\s+(?:""[^""]*"")\s*));";
 
         private readonly IParseFailureObserver m_observer;
 
@@ -23,19 +25,31 @@ namespace DbcParserLib.Parsers
             var cleanLine = line.Trim(' ');
 
             if (cleanLine.StartsWith(ValueTableDefinitionLineStarter) == false)
+            {
                 return false;
+            }
 
             var match = Regex.Match(cleanLine, m_valueTableDefinitionParsingRegex);
             if (match.Success)
             {
-                if (match.Groups[ValueDescriptionGroup].Value.TryParseToDict(out var valueTableDictionary))
+                var dictionary = string.IsNullOrEmpty(match.Groups[ValueDescriptionGroup].Value)
+                    ? match.Groups[EndValeDescriptionGroup].Value
+                    : string.Concat(match.Groups[ValueDescriptionGroup].Value, match.Groups[EndValeDescriptionGroup].Value);
+
+                if (!string.IsNullOrEmpty(dictionary) && dictionary.TryParseToDict(out var valueTableDictionary))
+                {
                     builder.AddNamedValueTable(match.Groups[ValTableGroup].Value, valueTableDictionary);
+                }
                 else
+                {
                     m_observer.ValueTableDefinitionSyntaxError();
+                }
             }
             else
+            {
                 m_observer.ValueTableDefinitionSyntaxError();
-
+            }
+                
             return true;
         }
     }
