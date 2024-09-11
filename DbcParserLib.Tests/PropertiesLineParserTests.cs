@@ -157,7 +157,29 @@ namespace DbcParserLib.Tests
         }
 
         [Test]
-        public void ScientificNotationDefinitionCustomPropertyIsParsedTest()
+        public void ScientificNotationIntegerDefinitionCustomPropertyIsParsedTest()
+        {
+            var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+
+            dbcBuilderMock.Setup(mock => mock.AddCustomProperty(It.IsAny<CustomPropertyObjectType>(), It.IsAny<CustomPropertyDefinition>()))
+                .Callback<CustomPropertyObjectType, CustomPropertyDefinition>((_, customProperty) =>
+                {
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(customProperty.Name, Is.EqualTo("AttributeName"));
+                        Assert.That(customProperty.DataType, Is.EqualTo(CustomPropertyDataType.Integer));
+                        Assert.That(customProperty.IntegerCustomProperty.Minimum, Is.EqualTo(-1000));
+                        Assert.That(customProperty.IntegerCustomProperty.Maximum, Is.EqualTo(1000));
+                    });
+                });
+
+            var customPropertyLineParsers = CreateParser();
+            Assert.That(ParseLine(@"BA_DEF_ BU_ ""AttributeName"" INT -1e3 1e+3;", customPropertyLineParsers, dbcBuilderMock.Object, nextLineProviderMock.Object), Is.True);
+        }
+
+        [Test]
+        public void ScientificNotationFloatDefinitionCustomPropertyIsParsedTest()
         {
             var dbcBuilderMock = m_repository.Create<IDbcBuilder>();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
