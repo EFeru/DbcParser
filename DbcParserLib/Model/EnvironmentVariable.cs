@@ -9,6 +9,8 @@ namespace DbcParserLib.Model
         public string Unit { get; }
         public string Comment { get; }
         public EnvAccessibility Access { get; }
+        public uint ID { get; }
+        public string[] AccessNodes { get; }
         public IReadOnlyDictionary<int, string> ValueTableMap { get; }
         public IReadOnlyDictionary<string, CustomProperty> CustomProperties { get; }
         public NumericEnvironmentVariable<int> IntegerEnvironmentVariable { get; }
@@ -24,6 +26,8 @@ namespace DbcParserLib.Model
             Unit = environmentVariable.Unit;
             Comment = environmentVariable.Comment;
             Access = environmentVariable.Access;
+            ID = environmentVariable.ID;
+            AccessNodes = environmentVariable.AccessNodes;
             ValueTableMap = environmentVariable.ValueTableMap;
             IntegerEnvironmentVariable = environmentVariable.IntegerEnvironmentVariable;
             FloatEnvironmentVariable = environmentVariable.FloatEnvironmentVariable;
@@ -38,6 +42,8 @@ namespace DbcParserLib.Model
         public string Unit { get; set; }
         public string Comment { get; set; }
         public EnvAccessibility Access { get; set; }
+        public uint ID { get; set; }
+        public string[] AccessNodes { get; set; }
         public IReadOnlyDictionary<int, string> ValueTableMap { get; set; }
 
         public readonly IDictionary<string, CustomProperty> CustomProperties = new Dictionary<string, CustomProperty>();

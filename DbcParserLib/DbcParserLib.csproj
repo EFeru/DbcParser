@@ -15,6 +15,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>1.7.0</Version>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup> 
 
   <ItemGroup>
