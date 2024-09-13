@@ -270,12 +270,13 @@ namespace DbcParserLib.Tests
 
     internal class ArrayBasedLineProvider : INextLineProvider
     {
-        private readonly IList<string> m_lines;
+        private readonly IReadOnlyList<string> m_lines;
         private int m_index;
 
-        public ArrayBasedLineProvider(IList<string> lines)
+        public ArrayBasedLineProvider(IReadOnlyList<string> lines)
         {
             m_lines = lines;
+            m_index = -1;
         }
 
         public bool TryGetLine(out string line)

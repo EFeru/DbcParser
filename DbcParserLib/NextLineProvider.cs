@@ -4,7 +4,7 @@ namespace DbcParserLib
 {
     public class NextLineProvider : INextLineProvider
     {
-        private TextReader m_reader;
+        private readonly TextReader m_reader;
 
         public NextLineProvider(TextReader reader)
         {
