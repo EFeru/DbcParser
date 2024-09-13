@@ -123,7 +123,9 @@ namespace DbcParserLib.Tests
             lineParser.TryParse(line2, dbcBuilder, nextLineProviderMock.Object);
         }
 
-        [TestCase("BA_DEF_ BO_ \"GenMsgCycleTime\" INT 1.5 65535;")]
+        [TestCase("BA_DEF_ BO_ \"attributeName\" INT 1.5 65535;")]
+        [TestCase("BA_DEF_ BO_ \"attributeName\" INT 0 1e-5;")]
+        [TestCase("BA_DEF_ BO_ \"attributeName\" INT 0 1.0e+05;")]
         [TestCase("BA_DEF_ \"attributeName\" STRING")]
         [TestCase("BA_DEF_ SGG_ \"attributeName\" FLOAT -3.4E+038 3.4E+038;")]
         [TestCase("BA_DEF_ BU_ \"attributeName\" STRING 0;")]

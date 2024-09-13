@@ -320,11 +320,11 @@ namespace DbcParserLib.Tests
             lineParser.TryParse(line, dbcBuilder, nextLineProviderMock.Object);
         }
 
-        [TestCase("VAL_TABLE_ tableName 0 \"Running\" 1 \"Idle\";")]
         [TestCase("VAL_TABLE_ tableName 0 \"Running\" 1 \"Idle\"")]
         [TestCase("VAL_TABLE_ tableName 0 \"Running\" 1 Idle;")]
         [TestCase("VAL_TABLE_ \"tableName\" 0 \"Running\" 1 \"Idle\" ;")]
         [TestCase("VAL_TABLE_ tableName 0 \"Running\" 1.5 \"Idle\" ;")]
+        [TestCase("VAL_TABLE_ tableName 0 \"Running\"1 \"Idle\";")]
         public void ValueTableDefinitionSyntaxErrorIsObserved(string line)
         {
             var observerMock = m_repository.Create<IParseFailureObserver>();
@@ -359,6 +359,21 @@ namespace DbcParserLib.Tests
         {
             var tableName = "tableName";
             var line = $"VAL_TABLE_ {tableName} 0 \"Running\" 1 \"Idle\"  ;";
+
+            var observerMock = m_repository.Create<IParseFailureObserver>();
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+            var dbcBuilder = new DbcBuilder(observerMock.Object);
+
+            var lineParser = new ValueTableDefinitionLineParser(observerMock.Object);
+
+            Assert.That(lineParser.TryParse(line, dbcBuilder, nextLineProviderMock.Object), Is.True);
+        }
+
+        [Test]
+        public void ValueTableDefinitionContainsNoSpacesBeforeSemicolon()
+        {
+            var tableName = "tableName";
+            var line = $"VAL_TABLE_ {tableName} 0 \"Running\" 1 \"Idle\";";
 
             var observerMock = m_repository.Create<IParseFailureObserver>();
             var nextLineProviderMock = m_repository.Create<INextLineProvider>();
