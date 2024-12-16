@@ -192,14 +192,15 @@ namespace DbcParserLib.Generators
                     {
                         if (isMessageHeaderLine(i))
                         {
-                            if (string.IsNullOrEmpty(table[i, j]))
-                            {
-                                cell.CellStyle = _messageHeaderNullCellStyle;
-                            }
-                            else
-                            {
-                                cell.CellStyle = _messageHeaderNormalCellStyle;
-                            }
+                            cell.CellStyle = _messageHeaderNormalCellStyle;
+                            //if (string.IsNullOrEmpty(table[i, j]))
+                            //{
+                            //    cell.CellStyle = _messageHeaderNullCellStyle;
+                            //}
+                            //else
+                            //{
+                            //    cell.CellStyle = _messageHeaderNormalCellStyle;
+                            //}
                         }
                         else
                         {
@@ -367,6 +368,10 @@ namespace DbcParserLib.Generators
             else if (string.Equals(extension, _xlsxExt, StringComparison.OrdinalIgnoreCase))
             {
                 workbook = new XSSFWorkbook();
+                CreateHeaderCellStyle();
+                CreateMessageHeaderStyleNull();
+                CreateMessageHeaderStyleNormal();
+                CreateSignalStyle();
                 return true;
             }
             else
