@@ -10,6 +10,7 @@ using NPOI.SS.Formula.Functions;
 using NPOI.SS.UserModel;
 using NPOI.Util;
 using NPOI.XSSF.UserModel;
+using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 
 namespace DbcParserLib.Generators
@@ -22,6 +23,17 @@ namespace DbcParserLib.Generators
         private string _path = string.Empty;
         private IWorkbook _workbook;
         private ISheet _sheet;
+
+        private ICellStyle _headerCellStyle;
+        private IFont _headerFont;
+
+        private ICellStyle _messageHeaderNullCellStyle;
+        private ICellStyle _messageHeaderNormalCellStyle;
+        private IFont _messageFont;
+
+        private ICellStyle _signalCellStyle;
+        private IFont _signalFont;
+
         private string[,] table;
         private IDictionary<string, ExcelColumnConfigModel> columnMapping = new Dictionary<string, ExcelColumnConfigModel>();
         private int table_row_count = 0;
@@ -30,47 +42,25 @@ namespace DbcParserLib.Generators
         public void GenDefaultDictionary()
         {
             columnMapping.Clear();
-            AddColumn("MessageName", "Message Name");
-            AddColumn("FrameFormat", "Frame Format");
-            AddColumn("ID", "Message ID");
-            AddColumn("MessageSendType", "Message Send Type");
-            AddColumn("CycleTime", "Cycle Time");
-            AddColumn("DataLength", "Data Length");
-            AddColumn("SignalName", "Signal Name");
-            AddColumn("Description", "Description");
-            AddColumn("ByteOrder", "Byte Order");
-            AddColumn("StartBit", "Start Bit");
-            AddColumn("BitLength", "Bit Length");
-            AddColumn("Sign", "Sign");
-            AddColumn("Factor", "Factor");
-            AddColumn("Offset", "Offset");
-            AddColumn("MinimumPhysical", "Minimum Physical");
-            AddColumn("MaximumPhysical", "Maximum Physical");
-            AddColumn("DefaultValue", "Default Value");
-            AddColumn("Unit", "Unit");
-            AddColumn("ValueTable", "Value Table");
-            //columnMapping = new Dictionary<string, ExcelColumnConfigModel>
-            //{
-            //    {"MessageName", new ExcelColumnConfigModel(){ IsVisible = true, ColumnIndex = 0, Header = "Message Name"}},
-            //    {"FrameFormat", new ExcelColumnConfigModel(){ IsVisible = true, ColumnIndex = 1, Header = "Frame Format"}},
-            //    {"ID", new ExcelColumnConfigModel(){ IsVisible = true, ColumnIndex = 2, Header = "Message ID"}},
-            //    {"MessageSendType", new ExcelColumnConfigModel(){ IsVisible = true, ColumnIndex = 3, Header = "Message Send Type"}},
-            //    {"CycleTime", new ExcelColumnConfigModel(){ IsVisible = true, ColumnIndex = 4, Header = "Cycle Time"}},
-            //    {"DataLength", new ExcelColumnConfigModel(){ IsVisible = true, ColumnIndex = 5, Header = "Data Length"}},
-            //    {"SignalName", new ExcelColumnConfigModel(){ IsVisible = true, ColumnIndex = 6, Header = "Signal Name"}},
-            //    {"Description", new ExcelColumnConfigModel(){ IsVisible = true, ColumnIndex = 7, Header = "Description"}},
-            //    {"ByteOrder", new ExcelColumnConfigModel(){ IsVisible = true, ColumnIndex = 8, Header = "Byte Order"}},
-            //    {"StartBit", new ExcelColumnConfigModel(){ IsVisible = true, ColumnIndex = 9, Header = "Star tBit"}},
-            //    {"BitLength", new ExcelColumnConfigModel(){ IsVisible = true, ColumnIndex = 10, Header = "Bit Length"}},
-            //    {"Sign", new ExcelColumnConfigModel(){ IsVisible = true, ColumnIndex = 11, Header = "Sign"}},
-            //    {"Factor", new ExcelColumnConfigModel(){ IsVisible = true, ColumnIndex = 12, Header = "Factor"}},
-            //    {"Offset", new ExcelColumnConfigModel(){ IsVisible = true, ColumnIndex = 13, Header = "Offset"}},
-            //    {"MinimumPhysical", new ExcelColumnConfigModel(){ IsVisible = true, ColumnIndex = 14, Header = "Minimum Physical"}},
-            //    {"MaximumPhysical", new ExcelColumnConfigModel(){ IsVisible = true, ColumnIndex = 15, Header = "Maximum Physical"}},
-            //    {"DefaultValue", new ExcelColumnConfigModel(){ IsVisible = true, ColumnIndex = 16, Header = "Default Value"}},
-            //    {"Unit", new ExcelColumnConfigModel(){ IsVisible = true, ColumnIndex = 17, Header = "Unit"}},
-            //    {"ValueTable", new ExcelColumnConfigModel(){ IsVisible = true, ColumnIndex = 18, Header = "Value Table"}},
-            //};
+            AddColumn(nameof(DictionaryColumnKey.MessageName), "Message\r\nName", 15);
+            AddColumn(nameof(DictionaryColumnKey.FrameFormat), "Frame\r\nFormat", 15);
+            AddColumn(nameof(DictionaryColumnKey.ID), "Message\r\nID", 15);
+            AddColumn(nameof(DictionaryColumnKey.MessageSendType), "Message\r\nSend Type", 15);
+            AddColumn(nameof(DictionaryColumnKey.CycleTime), "Cycle\r\nTime", 10);
+            AddColumn(nameof(DictionaryColumnKey.DataLength), "Data\r\nLength", 15);
+            AddColumn(nameof(DictionaryColumnKey.SignalName), "Signal\r\nName", 25);
+            AddColumn(nameof(DictionaryColumnKey.Description), "Description", 40);
+            AddColumn(nameof(DictionaryColumnKey.ByteOrder), "Byte\r\nOrder", 10);
+            AddColumn(nameof(DictionaryColumnKey.StartBit), "Start\r\nBit", 10);
+            AddColumn(nameof(DictionaryColumnKey.BitLength), "Bit\r\nLength", 15);
+            AddColumn(nameof(DictionaryColumnKey.Sign), "Sign", 10);
+            AddColumn(nameof(DictionaryColumnKey.Factor), "Factor", 10);
+            AddColumn(nameof(DictionaryColumnKey.Offset), "Offset", 10);
+            AddColumn(nameof(DictionaryColumnKey.MinimumPhysical), "Minimum\r\nPhysical", 15);
+            AddColumn(nameof(DictionaryColumnKey.MaximumPhysical), "Maximum\r\nPhysical", 15);
+            AddColumn(nameof(DictionaryColumnKey.DefaultValue), "Default\r\nValue", 15);
+            AddColumn(nameof(DictionaryColumnKey.Unit), "Unit", 10);
+            AddColumn(nameof(DictionaryColumnKey.ValueTable), "Value\r\nTable", 25);
         }
         public void UpdateColumnConfig(string columnKey, bool? isVisible = null, int? columnIndex = null, string header = null)
         {
@@ -130,7 +120,7 @@ namespace DbcParserLib.Generators
                 columnMapping.Add(columnKey, new ExcelColumnConfigModel() { Header = columnKey, IsVisible = true, ColumnIndex = columnMapping.Count });
             }
         }
-        public void AddColumn(string columnKey, string Header = "", bool visible = true)
+        public void AddColumn(string columnKey, string Header = "", double columnWidth = 0, bool visible = true)
         {
             if (!columnMapping.ContainsKey(columnKey))
             {
@@ -138,7 +128,8 @@ namespace DbcParserLib.Generators
                 {
                     Header = string.IsNullOrEmpty(Header) ? columnKey : Header,
                     IsVisible = visible,
-                    ColumnIndex = columnMapping.Count
+                    ColumnIndex = columnMapping.Count,
+                    ColumnWidth = columnWidth
                 });
             }
         }
@@ -155,7 +146,7 @@ namespace DbcParserLib.Generators
         {
             GenDefaultDictionary();
         }
-        public void WriteToFile(Dbc dbc, string path)
+        public void WriteToFile(Dbc dbc, string path, string sheeName = "Matrix")
         {
             if (tryCreateWorkbook(path, out _workbook))
             {
@@ -166,6 +157,160 @@ namespace DbcParserLib.Generators
             table = new string[table_row_count, table_column_count];
             writeColumnHeader();
             writeMessages(dbc);
+
+            // Write the table to the Excel file
+            WriteTableToExcel(sheeName);
+
+            // Save the workbook to the file
+            using (var fileData = new FileStream(_path, FileMode.Create))
+            {
+                _workbook.Write(fileData);
+            }
+
+        }
+
+        private void WriteTableToExcel(string sheetName)
+        {
+            _sheet = _workbook.CreateSheet(sheetName);
+            _sheet.CreateFreezePane(0, 1); // Freeze the first row
+
+            // Create a cell style with wrap text enabled and centered alignment
+
+            for (int i = 0; i < table_row_count; i++)
+            {
+                IRow row = _sheet.CreateRow(i);
+                for (int j = 0; j < table_column_count; j++)
+                {
+                    ICell cell = row.CreateCell(j);
+                    cell.SetCellValue(table[i, j]);
+                    //Setting Cell Style
+                    if (i == 0)
+                    {
+                        cell.CellStyle = _headerCellStyle;
+                    }
+                    else
+                    {
+                        if (isMessageHeaderLine(i))
+                        {
+                            if (string.IsNullOrEmpty(table[i, j]))
+                            {
+                                cell.CellStyle = _messageHeaderNullCellStyle;
+                            }
+                            else
+                            {
+                                cell.CellStyle = _messageHeaderNormalCellStyle;
+                            }
+                        }
+                        else
+                        {
+                            if (isSignalColumn(j))
+                            {
+                                cell.CellStyle = _signalCellStyle;
+                            }
+                        }
+                    }
+                }
+            }
+            // Set column widths based on the dictionary
+            foreach (var key in columnMapping.Keys)
+            {
+                var value = columnMapping[key];
+                if (value.ColumnIndex < table_column_count)
+                {
+                    if (value.ColumnWidth > 0)
+                    {
+                        _sheet.SetColumnWidth(value.ColumnIndex, (value.ColumnWidth * 256)); // Set custom column width
+                    }
+                    else
+                    {
+                        _sheet.AutoSizeColumn(value.ColumnIndex); // Set default column width
+                    }
+                }
+            }
+        }
+        private bool isMessageHeaderLine(int row)
+        {
+            if (row < table_row_count)
+            {
+                //MessageName
+                if (columnMapping.TryGetValue(DictionaryColumnKey.MessageName.ToString(), out ExcelColumnConfigModel MessageNameValue))
+                {
+                    if (string.IsNullOrEmpty(table[row, MessageNameValue.ColumnIndex]))
+                    {
+                        return false;
+                    }
+                }
+                //ID
+                if (columnMapping.TryGetValue(DictionaryColumnKey.ID.ToString(), out ExcelColumnConfigModel IDValue))
+                {
+                    if (string.IsNullOrEmpty(table[row, IDValue.ColumnIndex]))
+                    {
+                        return false;
+                    }
+                }
+                //SignalName
+                if (columnMapping.TryGetValue(DictionaryColumnKey.SignalName.ToString(), out ExcelColumnConfigModel SignalNameValue))
+                {
+                    if (!string.IsNullOrEmpty(table[row, SignalNameValue.ColumnIndex]))
+                    {
+                        return false;
+                    }
+                }
+                //ByteOrder
+                if (columnMapping.TryGetValue(DictionaryColumnKey.ByteOrder.ToString(), out ExcelColumnConfigModel ByteOrderValue))
+                {
+                    if (!string.IsNullOrEmpty(table[row, ByteOrderValue.ColumnIndex]))
+                    {
+                        return false;
+                    }
+                }
+                //StartBit
+                if (columnMapping.TryGetValue(DictionaryColumnKey.StartBit.ToString(), out ExcelColumnConfigModel StartBitValue))
+                {
+                    if (!string.IsNullOrEmpty(table[row, StartBitValue.ColumnIndex]))
+                    {
+                        return false;
+                    }
+                }
+                //BitLength
+                if (columnMapping.TryGetValue(DictionaryColumnKey.BitLength.ToString(), out ExcelColumnConfigModel BitLengthValue))
+                {
+                    if (!string.IsNullOrEmpty(table[row, BitLengthValue.ColumnIndex]))
+                    {
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                return false;
+            }
+            return true;
+        }
+        private bool isSignalColumn(int column)
+        {
+            var excludedKeys = new HashSet<string>
+            {
+                nameof(DictionaryColumnKey.MessageName),
+                nameof(DictionaryColumnKey.FrameFormat),
+                nameof(DictionaryColumnKey.ID),
+                nameof(DictionaryColumnKey.MessageSendType),
+                nameof(DictionaryColumnKey.CycleTime),
+                nameof(DictionaryColumnKey.DataLength)
+            };
+
+            foreach (var key in columnMapping.Keys)
+            {
+                if (!excludedKeys.Contains(key))
+                {
+                    var value = columnMapping[key];
+                    if (value.ColumnIndex == column)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
         private int calculateExcelRowsCount(Dbc dbc)
         {
@@ -213,30 +358,10 @@ namespace DbcParserLib.Generators
             if (string.Equals(extension, _xlsExt, StringComparison.OrdinalIgnoreCase))
             {
                 workbook = new HSSFWorkbook();
-                HSSFFont myFont = (HSSFFont)workbook.CreateFont();
-                myFont.FontHeightInPoints = 11;
-                myFont.FontName = "Tahoma";
-
-                // Defining a border
-                HSSFCellStyle borderedCellStyle = (HSSFCellStyle)workbook.CreateCellStyle();
-                borderedCellStyle.SetFont(myFont);
-                borderedCellStyle.BorderLeft = BorderStyle.Medium;
-                borderedCellStyle.BorderTop = BorderStyle.Medium;
-                borderedCellStyle.BorderRight = BorderStyle.Medium;
-                borderedCellStyle.BorderBottom = BorderStyle.Medium;
-                borderedCellStyle.VerticalAlignment = VerticalAlignment.Center;
-
-                ISheet Sheet = workbook.CreateSheet("Report");
-                //Creat The Headers of the excel
-                IRow HeaderRow = Sheet.CreateRow(0);
-                //Create The Actual Cells
-                CreateCell(HeaderRow, 0, "Batch Name", borderedCellStyle);
-                CreateCell(HeaderRow, 1, "RuleID", borderedCellStyle);
-                CreateCell(HeaderRow, 2, "Rule Type", borderedCellStyle);
-                CreateCell(HeaderRow, 3, "Code Message Type", borderedCellStyle);
-                CreateCell(HeaderRow, 4, "Severity", borderedCellStyle);
-                // This Where the Data row starts from
-                int RowIndex = 1;
+                CreateHeaderCellStyle();
+                CreateMessageHeaderStyleNull();
+                CreateMessageHeaderStyleNormal();
+                CreateSignalStyle();
                 return true;
             }
             else if (string.Equals(extension, _xlsxExt, StringComparison.OrdinalIgnoreCase))
@@ -408,7 +533,7 @@ namespace DbcParserLib.Generators
             //DefaultValue
             if (columnMapping.TryGetValue(DictionaryColumnKey.DefaultValue.ToString(), out ExcelColumnConfigModel DefaultValueValue))
             {
-                table[currentLine, DefaultValueValue.ColumnIndex] = signal.Maximum.ToString();
+                table[currentLine, DefaultValueValue.ColumnIndex] = signal.InitialValue.ToString();
             }
             //Unit
             if (columnMapping.TryGetValue(DictionaryColumnKey.Unit.ToString(), out ExcelColumnConfigModel UnitValue))
@@ -421,6 +546,105 @@ namespace DbcParserLib.Generators
                 string formattedValueTable = string.Join("\r\n", signal.ValueTableMap.Select(x => $"0x{x.Key:X}:{x.Value}"));
                 table[currentLine, ValueTableValue.ColumnIndex] = formattedValueTable;
             }
+            //Node
+            foreach (var node in signal.Receiver)
+            {
+                if (columnMapping.TryGetValue(node, out ExcelColumnConfigModel NodeValue))
+                {
+                    table[currentLine, NodeValue.ColumnIndex] = "R";
+                }
+            }
+        }
+        private ICellStyle CreateHeaderCellStyle()
+        {
+            _headerCellStyle = _workbook.CreateCellStyle();
+
+            _headerFont = _workbook.CreateFont();
+            _headerFont.IsBold = true;
+            _headerFont.FontHeightInPoints = 14;
+
+            _headerCellStyle.SetFont(_headerFont);
+            _headerCellStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+            _headerCellStyle.VerticalAlignment = NPOI.SS.UserModel.VerticalAlignment.Center;
+
+            // Set background color to Cyan
+            _headerCellStyle.FillPattern = FillPattern.SolidForeground;
+            _headerCellStyle.FillForegroundColor = IndexedColors.LightBlue.Index;
+
+            // Set border to thin solid line
+            _headerCellStyle.BorderTop = BorderStyle.Thin;
+            _headerCellStyle.BorderBottom = BorderStyle.Thin;
+            _headerCellStyle.BorderLeft = BorderStyle.Thin;
+            _headerCellStyle.BorderRight = BorderStyle.Thin;
+
+            // Enable text wrapping
+            _headerCellStyle.WrapText = true;
+
+            return _headerCellStyle;
+        }
+
+        private ICellStyle CreateMessageHeaderStyleNull()
+        {
+            _messageHeaderNullCellStyle = _workbook.CreateCellStyle();
+
+            _messageFont = _workbook.CreateFont();
+            _messageFont.IsBold = true;
+            _messageFont.FontHeightInPoints = 10;
+
+            _messageHeaderNullCellStyle.SetFont(_messageFont);
+            _messageHeaderNullCellStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+            _messageHeaderNullCellStyle.VerticalAlignment = NPOI.SS.UserModel.VerticalAlignment.Center;
+            _messageHeaderNullCellStyle.BorderTop = BorderStyle.Thin;
+            _messageHeaderNullCellStyle.BorderBottom = BorderStyle.Thin;
+
+            _messageHeaderNullCellStyle.FillPattern = FillPattern.SolidForeground;
+            _messageHeaderNullCellStyle.FillForegroundColor = IndexedColors.Yellow.Index;
+            _messageHeaderNullCellStyle.WrapText = true;
+
+            return _messageHeaderNullCellStyle;
+        }
+        private ICellStyle CreateMessageHeaderStyleNormal()
+        {
+            _messageHeaderNormalCellStyle = _workbook.CreateCellStyle();
+
+            _messageFont = _workbook.CreateFont();
+            _messageFont.IsBold = true;
+            _messageFont.FontHeightInPoints = 10;
+
+            _messageHeaderNormalCellStyle.SetFont(_messageFont);
+            _messageHeaderNormalCellStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+            _messageHeaderNormalCellStyle.VerticalAlignment = NPOI.SS.UserModel.VerticalAlignment.Center;
+
+            _messageHeaderNormalCellStyle.BorderTop = BorderStyle.Thin;
+            _messageHeaderNormalCellStyle.BorderBottom = BorderStyle.Thin;
+            _messageHeaderNormalCellStyle.BorderLeft = BorderStyle.Thin;
+            _messageHeaderNormalCellStyle.BorderRight = BorderStyle.Thin;
+
+            _messageHeaderNormalCellStyle.FillPattern = FillPattern.SolidForeground;
+            _messageHeaderNormalCellStyle.FillForegroundColor = IndexedColors.Yellow.Index;
+            _messageHeaderNormalCellStyle.WrapText = true;
+
+            return _messageHeaderNormalCellStyle;
+        }
+
+        private ICellStyle CreateSignalStyle()
+        {
+            _signalCellStyle = _workbook.CreateCellStyle();
+            _signalFont = _workbook.CreateFont();
+            _signalFont.IsBold = false;
+            _signalFont.FontHeightInPoints = 10;
+            _signalCellStyle.SetFont(_signalFont);
+            _signalCellStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Left;
+            _signalCellStyle.VerticalAlignment = NPOI.SS.UserModel.VerticalAlignment.Center;
+            _signalCellStyle.BorderTop = BorderStyle.Thin;
+            _signalCellStyle.BorderBottom = BorderStyle.Thin;
+            _signalCellStyle.BorderLeft = BorderStyle.Thin;
+            _signalCellStyle.BorderRight = BorderStyle.Thin;
+            _signalCellStyle.FillPattern = FillPattern.SolidForeground;
+            _signalCellStyle.FillForegroundColor = IndexedColors.LightGreen.Index;
+            _signalCellStyle.WrapText = true;
+
+            return _signalCellStyle;
         }
         public enum DictionaryColumnKey
         {

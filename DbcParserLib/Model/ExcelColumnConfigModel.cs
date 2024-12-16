@@ -9,5 +9,6 @@ namespace DbcParserLib.Model
         public string Header { get; set; }
         public bool IsVisible { get; set; }
         public int ColumnIndex { get; set; }
+        public double ColumnWidth { get; set; } 
     }
 }

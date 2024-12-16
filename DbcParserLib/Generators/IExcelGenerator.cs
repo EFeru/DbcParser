@@ -7,6 +7,6 @@ namespace DbcParserLib.Generators
     
     public interface IExcelGenerator
     {
-        void WriteToFile(Dbc dbc, string path);
+        void WriteToFile(Dbc dbc, string path, string sheeName = "Matrix");
     }
 }
