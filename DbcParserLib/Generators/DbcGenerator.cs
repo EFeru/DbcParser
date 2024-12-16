@@ -3,13 +3,68 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Xml.Linq;
-using static System.Net.WebRequestMethods;
 
 namespace DbcParserLib.Generators
 {
     public class DbcGenerator
     {
+        public static bool MergeDbc(List<Dbc> dbcs, out Dbc dbcOutput)
+        {
+            dbcOutput = null;
+            bool retVal = false;
+            var allNodes = new List<Node>();
+            var allMessages = new List<Message>();
+            var allEnvironmentVariables = new List<EnvironmentVariable>();
+            var allGlobalProperties = new List<CustomProperty>();
+            foreach (Dbc dbc in dbcs)
+            {
+
+                foreach (var node in dbc.Nodes)
+                {
+                    if (!allNodes.Any(n => n.Name == node.Name))
+                    {
+                        allNodes.Add(node);
+                    }
+                }
+
+                foreach (var message in dbc.Messages)
+                {
+                    if (!allMessages.Any(m => m.Name == message.Name))
+                    {
+                        allMessages.Add(message);
+                    }
+                }
+
+                foreach (var envVar in dbc.EnvironmentVariables)
+                {
+                    if (!allEnvironmentVariables.Any(e => e.Name == envVar.Name))
+                    {
+                        allEnvironmentVariables.Add(envVar);
+                    }
+                }
+
+                foreach (var globalProp in dbc.GlobalProperties)
+                {
+
+                    if (!allGlobalProperties.Any(g => g.CustomPropertyDefinition == globalProp.CustomPropertyDefinition))
+                    {
+                        allGlobalProperties.Add(globalProp);
+                    }
+                    else
+                    {
+                        var existingProperty = allGlobalProperties.First(g => g.CustomPropertyDefinition == globalProp.CustomPropertyDefinition);
+                        // existingProperty.SetCustomPropertyValueFromDefault(); 
+                    }
+                }
+
+                dbcOutput = new Dbc(allNodes, allMessages, allEnvironmentVariables, allGlobalProperties);
+                if (dbcOutput?.Messages?.Count() > 0)
+                {
+                    retVal = true;
+                }                 
+            }
+            return retVal;
+        }
         public static void WriteToFile(Dbc dbc, string filePath)
         {
             using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
@@ -259,7 +314,7 @@ namespace DbcParserLib.Generators
                 }
                 writer.WriteLine("");
             }
-            
+
         }
 
         private static void WriteEnvironmentVariables(Dbc dbc, TextWriter writer)
@@ -299,7 +354,7 @@ namespace DbcParserLib.Generators
 
             foreach (var globalProperty in dbc.GlobalProperties)
             {
-                if(TryGetCustomPropertyValueWithNumber(globalProperty,out object value))
+                if (TryGetCustomPropertyValueWithNumber(globalProperty, out object value))
                 {
                     var line = $"BA_ \"{globalProperty.CustomPropertyDefinition.Name}\" {value};";
                     if (addedProperties.Add(globalProperty))
@@ -381,17 +436,17 @@ namespace DbcParserLib.Generators
 
         private static object GetID(EnvironmentVariable envVar)
         {
-            return envVar.ID ;
+            return envVar.ID;
         }
 
         private static object GetAccessType(EnvironmentVariable envVar)
         {
-           return envVar.Access;
+            return envVar.Access;
         }
 
         private static object GetAccessNodes(EnvironmentVariable envVar)
         {
-           return envVar.AccessNodes;
+            return envVar.AccessNodes;
         }
 
         private static object GetMinimum(EnvironmentVariable envVar)
