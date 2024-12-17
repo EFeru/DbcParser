@@ -43,7 +43,6 @@ namespace DbcParserLib
                 return ParseFromStream(fileStream);
             }
         }
-
         public static Dbc ParseFromStream(Stream dbcStream)
         {
             using(var reader = new StreamReader(dbcStream))

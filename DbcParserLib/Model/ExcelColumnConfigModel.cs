@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DbcParserLib.Model
+﻿namespace DbcParserLib.Model
 {
     public class ExcelColumnConfigModel
     {
@@ -32,5 +28,29 @@ namespace DbcParserLib.Model
         DefaultValue,
         Unit,
         ValueTable,
+    }
+    public enum WriteStatus
+    {
+        Success,
+        PathError,
+        FormatError,
+        WritePermissionError,
+        UnknownError
+    }
+    public enum ExcelParserState
+    {
+        Success,
+        PathError,
+        FormatError,
+        ReadPermissionError,
+        UnknownError
+    }
+    public enum UpdateColumnConfigState
+    {
+        Success,
+        ColumnIndexError,
+        HeaderError,
+        ColumnKeyNotExists,
+        UnknownError
     }
 }

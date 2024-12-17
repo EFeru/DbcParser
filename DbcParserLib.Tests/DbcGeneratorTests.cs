@@ -41,5 +41,6 @@ namespace DbcParserLib.Tests
             DbcGenerator.WriteToFile(dbcOutput, mergedPath);
             Assert.That(File.Exists(mergedPath), Is.True);
         }
+  
     }
 }

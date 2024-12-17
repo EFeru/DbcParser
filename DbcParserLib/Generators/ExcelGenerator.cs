@@ -35,9 +35,10 @@ namespace DbcParserLib.Generators
         private IFont _signalFont;
 
         private string[,] table;
-        private IDictionary<string, ExcelColumnConfigModel> columnMapping = new Dictionary<string, ExcelColumnConfigModel>();
         private int table_row_count = 0;
         private int table_column_count = 0;
+        private IDictionary<string, ExcelColumnConfigModel> columnMapping = new Dictionary<string, ExcelColumnConfigModel>();
+
 
         public void GenDefaultDictionary()
         {
@@ -62,55 +63,137 @@ namespace DbcParserLib.Generators
             AddColumn(nameof(DictionaryColumnKey.Unit), "Unit", 10);
             AddColumn(nameof(DictionaryColumnKey.ValueTable), "Value\r\nTable", 25);
         }
-        public void UpdateColumnConfig(string columnKey, bool? isVisible = null, int? columnIndex = null, string header = null)
+        public UpdateColumnConfigState UpdateColumnConfig(string columnKey, bool? isVisible = null, int? columnIndex = null, string header = null, double columnWidth = 0)
         {
-            if (columnMapping.ContainsKey(columnKey))
+            if (!columnMapping.ContainsKey(columnKey))
             {
-                var columnConfig = columnMapping[columnKey];
-                if (isVisible.HasValue)
-                {
-                    columnConfig.IsVisible = isVisible.Value;
-                }
-
-                if (columnIndex.HasValue)
-                {
-                    columnConfig.ColumnIndex = columnIndex.Value;
-                }
-
-                if (!string.IsNullOrEmpty(header))
-                {
-                    columnConfig.Header = header;
-                }
+                return UpdateColumnConfigState.ColumnKeyNotExists;
             }
-            else
+            if (!columnIndex.HasValue)
             {
-                Console.WriteLine($"Column key '{columnKey}' not found in the dictionary.");
+                return UpdateColumnConfigState.ColumnIndexError;
             }
+            if (string.IsNullOrEmpty(header))
+            {
+                return UpdateColumnConfigState.HeaderError;
+            }
+            var columnConfig = columnMapping[columnKey];
+            columnConfig.IsVisible = isVisible.Value;
+            columnConfig.ColumnIndex = columnIndex.Value;
+            columnConfig.Header = header;
+            columnConfig.ColumnWidth = columnWidth;
+            return UpdateColumnConfigState.Success;
         }
-        public void UpdateColumnConfig(DictionaryColumnKey columnKey, bool? isVisible = null, int? columnIndex = null, string header = null)
+        public UpdateColumnConfigState UpdateColumnConfig(DictionaryColumnKey columnKey, bool? isVisible = null, int? columnIndex = null, string header = null, double columnWidth = 0)
         {
-            if (columnMapping.ContainsKey(nameof(columnKey)))
+            if (!columnMapping.ContainsKey(columnKey.ToString()))
             {
-                var columnConfig = columnMapping[nameof(columnKey)];
-                if (isVisible.HasValue)
-                {
-                    columnConfig.IsVisible = isVisible.Value;
-                }
-
-                if (columnIndex.HasValue)
-                {
-                    columnConfig.ColumnIndex = columnIndex.Value;
-                }
-
-                if (!string.IsNullOrEmpty(header))
-                {
-                    columnConfig.Header = header;
-                }
+                return UpdateColumnConfigState.ColumnKeyNotExists;
             }
-            else
+            if (!columnIndex.HasValue)
             {
-                Console.WriteLine($"Column key '{nameof(columnKey)}' not found in the dictionary.");
+                return UpdateColumnConfigState.ColumnIndexError;
             }
+            if (string.IsNullOrEmpty(header))
+            {
+                return UpdateColumnConfigState.HeaderError;
+            }
+            var columnConfig = columnMapping[columnKey.ToString()];
+            columnConfig.IsVisible = isVisible.Value;
+            columnConfig.ColumnIndex = columnIndex.Value;
+            columnConfig.Header = header;
+            columnConfig.ColumnWidth = columnWidth;
+            return UpdateColumnConfigState.Success;
+        }
+        public UpdateColumnConfigState UpdateColumnConfig(DictionaryColumnKey columnKey, bool isVisible)
+        {
+            if (!columnMapping.ContainsKey(columnKey.ToString()))
+            {
+                return UpdateColumnConfigState.ColumnKeyNotExists;
+            }
+            var columnConfig = columnMapping[columnKey.ToString()];
+            columnConfig.IsVisible = isVisible;
+            return UpdateColumnConfigState.Success;
+        }
+        public UpdateColumnConfigState UpdateColumnConfig(string columnKey, bool isVisible)
+        {
+            if (!columnMapping.ContainsKey(columnKey))
+            {
+                return UpdateColumnConfigState.ColumnKeyNotExists;
+            }
+            var columnConfig = columnMapping[columnKey];
+            columnConfig.IsVisible = isVisible;
+            return UpdateColumnConfigState.Success;
+        }
+        public UpdateColumnConfigState UpdateColumnConfig(DictionaryColumnKey columnKey,  int columnIndex)
+        {
+            if (!columnMapping.ContainsKey(columnKey.ToString()))
+            {
+                return UpdateColumnConfigState.ColumnKeyNotExists;
+            }
+            var columnConfig = columnMapping[columnKey.ToString()];
+            columnConfig.ColumnIndex = columnIndex;
+            return UpdateColumnConfigState.Success;
+        }
+        public UpdateColumnConfigState UpdateColumnConfig(string columnKey, int columnIndex)
+        {
+            if (!columnMapping.ContainsKey(columnKey))
+            {
+                return UpdateColumnConfigState.ColumnKeyNotExists;
+            }
+            var columnConfig = columnMapping[columnKey];
+            columnConfig.ColumnIndex = columnIndex;
+            return UpdateColumnConfigState.Success;
+        }
+        public UpdateColumnConfigState UpdateColumnConfig(DictionaryColumnKey columnKey,  string header)
+        {
+            if (!columnMapping.ContainsKey(columnKey.ToString()))
+            {
+                return UpdateColumnConfigState.ColumnKeyNotExists;
+            }
+            if (string.IsNullOrEmpty(header))
+            {
+                return UpdateColumnConfigState.HeaderError;
+            }
+            var columnConfig = columnMapping[columnKey.ToString()];
+            columnConfig.Header = header;
+            return UpdateColumnConfigState.Success;
+        }
+        public UpdateColumnConfigState UpdateColumnConfig(string columnKey, string header)
+        {
+            if (!columnMapping.ContainsKey(columnKey))
+            {
+                return UpdateColumnConfigState.ColumnKeyNotExists;
+            }
+            if (string.IsNullOrEmpty(header))
+            {
+                return UpdateColumnConfigState.HeaderError;
+            }
+            var columnConfig = columnMapping[columnKey];
+            columnConfig.Header = header;
+            return UpdateColumnConfigState.Success;
+        }
+        public UpdateColumnConfigState UpdateColumnConfig(DictionaryColumnKey columnKey, double columnWidth = 0)
+        {
+            if (!columnMapping.ContainsKey(columnKey.ToString()))
+            {
+                return UpdateColumnConfigState.ColumnKeyNotExists;
+            }
+            var columnConfig = columnMapping[columnKey.ToString()];
+
+            columnConfig.ColumnWidth = columnWidth;
+            return UpdateColumnConfigState.Success;
+        }
+        public UpdateColumnConfigState UpdateColumnConfig(string columnKey, double columnWidth = 0)
+        {
+            if (!columnMapping.ContainsKey(columnKey))
+            {
+                return UpdateColumnConfigState.ColumnKeyNotExists;
+            }
+            var columnConfig = columnMapping[columnKey];
+
+            columnConfig.ColumnWidth = columnWidth;
+            return UpdateColumnConfigState.Success;
         }
         public void AddColumnNode(string columnKey)
         {
@@ -137,23 +220,62 @@ namespace DbcParserLib.Generators
         {
             GenDefaultDictionary();
         }
-        public void WriteToFile(Dbc dbc, string path, string sheeName = "Matrix")
+
+
+        public WriteStatus WriteToFile(Dbc dbc, string path, string sheeName = "Matrix")
         {
-            if (tryCreateWorkbook(path, out _workbook))
+            try
             {
+                if (!tryCreateWorkbook(path, out _workbook))
+                {
+                    return WriteStatus.FormatError;
+                }
+
                 _path = path;
+                table_row_count = calculateExcelRowsCount(dbc);
+                table_column_count = calculateExcelColumnCount(dbc);
+                table = new string[table_row_count, table_column_count];
+                writeColumnHeader();
+                writeMessages(dbc);
+                // Write the table to the Excel file
+                WriteTableToExcel(sheeName);
+                // Save the workbook to the file
+                using (var fileData = new FileStream(_path, FileMode.Create))
+                {
+                    _workbook.Write(fileData);
+                }
+                return WriteStatus.Success;
             }
-            table_row_count = calculateExcelRowsCount(dbc);
-            table_column_count = calculateExcelColumnCount(dbc);
-            table = new string[table_row_count, table_column_count];
-            writeColumnHeader();
-            writeMessages(dbc);
-            // Write the table to the Excel file
-            WriteTableToExcel(sheeName);
-            // Save the workbook to the file
-            using (var fileData = new FileStream(_path, FileMode.Create))
+            catch (DirectoryNotFoundException)
             {
-                _workbook.Write(fileData);
+                return WriteStatus.PathError;
+            }
+            catch (IOException ex)
+            {
+                return WriteStatus.WritePermissionError;
+            }
+            catch (Exception ex)
+            {
+                return WriteStatus.UnknownError;
+            }
+        }
+
+        private void SetColumnWidths()
+        {
+            foreach (var key in columnMapping.Keys)
+            {
+                var value = columnMapping[key];
+                if (value.ColumnIndex < table_column_count)
+                {
+                    if (value.ColumnWidth > 0)
+                    {
+                        _sheet.SetColumnWidth(value.ColumnIndex, (value.ColumnWidth * 256)); // Set custom column width
+                    }
+                    else
+                    {
+                        _sheet.AutoSizeColumn(value.ColumnIndex); // Set default column width
+                    }
+                }
             }
         }
 
@@ -184,7 +306,6 @@ namespace DbcParserLib.Generators
                     {
                         if (isMessageHeader)
                         {
-                            
                             cell.CellStyle = _messageHeaderNormalCellStyle;
                         }
                         else
@@ -198,7 +319,7 @@ namespace DbcParserLib.Generators
                 }
             }
             _messageHeaderIndexList.Add(table_row_count);
-           _messageGroupList = generateGroupData(_messageHeaderIndexList);
+            _messageGroupList = generateGroupData(_messageHeaderIndexList);
 
             foreach (ExcelGroupMessageModel rowGroup in _messageGroupList)
             {
@@ -206,22 +327,7 @@ namespace DbcParserLib.Generators
                 //_sheet.SetRowGroupCollapsed(rowGroup.StartIndex, true);
             }
             // Set column widths based on the dictionary
-            foreach (var key in columnMapping.Keys)
-            {
-                var value = columnMapping[key];
-                if (value.ColumnIndex < table_column_count)
-                {
-                    if (value.ColumnWidth > 0)
-                    {
-                        _sheet.SetColumnWidth(value.ColumnIndex, (value.ColumnWidth * 256)); // Set custom column width
-                    }
-                    else
-                    {
-                        _sheet.AutoSizeColumn(value.ColumnIndex); // Set default column width
-                    }
-                }
-            }
-
+            SetColumnWidths();
         }
         static List<ExcelGroupMessageModel> generateGroupData(List<int> data)
         {
@@ -654,5 +760,49 @@ namespace DbcParserLib.Generators
             return _signalCellStyle;
         }
 
+        public bool CheckColumnIndexConfiction(out List<int> confictionIndexList)
+        {
+            confictionIndexList = new List<int>();
+            var indexCount = new Dictionary<int, int>();
+
+            foreach (var column in columnMapping.Values)
+            {
+                if (indexCount.ContainsKey(column.ColumnIndex))
+                {
+                    indexCount[column.ColumnIndex]++;
+                }
+                else
+                {
+                    indexCount[column.ColumnIndex] = 1;
+                }
+            }
+
+            foreach (var kvp in indexCount)
+            {
+                if (kvp.Value > 1)
+                {
+                    confictionIndexList.Add(kvp.Key);
+                }
+            }
+
+            return confictionIndexList.Count > 0;
+        }
+
+        public bool CheckColumnIndexConfiction(int columnIndex)
+        {
+            foreach (var column in columnMapping.Values)
+            {
+                if (column.ColumnIndex == columnIndex)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public IDictionary<string, ExcelColumnConfigModel> GetColumnConfiguration()
+        {
+            return columnMapping;
+        }
     }
 }
