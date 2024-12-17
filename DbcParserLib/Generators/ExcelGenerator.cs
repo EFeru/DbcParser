@@ -3,15 +3,11 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Text;
 using DbcParserLib.Model;
 using NPOI.HSSF.UserModel;
-using NPOI.SS.Formula.Functions;
+using NPOI.POIFS.Crypt.Dsig;
 using NPOI.SS.UserModel;
-using NPOI.Util;
 using NPOI.XSSF.UserModel;
-using SixLabors.Fonts;
-using SixLabors.ImageSharp;
 
 namespace DbcParserLib.Generators
 {
@@ -19,6 +15,10 @@ namespace DbcParserLib.Generators
     {
         private readonly string _xlsExt = ".xls";
         private readonly string _xlsxExt = ".xlsx";
+
+        //For message Group
+        private List<int> _messageHeaderIndexList = new List<int>();
+        private List<ExcelGroupMessageModel> _messageGroupList = new List<ExcelGroupMessageModel>();
 
         private string _path = string.Empty;
         private IWorkbook _workbook;
@@ -42,10 +42,10 @@ namespace DbcParserLib.Generators
         public void GenDefaultDictionary()
         {
             columnMapping.Clear();
-            AddColumn(nameof(DictionaryColumnKey.MessageName), "Message\r\nName", 15);
+            AddColumn(nameof(DictionaryColumnKey.MessageName), "Message\r\nName", 20);
             AddColumn(nameof(DictionaryColumnKey.FrameFormat), "Frame\r\nFormat", 15);
             AddColumn(nameof(DictionaryColumnKey.ID), "Message\r\nID", 15);
-            AddColumn(nameof(DictionaryColumnKey.MessageSendType), "Message\r\nSend Type", 15);
+            AddColumn(nameof(DictionaryColumnKey.MessageSendType), "Message\r\nSend Type", 18);
             AddColumn(nameof(DictionaryColumnKey.CycleTime), "Cycle\r\nTime", 10);
             AddColumn(nameof(DictionaryColumnKey.DataLength), "Data\r\nLength", 15);
             AddColumn(nameof(DictionaryColumnKey.SignalName), "Signal\r\nName", 25);
@@ -89,10 +89,9 @@ namespace DbcParserLib.Generators
         }
         public void UpdateColumnConfig(DictionaryColumnKey columnKey, bool? isVisible = null, int? columnIndex = null, string header = null)
         {
-            string key = columnKey.ToString();
-            if (columnMapping.ContainsKey(key))
+            if (columnMapping.ContainsKey(nameof(columnKey)))
             {
-                var columnConfig = columnMapping[key];
+                var columnConfig = columnMapping[nameof(columnKey)];
                 if (isVisible.HasValue)
                 {
                     columnConfig.IsVisible = isVisible.Value;
@@ -110,7 +109,7 @@ namespace DbcParserLib.Generators
             }
             else
             {
-                Console.WriteLine($"Column key '{columnKey}' not found in the dictionary.");
+                Console.WriteLine($"Column key '{nameof(columnKey)}' not found in the dictionary.");
             }
         }
         public void AddColumnNode(string columnKey)
@@ -133,14 +132,6 @@ namespace DbcParserLib.Generators
                 });
             }
         }
-        public ExcelGenerator(string path)
-        {
-            if (tryCreateWorkbook(path, out _workbook))
-            {
-                _path = path;
-            }
-            GenDefaultDictionary();
-        }
 
         public ExcelGenerator()
         {
@@ -157,50 +148,44 @@ namespace DbcParserLib.Generators
             table = new string[table_row_count, table_column_count];
             writeColumnHeader();
             writeMessages(dbc);
-
             // Write the table to the Excel file
             WriteTableToExcel(sheeName);
-
             // Save the workbook to the file
             using (var fileData = new FileStream(_path, FileMode.Create))
             {
                 _workbook.Write(fileData);
             }
-
         }
 
         private void WriteTableToExcel(string sheetName)
         {
             _sheet = _workbook.CreateSheet(sheetName);
             _sheet.CreateFreezePane(0, 1); // Freeze the first row
-
-            // Create a cell style with wrap text enabled and centered alignment
-
+            bool isMessageHeader = false;
             for (int i = 0; i < table_row_count; i++)
             {
                 IRow row = _sheet.CreateRow(i);
+                //Setting Cell Style
+                isMessageHeader = isMessageHeaderLine(i);
+                if (isMessageHeader)
+                {
+                    _messageHeaderIndexList.Add(i);
+                }
                 for (int j = 0; j < table_column_count; j++)
                 {
                     ICell cell = row.CreateCell(j);
                     cell.SetCellValue(table[i, j]);
-                    //Setting Cell Style
+
                     if (i == 0)
                     {
                         cell.CellStyle = _headerCellStyle;
                     }
                     else
                     {
-                        if (isMessageHeaderLine(i))
+                        if (isMessageHeader)
                         {
+                            
                             cell.CellStyle = _messageHeaderNormalCellStyle;
-                            //if (string.IsNullOrEmpty(table[i, j]))
-                            //{
-                            //    cell.CellStyle = _messageHeaderNullCellStyle;
-                            //}
-                            //else
-                            //{
-                            //    cell.CellStyle = _messageHeaderNormalCellStyle;
-                            //}
                         }
                         else
                         {
@@ -211,6 +196,14 @@ namespace DbcParserLib.Generators
                         }
                     }
                 }
+            }
+            _messageHeaderIndexList.Add(table_row_count);
+           _messageGroupList = generateGroupData(_messageHeaderIndexList);
+
+            foreach (ExcelGroupMessageModel rowGroup in _messageGroupList)
+            {
+                _sheet.GroupRow(rowGroup.StartIndex, rowGroup.EndIndex);
+                //_sheet.SetRowGroupCollapsed(rowGroup.StartIndex, true);
             }
             // Set column widths based on the dictionary
             foreach (var key in columnMapping.Keys)
@@ -228,6 +221,25 @@ namespace DbcParserLib.Generators
                     }
                 }
             }
+
+        }
+        static List<ExcelGroupMessageModel> generateGroupData(List<int> data)
+        {
+            if (data == null || data.Count < 2)
+                return new List<ExcelGroupMessageModel>();
+            List<ExcelGroupMessageModel> groupDataList = new List<ExcelGroupMessageModel>();
+
+            for (int i = 0; i < data.Count - 1; i++)
+            {
+                ExcelGroupMessageModel group = new ExcelGroupMessageModel
+                {
+                    StartIndex = data[i] + 1,
+                    EndIndex = data[i + 1] - 1
+                };
+
+                groupDataList.Add(group);
+            }
+            return groupDataList;
         }
         private bool isMessageHeaderLine(int row)
         {
@@ -591,44 +603,35 @@ namespace DbcParserLib.Generators
         private ICellStyle CreateMessageHeaderStyleNull()
         {
             _messageHeaderNullCellStyle = _workbook.CreateCellStyle();
-
             _messageFont = _workbook.CreateFont();
             _messageFont.IsBold = true;
             _messageFont.FontHeightInPoints = 10;
-
             _messageHeaderNullCellStyle.SetFont(_messageFont);
             _messageHeaderNullCellStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
             _messageHeaderNullCellStyle.VerticalAlignment = NPOI.SS.UserModel.VerticalAlignment.Center;
             _messageHeaderNullCellStyle.BorderTop = BorderStyle.Thin;
             _messageHeaderNullCellStyle.BorderBottom = BorderStyle.Thin;
-
             _messageHeaderNullCellStyle.FillPattern = FillPattern.SolidForeground;
             _messageHeaderNullCellStyle.FillForegroundColor = IndexedColors.Yellow.Index;
             _messageHeaderNullCellStyle.WrapText = true;
-
             return _messageHeaderNullCellStyle;
         }
         private ICellStyle CreateMessageHeaderStyleNormal()
         {
             _messageHeaderNormalCellStyle = _workbook.CreateCellStyle();
-
             _messageFont = _workbook.CreateFont();
             _messageFont.IsBold = true;
             _messageFont.FontHeightInPoints = 10;
-
             _messageHeaderNormalCellStyle.SetFont(_messageFont);
             _messageHeaderNormalCellStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
             _messageHeaderNormalCellStyle.VerticalAlignment = NPOI.SS.UserModel.VerticalAlignment.Center;
-
             _messageHeaderNormalCellStyle.BorderTop = BorderStyle.Thin;
             _messageHeaderNormalCellStyle.BorderBottom = BorderStyle.Thin;
             _messageHeaderNormalCellStyle.BorderLeft = BorderStyle.Thin;
             _messageHeaderNormalCellStyle.BorderRight = BorderStyle.Thin;
-
             _messageHeaderNormalCellStyle.FillPattern = FillPattern.SolidForeground;
             _messageHeaderNormalCellStyle.FillForegroundColor = IndexedColors.Yellow.Index;
             _messageHeaderNormalCellStyle.WrapText = true;
-
             return _messageHeaderNormalCellStyle;
         }
 
@@ -648,30 +651,8 @@ namespace DbcParserLib.Generators
             _signalCellStyle.FillPattern = FillPattern.SolidForeground;
             _signalCellStyle.FillForegroundColor = IndexedColors.LightGreen.Index;
             _signalCellStyle.WrapText = true;
-
             return _signalCellStyle;
         }
-        public enum DictionaryColumnKey
-        {
-            MessageName,
-            FrameFormat,
-            ID,
-            MessageSendType,
-            CycleTime,
-            DataLength,
-            SignalName,
-            Description,
-            ByteOrder,
-            StartBit,
-            BitLength,
-            Sign,
-            Factor,
-            Offset,
-            MinimumPhysical,
-            MaximumPhysical,
-            DefaultValue,
-            Unit,
-            ValueTable,
-        }
+
     }
 }

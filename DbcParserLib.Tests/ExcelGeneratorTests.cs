@@ -13,10 +13,10 @@ namespace DbcParserLib.Tests
         [Test]
         public void SimpleWriteToExcelXlsTest()
         {
-            string path = @"..\..\..\..\DbcFiles\tesla_can.dbc";        
+            string path = @"..\..\..\..\DbcFiles\j1939.dbc";        
             string outputPath = @"..\..\..\..\DbcFiles\tesla_can.xls";
             var dbc = Parser.ParseFromPath(path);
-            ExcelGenerator excelGenerator = new ExcelGenerator(path);
+            ExcelGenerator excelGenerator = new ExcelGenerator();
             excelGenerator.WriteToFile(dbc, outputPath);                
         }
         [Test]
@@ -25,7 +25,7 @@ namespace DbcParserLib.Tests
             string path = @"..\..\..\..\DbcFiles\tesla_can.dbc";
             string outputPath = @"..\..\..\..\DbcFiles\tesla_can.xlsx";
             var dbc = Parser.ParseFromPath(path);
-            ExcelGenerator excelGenerator = new ExcelGenerator(path);
+            ExcelGenerator excelGenerator = new ExcelGenerator();
             excelGenerator.WriteToFile(dbc, outputPath);
         }
     }

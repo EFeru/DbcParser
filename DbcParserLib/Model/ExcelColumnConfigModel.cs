@@ -11,4 +11,26 @@ namespace DbcParserLib.Model
         public int ColumnIndex { get; set; }
         public double ColumnWidth { get; set; } 
     }
+    public enum DictionaryColumnKey
+    {
+        MessageName,
+        FrameFormat,
+        ID,
+        MessageSendType,
+        CycleTime,
+        DataLength,
+        SignalName,
+        Description,
+        ByteOrder,
+        StartBit,
+        BitLength,
+        Sign,
+        Factor,
+        Offset,
+        MinimumPhysical,
+        MaximumPhysical,
+        DefaultValue,
+        Unit,
+        ValueTable,
+    }
 }
