@@ -264,7 +264,7 @@ namespace DbcParserLib.Generators
             writer.WriteLine($"NS_ :");
             foreach (string symbol in NewSymbols)
             {
-                writer.WriteLine($"{symbol}");
+                writer.WriteLine($"    {symbol}");
             }
             writer.WriteLine("");
         }

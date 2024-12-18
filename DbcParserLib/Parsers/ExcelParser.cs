@@ -1,4 +1,6 @@
 ﻿using DbcParserLib.Model;
+using DbcParserLib.Observers;
+using NPOI.DDF;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
@@ -11,30 +13,39 @@ namespace DbcParserLib.Parsers
 {
     public class ExcelParser : IExcelParser
     {
+        private const string GenMsgSendType = "GenMsgSendType";
+        private const string VFrameFormat = "VFrameFormat";
+        private const string GenSigStartValue = "GenSigStartValue";
+        private const string GenMsgStartDelayTime = "GenMsgStartDelayTime";
+        private const string GenMsgDelayTime = "GenMsgDelayTime";
+        private const string GenMsgCycleTime = "GenMsgCycleTime";
+        private const string BusType = "BusType";
+        private const string ProtocolType = "ProtocolType";
         private string[,] table;
         private int table_row_count = 0;
         private int table_column_count = 0;
         private IDictionary<string, ExcelColumnConfigModel> columnMapping = new Dictionary<string, ExcelColumnConfigModel>();
         private int _nodeStartIndex = 0;
+        private DbcBuilder _dbcBuilder = new DbcBuilder(new SilentFailureObserver());
         private IEnumerable<Node> _nodes;
         private IEnumerable<Message> _messages;
         private IEnumerable<EnvironmentVariable> _environmentVariables;
         private IEnumerable<CustomProperty> globalProperties;
-
+        private IParseFailureObserver m_observer;
         public ExcelParser()
         {
             GenDefaultDictionary();
         }
-        public ExcelParser(IDictionary<DictionaryColumnKey, ExcelColumnConfigModel> excelTitleDictionary,int nodeStartColumnIndex)
+        public ExcelParser(IDictionary<DictionaryColumnKey, ExcelColumnConfigModel> excelTitleDictionary, int nodeStartColumnIndex)
         {
             columnMapping.Clear();
-            foreach (var key in excelTitleDictionary.Keys) 
+            foreach (var key in excelTitleDictionary.Keys)
             {
-               if( excelTitleDictionary.TryGetValue(key,out ExcelColumnConfigModel model))
+                if (excelTitleDictionary.TryGetValue(key, out ExcelColumnConfigModel model))
                 {
                     AddColumn(key.ToString(), model.Header);
-                    UpdateColumnConfig(key.ToString(),model.ColumnIndex);
-                }                             
+                    UpdateColumnConfig(key.ToString(), model.ColumnIndex);
+                }
             }
             SetNodeStartIndex(nodeStartColumnIndex);
         }
@@ -230,6 +241,8 @@ namespace DbcParserLib.Parsers
                 AddNodeDictionary();
                 //Paser to Dbc file
                 ParseNodesFromTable();
+                ParseMessageFromTable();
+                dbc = _dbcBuilder.Build();
                 // 假设解析成功，返回Success状态
                 return ExcelParserState.Success;
             }
@@ -401,9 +414,8 @@ namespace DbcParserLib.Parsers
         {
             return _nodeStartIndex;
         }
-        private IEnumerable<Node> ParseNodesFromTable()
+        private void ParseNodesFromTable()
         {
-            var nodes = new List<Node>();
             try
             {
                 for (int col = _nodeStartIndex; col < table_column_count; col++)
@@ -415,7 +427,7 @@ namespace DbcParserLib.Parsers
                         {
                             Name = nodeName,
                         };
-                        nodes.Add(node);
+                        _dbcBuilder.AddNode(node);
                     }
                 }
             }
@@ -423,29 +435,243 @@ namespace DbcParserLib.Parsers
             {
                 Console.Write(ex.Message.ToString());
             }
-            return nodes;
+            return;
         }
-        private IEnumerable<Message> ParseMessageFromTable()
+        private void ParseMessageFromTable()
         {
-            var messages = new List<Message>();
+            AddCustomProperty();
             for (int row = 1; row < table_row_count; row++)
             {
                 if (isMessageHeaderLine(row))
                 {
+                    string transmitter = getMessageRowTransmitterName(row);
+                    uint id = convertToMsgId(table[row, columnMapping[DictionaryColumnKey.ID.ToString()].ColumnIndex]);
+                    bool isExtId = id > 0x7FF ? true : false;
+                    string messageSendType = table[row, columnMapping[DictionaryColumnKey.MessageSendType.ToString()].ColumnIndex];
                     var message = new Message
                     {
                         Name = table[row, columnMapping[DictionaryColumnKey.MessageName.ToString()].ColumnIndex],
-                        ID = Convert.ToUInt32(table[row, columnMapping[DictionaryColumnKey.ID.ToString()].ColumnIndex]),
-                        //FrameFormat = table[row, columnMapping[DictionaryColumnKey.FrameFormat.ToString()].ColumnIndex],
-                        //SendType = table[row, columnMapping[DictionaryColumnKey.MessageSendType.ToString()].ColumnIndex],
-                        //CycleTime = Convert.ToUInt32(table[row, columnMapping[DictionaryColumnKey.CycleTime.ToString()].ColumnIndex]),
-                        //DataLength = Convert.ToByte(table[row, columnMapping[DictionaryColumnKey.DataLength.ToString()].ColumnIndex]),
-                        //Description = table[row, columnMapping[DictionaryColumnKey.Description.ToString()].ColumnIndex],
+                        ID = id,
+                        Transmitter = transmitter,
+                        Comment = table[row, columnMapping[DictionaryColumnKey.Description.ToString()].ColumnIndex],
+                        DLC = Convert.ToByte(table[row, columnMapping[DictionaryColumnKey.DataLength.ToString()].ColumnIndex]),
+                        IsExtID = isExtId,
                     };
-                    messages.Add(message);
+                    _dbcBuilder.AddMessage(message);
+                    _dbcBuilder.AddMessageCustomProperty(GenMsgSendType, id, messageSendType, false);
+                    _dbcBuilder.AddMessageCustomProperty(VFrameFormat, id, table[row, columnMapping[DictionaryColumnKey.FrameFormat.ToString()].ColumnIndex], false);
+                    _dbcBuilder.AddMessageCustomProperty(GenMsgCycleTime, id, table[row, columnMapping[DictionaryColumnKey.CycleTime.ToString()].ColumnIndex], true);
+                    _dbcBuilder.AddMessageCustomProperty(GenMsgStartDelayTime, id, "0", true);
+                    _dbcBuilder.AddMessageCustomProperty(GenMsgDelayTime, id, "0", true);
+                    _dbcBuilder.AddMessageCustomProperty(GenSigStartValue, id, "0", true);
+                }
+                else
+                {
+                    string name = table[row, columnMapping[DictionaryColumnKey.SignalName.ToString()].ColumnIndex];
+                    string comment = table[row, columnMapping[DictionaryColumnKey.Description.ToString()].ColumnIndex];
+                    byte byteOrder = string.Equals(table[row, columnMapping[DictionaryColumnKey.ByteOrder.ToString()].ColumnIndex], "Intel", StringComparison.OrdinalIgnoreCase) ? (byte)1 : (byte)0;
+                    ushort startBit = Convert.ToUInt16(table[row, columnMapping[DictionaryColumnKey.StartBit.ToString()].ColumnIndex]);
+                    ushort length = Convert.ToUInt16(table[row, columnMapping[DictionaryColumnKey.BitLength.ToString()].ColumnIndex]);
+                    DbcValueType valueType = (DbcValueType)Enum.Parse(typeof(DbcValueType), table[row, columnMapping[DictionaryColumnKey.Sign.ToString()].ColumnIndex], true);
+                    double factor = Convert.ToDouble(table[row, columnMapping[DictionaryColumnKey.Factor.ToString()].ColumnIndex]);
+                    double offset = Convert.ToDouble(table[row, columnMapping[DictionaryColumnKey.Offset.ToString()].ColumnIndex]);
+                    double minimumPhysical = Convert.ToDouble(table[row, columnMapping[DictionaryColumnKey.MinimumPhysical.ToString()].ColumnIndex]);
+                    double maximumPhysical = Convert.ToDouble(table[row, columnMapping[DictionaryColumnKey.MaximumPhysical.ToString()].ColumnIndex]);
+                    double initialValue = Convert.ToDouble(table[row, columnMapping[DictionaryColumnKey.DefaultValue.ToString()].ColumnIndex]);
+                    string unit = table[row, columnMapping[DictionaryColumnKey.Unit.ToString()].ColumnIndex];
+                    IReadOnlyDictionary<int, string> valueTableMap = ParseValueTableMap(table[row, columnMapping[DictionaryColumnKey.ValueTable.ToString()].ColumnIndex]);
+                    string[] reveiver = getSignalReceiver(row);
+                    _dbcBuilder.AddSignal(
+                        new Signal()
+                        {
+                            Name = name,
+                            Comment = comment,
+                            ByteOrder = byteOrder,
+                            StartBit = startBit,
+                            Length = length,
+                            ValueType = valueType,
+                            Factor = factor,
+                            Offset = offset,
+                            Minimum = minimumPhysical,
+                            Maximum = maximumPhysical,
+                            Unit = unit,
+                            ValueTableMap = valueTableMap,
+                            Receiver = reveiver,
+                        });
                 }
             }
-            return messages;
+            return;
+        }
+        public IReadOnlyDictionary<int, string> ParseValueTableMap(string valueTableString)
+        {
+            var valueTableMap = new Dictionary<int, string>();
+
+            if (string.IsNullOrWhiteSpace(valueTableString))
+            {
+                return valueTableMap;
+            }
+
+            var entries = valueTableString.Replace(",", ":").Replace("：", ":").Replace("，", ":").Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var entry in entries)
+            {
+                var parts = entry.Split(new[] { ':' }, 2);
+                if (parts.Length == 2 && parts[0].StartsWith("0x") && int.TryParse(parts[0].Substring(2), System.Globalization.NumberStyles.HexNumber, null, out int key))
+                {
+                    valueTableMap[key] = parts[1];
+                }
+            }
+
+            return valueTableMap;
+        }
+        private uint convertToMsgId(string id)
+        {
+            if (id.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+            {
+                return Convert.ToUInt32(id.Substring(2), 16);
+            }
+            else
+            {
+                return Convert.ToUInt32(id);
+            }
+        }
+        private string[] getSignalReceiver(int row)
+        {
+            List<string> receivers = new List<string>();
+            if (!isMessageHeaderLine(row))
+            {
+                for (int i = _nodeStartIndex; i < table_column_count; i++)
+                {
+                    if (string.Equals(table[row, i].Trim(), "R", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (columnMapping.TryGetValue(table[0, i], out ExcelColumnConfigModel model))
+                        {
+                            receivers.Add(model.Header);
+                        }
+                    }
+
+                }
+                return receivers.ToArray();
+            }
+            else
+            {
+                return null;
+            }
+        }
+        private void AddCustomProperty()
+        {
+            _dbcBuilder.AddCustomProperty(CustomPropertyObjectType.Message,
+                new CustomPropertyDefinition(m_observer)
+                {
+                    DataType = CustomPropertyDataType.Enum,
+                    Name = GenMsgSendType,
+                    EnumCustomProperty =
+                    new EnumCustomPropertyDefinition
+                    {
+                        Default = "cyclic",
+                        Values = new string[] { "cyclic", "reserved", "cyclicIfActive", "reserved", "reserved", "reserved", "reserved", "reserved", "noMsgSendType" },
+                    }
+                });
+            _dbcBuilder.AddCustomProperty(CustomPropertyObjectType.Message,
+                new CustomPropertyDefinition(m_observer)
+                {
+                    DataType = CustomPropertyDataType.Enum,
+                    Name = VFrameFormat,
+                    EnumCustomProperty =
+                    new EnumCustomPropertyDefinition
+                    {
+                        Default = "StandardCAN",
+                        Values = new string[] { "StandardCAN", "ExtendedCAN", "reserved", "J1939PG" },
+                    }
+                });
+            _dbcBuilder.AddCustomProperty(CustomPropertyObjectType.Message,
+                new CustomPropertyDefinition(m_observer)
+                {
+                    DataType = CustomPropertyDataType.Integer,
+                    Name = GenSigStartValue,
+                    IntegerCustomProperty =
+                    new NumericCustomPropertyDefinition<int>
+                    {
+                        Default = 0,
+                        Minimum = 0,
+                        Maximum = 10000,
+                    }
+                });
+            _dbcBuilder.AddCustomProperty(CustomPropertyObjectType.Message,
+                new CustomPropertyDefinition(m_observer)
+                {
+                    DataType = CustomPropertyDataType.Integer,
+                    Name = GenMsgStartDelayTime,
+                    IntegerCustomProperty =
+                    new NumericCustomPropertyDefinition<int>
+                    {
+                        Default = 0,
+                        Minimum = 0,
+                        Maximum = 100000,
+                    }
+                });
+            _dbcBuilder.AddCustomProperty(CustomPropertyObjectType.Message,
+                new CustomPropertyDefinition(m_observer)
+                {
+                    DataType = CustomPropertyDataType.Integer,
+                    Name = GenMsgDelayTime,
+                    IntegerCustomProperty =
+                    new NumericCustomPropertyDefinition<int>
+                    {
+                        Default = 0,
+                        Minimum = 0,
+                        Maximum = 1000,
+                    }
+                });
+            _dbcBuilder.AddCustomProperty(CustomPropertyObjectType.Message,
+                new CustomPropertyDefinition(m_observer)
+                {
+                    DataType = CustomPropertyDataType.Integer,
+                    Name = GenMsgCycleTime,
+                    IntegerCustomProperty =
+                    new NumericCustomPropertyDefinition<int>
+                    {
+                        Default = 0,
+                        Minimum = 0,
+                        Maximum = 3600000,
+                    }
+                });
+            _dbcBuilder.AddCustomProperty(CustomPropertyObjectType.Global,
+                new CustomPropertyDefinition(m_observer)
+                {
+                    DataType = CustomPropertyDataType.String,
+                    Name = BusType,
+                    StringCustomProperty = new StringCustomPropertyDefinition
+                    {
+                        Default = "CAN",
+                    }
+                });
+            //_dbcBuilder.AddCustomProperty(CustomPropertyObjectType.Global,
+            //    new CustomPropertyDefinition(m_observer)
+            //    {
+            //        DataType = CustomPropertyDataType.String,
+            //        Name = ProtocolType,
+            //        StringCustomProperty = new StringCustomPropertyDefinition
+            //        {
+            //            Default = "J1939",
+            //        }
+            //    });
+        }
+        private string getMessageRowTransmitterName(int row)
+        {
+            for (int col = _nodeStartIndex; col < table_column_count; col++)
+            {
+                if (!string.IsNullOrEmpty(table[row, col]) && string.Equals(table[row, col].Trim(), "S", StringComparison.OrdinalIgnoreCase))
+                {
+                    foreach (var key in columnMapping.Keys)
+                    {
+                        if (columnMapping[key].ColumnIndex == col)
+                        {
+                            return columnMapping[key].Header;
+                        }
+                    }
+                }
+            }
+            return "Vector__XXX";
         }
         private bool isMessageHeaderLine(int row)
         {

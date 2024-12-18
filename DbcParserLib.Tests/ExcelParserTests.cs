@@ -1,5 +1,7 @@
-﻿using DbcParserLib.Parsers;
+﻿using DbcParserLib.Generators;
+using DbcParserLib.Parsers;
 using NUnit.Framework;
+using System.IO;
 
 namespace DbcParserLib.Tests
 {
@@ -9,10 +11,12 @@ namespace DbcParserLib.Tests
         public void SimpleExcelParserTest()
         {
             string path = @"..\..\..\..\DbcFiles\tesla_can.xls";
-            var dbc = Parser.ParseFromPath(path);
             ExcelParser excelParser = new ExcelParser();
             excelParser.ParseFromPath(path, out Dbc dbcOutput);
+            var outputFilePath = @"..\..\..\..\DbcFiles\excelConverted_tesla_can.dbc";
+            DbcGenerator.WriteToFile(dbcOutput, outputFilePath);
             Assert.That(dbcOutput, Is.Not.Null);
+            Assert.That(File.Exists(outputFilePath), Is.True);
         }
         [Test]
         public void ExcelColumnNameParserTest()
