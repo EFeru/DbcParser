@@ -1,12 +1,11 @@
 ﻿using DbcParserLib.Model;
-using DbcParserLib.Observers;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Threading;
 
 namespace DbcParserLib.Parsers
 {
@@ -25,6 +24,32 @@ namespace DbcParserLib.Parsers
         public ExcelParser()
         {
             GenDefaultDictionary();
+        }
+        public ExcelParser(IDictionary<DictionaryColumnKey, ExcelColumnConfigModel> excelTitleDictionary,int nodeStartColumnIndex)
+        {
+            columnMapping.Clear();
+            foreach (var key in excelTitleDictionary.Keys) 
+            {
+               if( excelTitleDictionary.TryGetValue(key,out ExcelColumnConfigModel model))
+                {
+                    AddColumn(key.ToString(), model.Header);
+                    UpdateColumnConfig(key.ToString(),model.ColumnIndex);
+                }                             
+            }
+            SetNodeStartIndex(nodeStartColumnIndex);
+        }
+        public ExcelParser(IDictionary<DictionaryColumnKey, ExcelColumnConfigModel> excelTitleDictionary, string nodeStartColumnName)
+        {
+            columnMapping.Clear();
+            foreach (var key in excelTitleDictionary.Keys)
+            {
+                if (excelTitleDictionary.TryGetValue(key, out ExcelColumnConfigModel model))
+                {
+                    AddColumn(key.ToString(), model.Header);
+                    UpdateColumnConfig(key.ToString(), model.ColumnIndex);
+                }
+            }
+            SetNodeStartIndex(nodeStartColumnName);
         }
         public void GenDefaultDictionary()
         {
@@ -50,6 +75,7 @@ namespace DbcParserLib.Parsers
             AddColumn(nameof(DictionaryColumnKey.ValueTable), "Value\r\nTable");
             _nodeStartIndex = columnMapping.Count;
         }
+
         public void AddColumn(string columnKey, string Header = "", double columnWidth = 0, bool visible = true)
         {
             if (!columnMapping.ContainsKey(columnKey))
@@ -62,6 +88,45 @@ namespace DbcParserLib.Parsers
                     ColumnWidth = columnWidth
                 });
             }
+        }
+        public UpdateColumnConfigState UpdateColumnConfig(DictionaryColumnKey columnKey, int? columnIndex = null, string header = null)
+        {
+            if (!columnMapping.ContainsKey(columnKey.ToString()))
+            {
+                return UpdateColumnConfigState.ColumnKeyNotExists;
+            }
+            if (!columnIndex.HasValue)
+            {
+                return UpdateColumnConfigState.ColumnIndexError;
+            }
+            if (string.IsNullOrEmpty(header))
+            {
+                return UpdateColumnConfigState.HeaderError;
+            }
+            var columnConfig = columnMapping[columnKey.ToString()];
+            columnConfig.ColumnIndex = columnIndex.Value;
+            columnConfig.Header = header;
+            return UpdateColumnConfigState.Success;
+        }
+        public UpdateColumnConfigState UpdateColumnConfig(string columnKey, int? columnIndex = null, string header = null)
+        {
+            if (!columnMapping.ContainsKey(columnKey))
+            {
+                return UpdateColumnConfigState.ColumnKeyNotExists;
+            }
+            if (!columnIndex.HasValue)
+            {
+                return UpdateColumnConfigState.ColumnIndexError;
+            }
+            if (string.IsNullOrEmpty(header))
+            {
+                return UpdateColumnConfigState.HeaderError;
+            }
+            var columnConfig = columnMapping[columnKey];
+
+            columnConfig.ColumnIndex = columnIndex.Value;
+            columnConfig.Header = header;
+            return UpdateColumnConfigState.Success;
         }
         public UpdateColumnConfigState UpdateColumnConfig(DictionaryColumnKey columnKey, int columnIndex)
         {
@@ -163,6 +228,8 @@ namespace DbcParserLib.Parsers
                     }
                 }
                 AddNodeDictionary();
+                //Paser to Dbc file
+                ParseNodesFromTable();
                 // 假设解析成功，返回Success状态
                 return ExcelParserState.Success;
             }
@@ -337,17 +404,24 @@ namespace DbcParserLib.Parsers
         private IEnumerable<Node> ParseNodesFromTable()
         {
             var nodes = new List<Node>();
-            for (int col = _nodeStartIndex; col < table_column_count; col++)
+            try
             {
-                string nodeName = table[0, col];
-                if (!string.IsNullOrEmpty(nodeName))
+                for (int col = _nodeStartIndex; col < table_column_count; col++)
                 {
-                    var node = new Node
+                    string nodeName = table[0, col];
+                    if (!string.IsNullOrEmpty(nodeName))
                     {
-                        Name = nodeName,
-                    };
-                    nodes.Add(node);
+                        var node = new Node
+                        {
+                            Name = nodeName,
+                        };
+                        nodes.Add(node);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.Write(ex.Message.ToString());
             }
             return nodes;
         }
