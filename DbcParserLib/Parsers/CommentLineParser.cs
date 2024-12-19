@@ -13,11 +13,11 @@ namespace DbcParserLib.Parsers
         private const string EnvVarNameGroup = "EnvVarName";
         private const string CommentLineStarter = "CM_ ";
 
-        private readonly string m_genericCommentParsingRegex = $@"CM_\s+""*(?<{CharGroup}>[^""]*)""*\s*;";
-        private readonly string m_nodeParsingRegex = $@"CM_ BU_\s+(?<{NodeNameGroup}>[a-zA-Z_][\w]*)\s+""*(?<{CharGroup}>[^""]*)""*\s*;";
-        private readonly string m_messageParsingRegex = $@"CM_ BO_\s+(?<{MessageIdGroup}>\d+)\s+""*(?<{CharGroup}>[^""]*)""*\s*;";
-        private readonly string m_signalParsingRegex = $@"CM_ SG_\s+(?<{MessageIdGroup}>\d+)\s+(?<{SignalNameGroup}>[a-zA-Z_][\w]*)\s+""*(?<{CharGroup}>[^""]*)""*\s*;";
-        private readonly string m_environmentVariableParsingRegex = $@"CM_ EV_\s+(?<{EnvVarNameGroup}>[a-zA-Z_][\w]*)\s+""*(?<{CharGroup}>[^""]*)""*\s*;";
+        private readonly string m_genericCommentParsingRegex = $@"CM_\s+""*(?<{CharGroup}>[^""]*)""*\s*;$";
+        private readonly string m_nodeParsingRegex = $@"CM_ BU_\s+(?<{NodeNameGroup}>[a-zA-Z_][\w]*)\s+""*(?<{CharGroup}>[^""]*)""*\s*;$";
+        private readonly string m_messageParsingRegex = $@"CM_ BO_\s+(?<{MessageIdGroup}>\d+)\s+""*(?<{CharGroup}>[^""]*)""*\s*;$";
+        private readonly string m_signalParsingRegex = $@"CM_ SG_\s+(?<{MessageIdGroup}>\d+)\s+(?<{SignalNameGroup}>[a-zA-Z_][\w]*)\s+""*(?<{CharGroup}>[^""]*)""*\s*;$";
+        private readonly string m_environmentVariableParsingRegex = $@"CM_ EV_\s+(?<{EnvVarNameGroup}>[a-zA-Z_][\w]*)\s+""*(?<{CharGroup}>[^""]*)""*\s*;$";
 
         private readonly IParseFailureObserver m_observer;
 

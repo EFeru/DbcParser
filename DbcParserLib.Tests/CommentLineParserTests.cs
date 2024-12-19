@@ -267,6 +267,12 @@ this is the third line"";";
         [TestCase("CM_ BO_ 865 \"Test with incorrect \"syntax\"\";")]
         [TestCase("CM_ EV_ VarName \"Test with incorrect \"syntax\"\";")]
         [TestCase("CM_ \"Test with incorrect \"syntax\"\";")]
+        [TestCase("CM_ BO_ 1160 \"This is a very fine comment;\"")]
+        [TestCase("CM_ BO_ 1160 \"This is a very fine comment\"")]
+        [TestCase("CM_ BO_ 1160 \"This is a very fine comment; Right?\"")]
+        [TestCase("CM_ SG_ SignalName \"This is a very fine comment; Right?\"")]
+        [TestCase("CM_ BU_ NodeName \"This is a very fine comment; Right?\"")]
+        [TestCase("CM_ EV_ VarName \"This is a very fine comment; Right?\"")]
         public void CommentSyntaxErrorIsObserved(string commentLine)
         {
             var observerMock = m_repository.Create<IParseFailureObserver>();
