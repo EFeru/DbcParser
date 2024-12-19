@@ -95,27 +95,40 @@ namespace DbcParserLib
 
         private string HandleMultipleDefinitionsPerLine(string line)
         {
-            int definitionTerminationLocation = line.IndexOf(lineTermination, StringComparison.Ordinal);
+            var lineTerminationIndex = line.IndexOf(lineTermination, StringComparison.Ordinal);
+            var afterTerminationPosition = lineTerminationIndex + lineTermination.Length;
 
-            var lastTerminationLocation = -1;
-            while (definitionTerminationLocation > lastTerminationLocation)
+            // If line has no termination just return the line
+            if (lineTerminationIndex < 0)
             {
-                if (definitionTerminationLocation + 1 == line.Length)
-                {
-                    return line;
-                }
+                return line;
+            }
 
-                var partAfterTermination = line.Substring(definitionTerminationLocation + 2, line.Length - 2 - definitionTerminationLocation);
+            while (afterTerminationPosition < line.Length)
+            {
+                var partAfterTermination = line.Substring(afterTerminationPosition);
 
+                // If part after the termination is another keyword then add the remaining line as virtual line
+                // and return line up to and including line termination;
                 if (CheckLineIsDefinition(partAfterTermination.TrimStart()))
                 {
                     m_reader.SetVirtualLine(partAfterTermination);
-                    return line.Substring(0, definitionTerminationLocation + 1);
+                    return line.Substring(0, afterTerminationPosition);
+                }
+           
+                var indexOfNextTermination = partAfterTermination.IndexOf(lineTermination, StringComparison.Ordinal);
+
+                if (indexOfNextTermination < 0)
+                {
+                    // You run in here if the line has atleast one termination but no followup definition
+                    // Should only occure in comments but these should end in termination char so will most likely 
+                    // lead to an parsing error
+                    return line;
                 }
 
-                lastTerminationLocation = definitionTerminationLocation;
-                definitionTerminationLocation = definitionTerminationLocation + 1 + partAfterTermination.IndexOf(lineTermination, StringComparison.Ordinal);
+                afterTerminationPosition = afterTerminationPosition + indexOfNextTermination + lineTermination.Length;
             }
+            // If the terminationcharacter is found at the end of the line and no subdefinitions where found retrun the line
             return line;
         }
 
