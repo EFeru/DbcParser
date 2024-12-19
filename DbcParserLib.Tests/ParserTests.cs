@@ -818,5 +818,35 @@ VAL_ 1160 DAS_steeringAngleRequest 16384 ""ZERO_ANGLE""; ";
             Assert.That(dbc.Messages.First().Signals.Last().ValueTableMap.Last().Key, Is.EqualTo(16384));
             Assert.That(dbc.Messages.First().Signals.Last().ValueTableMap.Last().Value, Is.EqualTo("ZERO_ANGLE"));
         }
+
+        [Test]
+        public void CommentFromIssue97()
+        {
+            var dbcString = @"
+BO_ 256 New_Message_1: 8 Vector__XXX
+ SG_ New_Signal_2 : 8|8@1- (1,0) [0|0] """" Vector__XXX
+ SG_ New_Signal_1 : 0|8@1- (1,0) [0|0] """" Vector__XXX
+
+CM_ SG_ 256 New_Signal_1 ""Flag to indicate newly created object in CAN bus.
+Object history flag
+0x0: new object in the cycle;
+0x1: object existed in previous cycle"";
+BA_DEF_  ""DBName"" STRING ;";
+
+            var failureObserver = new SimpleFailureObserver();
+            Parser.SetParsingFailuresObserver(failureObserver);
+            var dbc = Parser.Parse(dbcString);
+            var errorList = failureObserver.GetErrorList();
+
+            Assert.That(errorList, Has.Count.EqualTo(0));
+            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+            Assert.That(dbc.Messages.First().Comment, Is.Null);
+
+            Assert.That(dbc.Messages.First().Signals.Count(), Is.EqualTo(2));
+
+            Assert.That(dbc.Messages.First().Signals.First().Name, Is.EqualTo("New_Signal_2"));
+            Assert.That(dbc.Messages.First().Signals.Last().Name, Is.EqualTo("New_Signal_1"));
+            Assert.That(dbc.Messages.First().Signals.Last().Comment, Is.EqualTo("Flag to indicate newly created object in CAN bus.\r\nObject history flag\r\n0x0: new object in the cycle;\r\n0x1: object existed in previous cycle"));
+        }
     }
 }
