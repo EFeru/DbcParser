@@ -26,7 +26,7 @@ namespace DbcParserLib.Parsers
 
         public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
-            var cleanLine = line.Trim(' ');
+            var cleanLine = line.ReplaceNewlinesWithSpace().Trim();
 
             if (cleanLine.StartsWith(ValueTableLineStarter) == false)
                 return false;

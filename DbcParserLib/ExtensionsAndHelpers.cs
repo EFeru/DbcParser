@@ -2,11 +2,17 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using DbcParserLib.Model;
+using System.Text.RegularExpressions;
 
 namespace DbcParserLib
 {
     public static class ExtensionsAndHelpers
     {
+        public const string DoubleQuotes = "\"";
+        public const string Space = " ";
+        public static readonly string[] CommaSpaceSeparator = { " ", "," };
+        private static readonly string[] SpaceArray = { " " };
+
         public static bool Motorola(this Signal signal)
         {
             return signal.Msb();
@@ -116,6 +122,21 @@ namespace DbcParserLib
                 return false;
         }
 
+        public static string[] SplitBySpace(this string value)
+        {
+            return value.Split(SpaceArray, System.StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        // Sequence of return codes was taken from the internals of "String.ReplaceLineEndings" method.
+        private const string NewLineChars = "\r\f\u0085\u2028\u2029\n";
+        private static readonly string pattern = $"[{Regex.Escape(NewLineChars)}]+";
+
+        public static string ReplaceNewlinesWithSpace(this string input)
+        {
+            // Would like to use "String.ReplaceLineEndings" but its unavailable because of the target frameworks
+            // Feel free to optimate
+            return Regex.Replace(input, pattern, " ");
+        }
     }
 
     internal class StringToDictionaryParser
@@ -142,7 +163,7 @@ namespace DbcParserLib
         
         private bool ParseKey(string text, int offset)
         {
-            var index = text.IndexOf(Helpers.DoubleQuotes, offset, StringComparison.InvariantCulture);
+            var index = text.IndexOf(ExtensionsAndHelpers.DoubleQuotes, offset, StringComparison.InvariantCulture);
             if(index == -1)
                 return true;
 
@@ -153,7 +174,7 @@ namespace DbcParserLib
 
         private bool ParseValue(string text, int offset, int key)
         {
-            var index = text.IndexOf(Helpers.DoubleQuotes, offset, StringComparison.InvariantCulture);
+            var index = text.IndexOf(ExtensionsAndHelpers.DoubleQuotes, offset, StringComparison.InvariantCulture);
             if (index == -1)
                 return false;
 

@@ -38,7 +38,7 @@
         void PropertyValueOutOfIndex(string propertyName, string index);
         void ExtraMessageTransmittersSyntaxError();
         void ExtraMessageTransmittersDuplicate(uint messageId, string duplicateTransmitter);
-        void UnknownLine();
+        void UnknownLine(string line);
         void NoMessageFound();
         void Clear();
     }

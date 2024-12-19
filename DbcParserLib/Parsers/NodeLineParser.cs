@@ -22,11 +22,13 @@ namespace DbcParserLib.Parsers
 
         public bool TryParse(string line, IDbcBuilder builder, INextLineProvider nextLineProvider)
         {
-            if (line.TrimStart().StartsWith(NodeLineStarter) == false)
+            var cleanLine = line.ReplaceNewlinesWithSpace().Trim();
+
+            if (cleanLine.StartsWith(NodeLineStarter) == false)
                 return false;
 
             // Empty node list
-            if (line.Trim().Equals(NodeLineStarter))
+            if (cleanLine.Equals(NodeLineStarter))
                 return true;
 
             var match = m_regex.Match(line);

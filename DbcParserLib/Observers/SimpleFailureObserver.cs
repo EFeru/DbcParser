@@ -184,9 +184,9 @@ namespace DbcParserLib.Observers
             AddError($"Duplicate additional transmitter '{duplicateTransmitter}' in message '{messageId}'");
         }
 
-        public void UnknownLine()
+        public void UnknownLine(string line)
         {
-            AddError("Unknown syntax");
+            AddError($"Unknown syntax in line: '{line}'");
         }
 
         public void NoMessageFound()
