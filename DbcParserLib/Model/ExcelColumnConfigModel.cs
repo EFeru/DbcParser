@@ -20,12 +20,12 @@
         ByteOrder,
         StartBit,
         BitLength,
-        Sign,
+        DataType,
         Factor,
         Offset,
         MinimumPhysical,
         MaximumPhysical,
-        DefaultValue,
+        InitialValue,
         Unit,
         ValueTable,
     }
@@ -43,6 +43,7 @@
         PathError,
         FormatError,
         ReadPermissionError,
+        ReadNullError,
         UnknownError
     }
     public enum UpdateColumnConfigState
@@ -53,4 +54,16 @@
         ColumnKeyNotExists,
         UnknownError
     }
+    public enum DbcProtocolType
+    {
+        CAN,
+        J1939,
+        CANOpen,
+        UDS,
+        ISO15765,
+        FlexRay,
+        LIN,
+        Ethernet,
+    }
+
 }

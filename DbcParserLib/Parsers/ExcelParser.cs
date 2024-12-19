@@ -1,18 +1,20 @@
 ﻿using DbcParserLib.Model;
 using DbcParserLib.Observers;
-using NPOI.DDF;
 using NPOI.HSSF.UserModel;
+using NPOI.SS.Formula.Functions;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
+using System.Runtime.Serialization.Formatters;
+using System.Text.RegularExpressions;
 
 namespace DbcParserLib.Parsers
 {
     public class ExcelParser : IExcelParser
     {
+        // Normal protocol
         private const string GenMsgSendType = "GenMsgSendType";
         private const string VFrameFormat = "VFrameFormat";
         private const string GenSigStartValue = "GenSigStartValue";
@@ -20,18 +22,29 @@ namespace DbcParserLib.Parsers
         private const string GenMsgDelayTime = "GenMsgDelayTime";
         private const string GenMsgCycleTime = "GenMsgCycleTime";
         private const string BusType = "BusType";
+        //Used for j1939
         private const string ProtocolType = "ProtocolType";
+        private const string NmStationAddress = "NmStationAddress";
+        //1939 - 81 CA
+        private const string NmJ1939IndustryGroup = "NmJ1939IndustryGroup";
+        private const string NmJ1939System = "NmJ1939System";
+        private const string NmJ1939SystemInstance = "NmJ1939SystemInstance";
+        private const string NmJ1939Function = "NmJ1939Function";
+        private const string NmJ1939FunctionInstance = "NmJ1939FunctionInstance";
+        private const string NmJ1939ECUInstance = "NmJ1939ECUInstance";
+        private const string NmJ1939ManufacturerCode = "NmJ1939ManufacturerCode";
+        private const string NmJ1939IdentityNumber = "NmJ1939IdentityNumber";
+
         private string[,] table;
         private int table_row_count = 0;
         private int table_column_count = 0;
         private IDictionary<string, ExcelColumnConfigModel> columnMapping = new Dictionary<string, ExcelColumnConfigModel>();
         private int _nodeStartIndex = 0;
         private DbcBuilder _dbcBuilder = new DbcBuilder(new SilentFailureObserver());
-        private IEnumerable<Node> _nodes;
-        private IEnumerable<Message> _messages;
-        private IEnumerable<EnvironmentVariable> _environmentVariables;
-        private IEnumerable<CustomProperty> globalProperties;
         private IParseFailureObserver m_observer;
+        private DbcProtocolType _protocolType = DbcProtocolType.CAN;
+        private int _messageRowStartOffset = 1;
+        private int _nodeRowIndex = 0;
         public ExcelParser()
         {
             GenDefaultDictionary();
@@ -44,7 +57,7 @@ namespace DbcParserLib.Parsers
                 if (excelTitleDictionary.TryGetValue(key, out ExcelColumnConfigModel model))
                 {
                     AddColumn(key.ToString(), model.Header);
-                    UpdateColumnConfig(key.ToString(), model.ColumnIndex);
+                    UpdateColumnConfigWithIndex(key.ToString(), model.ColumnIndex);
                 }
             }
             SetNodeStartIndex(nodeStartColumnIndex);
@@ -57,7 +70,7 @@ namespace DbcParserLib.Parsers
                 if (excelTitleDictionary.TryGetValue(key, out ExcelColumnConfigModel model))
                 {
                     AddColumn(key.ToString(), model.Header);
-                    UpdateColumnConfig(key.ToString(), model.ColumnIndex);
+                    UpdateColumnConfigWithIndex(key.ToString(), model.ColumnIndex);
                 }
             }
             SetNodeStartIndex(nodeStartColumnName);
@@ -76,12 +89,12 @@ namespace DbcParserLib.Parsers
             AddColumn(nameof(DictionaryColumnKey.ByteOrder), "Byte\r\nOrder");
             AddColumn(nameof(DictionaryColumnKey.StartBit), "Start\r\nBit");
             AddColumn(nameof(DictionaryColumnKey.BitLength), "Bit\r\nLength");
-            AddColumn(nameof(DictionaryColumnKey.Sign), "Sign");
+            AddColumn(nameof(DictionaryColumnKey.DataType), "Sign");
             AddColumn(nameof(DictionaryColumnKey.Factor), "Factor");
             AddColumn(nameof(DictionaryColumnKey.Offset), "Offset");
             AddColumn(nameof(DictionaryColumnKey.MinimumPhysical), "Minimum\r\nPhysical");
             AddColumn(nameof(DictionaryColumnKey.MaximumPhysical), "Maximum\r\nPhysical");
-            AddColumn(nameof(DictionaryColumnKey.DefaultValue), "Default\r\nValue");
+            AddColumn(nameof(DictionaryColumnKey.InitialValue), "Default\r\nValue");
             AddColumn(nameof(DictionaryColumnKey.Unit), "Unit");
             AddColumn(nameof(DictionaryColumnKey.ValueTable), "Value\r\nTable");
             _nodeStartIndex = columnMapping.Count;
@@ -139,7 +152,7 @@ namespace DbcParserLib.Parsers
             columnConfig.Header = header;
             return UpdateColumnConfigState.Success;
         }
-        public UpdateColumnConfigState UpdateColumnConfig(DictionaryColumnKey columnKey, int columnIndex)
+        public UpdateColumnConfigState UpdateColumnConfigWithIndex(DictionaryColumnKey columnKey, int columnIndex)
         {
             if (!columnMapping.ContainsKey(columnKey.ToString()))
             {
@@ -149,7 +162,7 @@ namespace DbcParserLib.Parsers
             columnConfig.ColumnIndex = columnIndex;
             return UpdateColumnConfigState.Success;
         }
-        public UpdateColumnConfigState UpdateColumnConfig(string columnKey, int columnIndex)
+        public UpdateColumnConfigState UpdateColumnConfigWithIndex(string columnKey, int columnIndex)
         {
             if (!columnMapping.ContainsKey(columnKey))
             {
@@ -159,84 +172,50 @@ namespace DbcParserLib.Parsers
             columnConfig.ColumnIndex = columnIndex;
             return UpdateColumnConfigState.Success;
         }
-        public UpdateColumnConfigState UpdateColumnConfig(DictionaryColumnKey columnKey, string header)
+        public UpdateColumnConfigState UpdateColumnConfigWithName(DictionaryColumnKey columnKey, string columnIndexName)
         {
             if (!columnMapping.ContainsKey(columnKey.ToString()))
             {
                 return UpdateColumnConfigState.ColumnKeyNotExists;
             }
-            if (string.IsNullOrEmpty(header))
-            {
-                return UpdateColumnConfigState.HeaderError;
-            }
             var columnConfig = columnMapping[columnKey.ToString()];
-            columnConfig.Header = header;
+            columnConfig.ColumnIndex = convertColumnIndexWithColumnName(columnIndexName);
             return UpdateColumnConfigState.Success;
         }
-        public UpdateColumnConfigState UpdateColumnConfig(string columnKey, string header)
+
+        public UpdateColumnConfigState UpdateColumnConfigWithName(string columnKey, string columnIndexName)
         {
-            if (!columnMapping.ContainsKey(columnKey))
-            {
-                return UpdateColumnConfigState.ColumnKeyNotExists;
-            }
-            if (string.IsNullOrEmpty(header))
-            {
-                return UpdateColumnConfigState.HeaderError;
-            }
-            var columnConfig = columnMapping[columnKey];
-            columnConfig.Header = header;
-            return UpdateColumnConfigState.Success;
+            throw new NotImplementedException();
         }
+
         private void AddNodeDictionary()
         {
             for (int i = _nodeStartIndex; i < table_column_count; i++)
             {
-                AddColumn(table[0, i], table[0, i]);
+                if (!string.IsNullOrEmpty(table[_nodeRowIndex, i]))
+                {
+                    AddColumn(table[_nodeRowIndex, i], table[_nodeRowIndex, i]);
+                }
             }
         }
-        public ExcelParserState ParseFromPath(string path, out Dbc dbc)
+        public ExcelParserState ParseFirstSheetFromPath(string path, out Dbc dbc)
         {
             dbc = null;
             string extension = Path.GetExtension(path);
             IWorkbook workbook;
-
+            ExcelParserState result = ExcelParserState.Success;
             try
             {
-                using (FileStream file = new FileStream(path, FileMode.Open, FileAccess.Read))
-                {
-                    if (extension.Equals(".xls"))
-                    {
-                        workbook = new HSSFWorkbook(file);
-                    }
-                    else if (extension.Equals(".xlsx"))
-                    {
-                        workbook = new XSSFWorkbook(file);
-                    }
-                    else
-                    {
-                        return ExcelParserState.FormatError;
-                    }
-                }
-
+                createWorkbookFromPath(path, out workbook);
                 // 读取Excel内容的逻辑
                 ISheet sheet = workbook.GetSheetAt(0);
-                table_row_count = sheet.LastRowNum + 1;
-                table_column_count = sheet.GetRow(0).LastCellNum;
-                table = new string[table_row_count, table_column_count];
-                for (int row = 0; row <= sheet.LastRowNum; row++)
+                if (sheet == null)
                 {
-                    IRow currentRow = sheet.GetRow(row);
-                    if (currentRow != null)
-                    {
-                        for (int col = 0; col < table_column_count; col++)
-                        {
-                            ICell cell = currentRow.GetCell(col);
-                            if (cell != null)
-                            {
-                                table[row, col] = cell.ToString();
-                            }
-                        }
-                    }
+                    return ExcelParserState.ReadNullError;
+                }
+                if ((result = createWorkingTable(sheet, out table)) != ExcelParserState.Success)
+                {
+                    return result;
                 }
                 AddNodeDictionary();
                 //Paser to Dbc file
@@ -263,49 +242,30 @@ namespace DbcParserLib.Parsers
                 return ExcelParserState.UnknownError;
             }
         }
-        public ExcelParserState ParseFromPath(string path, string sheetName, out Dbc dbc)
+        public ExcelParserState ParseSheetNameFromPath(string path, string sheetName, out Dbc dbc)
         {
             dbc = null;
             string extension = Path.GetExtension(path);
             IWorkbook workbook;
-
+            ExcelParserState result = ExcelParserState.Success;
             try
             {
-                using (FileStream file = new FileStream(path, FileMode.Open, FileAccess.Read))
-                {
-                    if (extension.Equals(".xls"))
-                    {
-                        workbook = new HSSFWorkbook(file);
-                    }
-                    else if (extension.Equals(".xlsx"))
-                    {
-                        workbook = new XSSFWorkbook(file);
-                    }
-                    else
-                    {
-                        return ExcelParserState.FormatError;
-                    }
-                }
-
+                createWorkbookFromPath(path, out workbook);
                 // 读取Excel内容的逻辑
                 ISheet sheet = workbook.GetSheet(sheetName);
-                for (int row = 0; row <= sheet.LastRowNum; row++)
+                if (sheet == null)
                 {
-                    IRow currentRow = sheet.GetRow(row);
-                    if (currentRow != null)
-                    {
-                        for (int col = 0; col < currentRow.LastCellNum; col++)
-                        {
-                            ICell cell = currentRow.GetCell(col);
-                            if (cell != null)
-                            {
-                                // 处理单元格内容
-                                string cellValue = cell.ToString();
-                                // 根据需要解析cellValue
-                            }
-                        }
-                    }
+                    return ExcelParserState.ReadNullError;
                 }
+                if ((result = createWorkingTable(sheet, out table)) != ExcelParserState.Success)
+                {
+                    return result;
+                }
+                AddNodeDictionary();
+                //Paser to Dbc file
+                ParseNodesFromTable();
+                ParseMessageFromTable();
+                dbc = _dbcBuilder.Build();
 
                 // 假设解析成功，返回Success状态
                 return ExcelParserState.Success;
@@ -327,12 +287,54 @@ namespace DbcParserLib.Parsers
                 return ExcelParserState.UnknownError;
             }
         }
-        public ExcelParserState ParseFromPath(string path, int sheetIndex, out Dbc dbc)
+        public ExcelParserState ParseSheetIndexFromPath(string path, int sheetIndex, out Dbc dbc)
         {
             dbc = null;
             string extension = Path.GetExtension(path);
             IWorkbook workbook;
-
+            ExcelParserState result = ExcelParserState.Success;
+            try
+            {
+                createWorkbookFromPath(path, out workbook);
+                // 读取Excel内容的逻辑
+                ISheet sheet = workbook.GetSheetAt(sheetIndex);
+                if (sheet == null)
+                {
+                    return ExcelParserState.ReadNullError;
+                }
+                if ((result = createWorkingTable(sheet, out table)) != ExcelParserState.Success)
+                {
+                    return result;
+                }
+                AddNodeDictionary();
+                //Paser to Dbc file
+                ParseNodesFromTable();
+                ParseMessageFromTable();
+                dbc = _dbcBuilder.Build();
+                // 假设解析成功，返回Success状态
+                return ExcelParserState.Success;
+            }
+            catch (DirectoryNotFoundException)
+            {
+                return ExcelParserState.PathError;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return ExcelParserState.ReadPermissionError;
+            }
+            catch (IOException)
+            {
+                return ExcelParserState.ReadPermissionError;
+            }
+            catch (Exception)
+            {
+                return ExcelParserState.UnknownError;
+            }
+        }
+        private ExcelParserState createWorkbookFromPath(string path, out IWorkbook workbook)
+        {
+            workbook = null;
+            string extension = Path.GetExtension(path);
             try
             {
                 using (FileStream file = new FileStream(path, FileMode.Open, FileAccess.Read))
@@ -350,29 +352,6 @@ namespace DbcParserLib.Parsers
                         return ExcelParserState.FormatError;
                     }
                 }
-
-                // 读取Excel内容的逻辑
-                ISheet sheet = workbook.GetSheetAt(sheetIndex);
-                for (int row = 0; row <= sheet.LastRowNum; row++)
-                {
-                    IRow currentRow = sheet.GetRow(row);
-                    if (currentRow != null)
-                    {
-                        for (int col = 0; col < currentRow.LastCellNum; col++)
-                        {
-                            ICell cell = currentRow.GetCell(col);
-                            if (cell != null)
-                            {
-                                // 处理单元格内容
-                                string cellValue = cell.ToString();
-                                // 根据需要解析cellValue
-                            }
-                        }
-                    }
-                }
-
-                // 假设解析成功，返回Success状态
-                return ExcelParserState.Success;
             }
             catch (DirectoryNotFoundException)
             {
@@ -390,8 +369,39 @@ namespace DbcParserLib.Parsers
             {
                 return ExcelParserState.UnknownError;
             }
+            return ExcelParserState.UnknownError;
         }
-
+        private ExcelParserState createWorkingTable(ISheet sheet, out string[,] table)
+        {
+            table = null;
+            if (sheet == null)
+            {
+                return ExcelParserState.ReadNullError;
+            }
+            initSheetTable(sheet);
+            for (int row = 0; row <= sheet.LastRowNum; row++)
+            {
+                IRow currentRow = sheet.GetRow(row);
+                if (currentRow != null)
+                {
+                    for (int col = 0; col < table_column_count; col++)
+                    {
+                        ICell cell = currentRow.GetCell(col);
+                        if (cell != null)
+                        {
+                            table[row, col] = cell.ToString();
+                        }
+                    }
+                }
+            }
+            return ExcelParserState.Success;
+        }
+        private void initSheetTable(ISheet sheet)
+        {
+            table_row_count = sheet.LastRowNum + 1;
+            table_column_count = sheet.GetRow(0).LastCellNum > sheet.GetRow(_nodeRowIndex).LastCellNum ? sheet.GetRow(0).LastCellNum : sheet.GetRow(_nodeRowIndex).LastCellNum;
+            table = new string[table_row_count, table_column_count];
+        }
         public void SetNodeStartIndex(int nodeStartIndex)
         {
             _nodeStartIndex = nodeStartIndex;
@@ -399,17 +409,35 @@ namespace DbcParserLib.Parsers
 
         public void SetNodeStartIndex(string excelColoumnName)
         {
-            int columnIndex = 0;
-            excelColoumnName = excelColoumnName.ToUpper(); // 将列名转换为大写
-            for (int i = 0; i < excelColoumnName.Length; i++)
-            {
-                columnIndex *= 26;
-                columnIndex += (excelColoumnName[i] - 'A' + 1);
-            }
-            columnIndex--; // Convert to zero-based index
-            _nodeStartIndex = columnIndex;
+            _nodeStartIndex = convertColumnIndexWithColumnName(excelColoumnName);
         }
+        private int convertColumnIndexWithColumnName(string columnName)
+        {
+            int retVal = 0;
+            columnName = Regex.Replace(columnName.ToUpper().Trim(), "[^A-Z]", "");
+            for (int i = 0; i < columnName.Length; i++)
+            {
+                retVal *= 26;
+                retVal += (columnName[i] - 'A' + 1);
+            }
+            retVal--; // Convert to zero-based index
+            return retVal;
+        }
+        private string convertIndexToColumnName(int index)
+        {
+            if (index < 0)
+                return string.Empty;
 
+            string columnName = string.Empty;
+
+            while (index >= 0)
+            {
+                int remainder = index % 26;
+                columnName = (char)('A' + remainder) + columnName;
+                index = index / 26 - 1;
+            }
+            return columnName;
+        }
         public int GetNodeStartIndex()
         {
             return _nodeStartIndex;
@@ -439,15 +467,19 @@ namespace DbcParserLib.Parsers
         }
         private void ParseMessageFromTable()
         {
+            bool messageParsingResult = false;
+            bool signalParsingResult = false;
             AddCustomProperty();
-            for (int row = 1; row < table_row_count; row++)
+            for (int row = _messageRowStartOffset; row < table_row_count; row++)
             {
                 if (isMessageHeaderLine(row))
                 {
-                    string transmitter = getMessageRowTransmitterName(row);
-                    uint id = convertToMsgId(table[row, columnMapping[DictionaryColumnKey.ID.ToString()].ColumnIndex]);
+                    messageParsingResult |= parsing_MessageTransmitter(row, out string transmitter);
+                    messageParsingResult |= parsing_MessageId(table[row, columnMapping[DictionaryColumnKey.ID.ToString()].ColumnIndex], out uint id);
                     bool isExtId = id > 0x7FF ? true : false;
-                    string messageSendType = table[row, columnMapping[DictionaryColumnKey.MessageSendType.ToString()].ColumnIndex];
+                    messageParsingResult |= parsing_MsgSendType(table[row, columnMapping[DictionaryColumnKey.MessageSendType.ToString()].ColumnIndex], out string messageSendType);
+                    messageParsingResult |= parsing_FrameFormat(table[row, columnMapping[DictionaryColumnKey.FrameFormat.ToString()].ColumnIndex], out string parsedFrameFormat);
+                    messageParsingResult |= parsing_MessageCycleTime(table[row, columnMapping[DictionaryColumnKey.CycleTime.ToString()].ColumnIndex], out uint messageCycleTime);
                     var message = new Message
                     {
                         Name = table[row, columnMapping[DictionaryColumnKey.MessageName.ToString()].ColumnIndex],
@@ -457,85 +489,254 @@ namespace DbcParserLib.Parsers
                         DLC = Convert.ToByte(table[row, columnMapping[DictionaryColumnKey.DataLength.ToString()].ColumnIndex]),
                         IsExtID = isExtId,
                     };
-                    _dbcBuilder.AddMessage(message);
-                    _dbcBuilder.AddMessageCustomProperty(GenMsgSendType, id, messageSendType, false);
-                    _dbcBuilder.AddMessageCustomProperty(VFrameFormat, id, table[row, columnMapping[DictionaryColumnKey.FrameFormat.ToString()].ColumnIndex], false);
-                    _dbcBuilder.AddMessageCustomProperty(GenMsgCycleTime, id, table[row, columnMapping[DictionaryColumnKey.CycleTime.ToString()].ColumnIndex], true);
-                    _dbcBuilder.AddMessageCustomProperty(GenMsgStartDelayTime, id, "0", true);
-                    _dbcBuilder.AddMessageCustomProperty(GenMsgDelayTime, id, "0", true);
-                    _dbcBuilder.AddMessageCustomProperty(GenSigStartValue, id, "0", true);
+                    if (messageParsingResult)
+                    {
+                        _dbcBuilder.AddMessage(message);
+                        _dbcBuilder.AddMessageCustomProperty(GenMsgSendType, id, messageSendType, false);
+                        _dbcBuilder.AddMessageCustomProperty(VFrameFormat, id, parsedFrameFormat, false);
+                        _dbcBuilder.AddMessageCustomProperty(GenMsgCycleTime, id, messageCycleTime.ToString(), true);
+                        _dbcBuilder.AddMessageCustomProperty(GenMsgStartDelayTime, id, "0", true);
+                        _dbcBuilder.AddMessageCustomProperty(GenMsgDelayTime, id, "0", true);
+                        _dbcBuilder.AddMessageCustomProperty(GenSigStartValue, id, "0", true);
+                    }
                 }
                 else
                 {
-                    string name = table[row, columnMapping[DictionaryColumnKey.SignalName.ToString()].ColumnIndex];
-                    string comment = table[row, columnMapping[DictionaryColumnKey.Description.ToString()].ColumnIndex];
-                    byte byteOrder = string.Equals(table[row, columnMapping[DictionaryColumnKey.ByteOrder.ToString()].ColumnIndex], "Intel", StringComparison.OrdinalIgnoreCase) ? (byte)1 : (byte)0;
-                    ushort startBit = Convert.ToUInt16(table[row, columnMapping[DictionaryColumnKey.StartBit.ToString()].ColumnIndex]);
-                    ushort length = Convert.ToUInt16(table[row, columnMapping[DictionaryColumnKey.BitLength.ToString()].ColumnIndex]);
-                    DbcValueType valueType = (DbcValueType)Enum.Parse(typeof(DbcValueType), table[row, columnMapping[DictionaryColumnKey.Sign.ToString()].ColumnIndex], true);
-                    double factor = Convert.ToDouble(table[row, columnMapping[DictionaryColumnKey.Factor.ToString()].ColumnIndex]);
-                    double offset = Convert.ToDouble(table[row, columnMapping[DictionaryColumnKey.Offset.ToString()].ColumnIndex]);
-                    double minimumPhysical = Convert.ToDouble(table[row, columnMapping[DictionaryColumnKey.MinimumPhysical.ToString()].ColumnIndex]);
-                    double maximumPhysical = Convert.ToDouble(table[row, columnMapping[DictionaryColumnKey.MaximumPhysical.ToString()].ColumnIndex]);
-                    double initialValue = Convert.ToDouble(table[row, columnMapping[DictionaryColumnKey.DefaultValue.ToString()].ColumnIndex]);
-                    string unit = table[row, columnMapping[DictionaryColumnKey.Unit.ToString()].ColumnIndex];
-                    IReadOnlyDictionary<int, string> valueTableMap = ParseValueTableMap(table[row, columnMapping[DictionaryColumnKey.ValueTable.ToString()].ColumnIndex]);
-                    string[] reveiver = getSignalReceiver(row);
-                    _dbcBuilder.AddSignal(
-                        new Signal()
-                        {
-                            Name = name,
-                            Comment = comment,
-                            ByteOrder = byteOrder,
-                            StartBit = startBit,
-                            Length = length,
-                            ValueType = valueType,
-                            Factor = factor,
-                            Offset = offset,
-                            Minimum = minimumPhysical,
-                            Maximum = maximumPhysical,
-                            Unit = unit,
-                            ValueTableMap = valueTableMap,
-                            Receiver = reveiver,
-                        });
+
+                    signalParsingResult |= parsing_SignalName(table[row, columnMapping[DictionaryColumnKey.SignalName.ToString()].ColumnIndex], out string name);
+
+                    signalParsingResult |= parsing_ByteOrder(table[row, columnMapping[DictionaryColumnKey.ByteOrder.ToString()].ColumnIndex], out byte byteOrder);
+                    signalParsingResult |= parsing_StartBit(table[row, columnMapping[DictionaryColumnKey.StartBit.ToString()].ColumnIndex], out ushort startBit);
+                    signalParsingResult |= parsing_SignalLength(table[row, columnMapping[DictionaryColumnKey.BitLength.ToString()].ColumnIndex], out ushort length);
+                    signalParsingResult |= parsing_SignalValueType(table[row, columnMapping[DictionaryColumnKey.DataType.ToString()].ColumnIndex], out DbcValueType valueType);
+                    signalParsingResult |= parsing_Factor(table[row, columnMapping[DictionaryColumnKey.Factor.ToString()].ColumnIndex], out double factor);
+                    signalParsingResult |= parsing_Offset(table[row, columnMapping[DictionaryColumnKey.Offset.ToString()].ColumnIndex], out double offset);
+                    //Non - mandatory parsing content
+                    parsing_Description(table[row, columnMapping[DictionaryColumnKey.Description.ToString()].ColumnIndex], out string comment);
+                    parsing_MinimumPhysical(table[row, columnMapping[DictionaryColumnKey.MinimumPhysical.ToString()].ColumnIndex], out double minimumPhysical);
+                    parsing_MaximumPhysical(table[row, columnMapping[DictionaryColumnKey.MaximumPhysical.ToString()].ColumnIndex], out double maximumPhysical);
+                    parsing_initialValue(table[row, columnMapping[DictionaryColumnKey.InitialValue.ToString()].ColumnIndex], out double initialValue);
+                    parsing_SignalUnit(table[row, columnMapping[DictionaryColumnKey.Unit.ToString()].ColumnIndex], out string unit);
+                    parsing_ValueTableMap(table[row, columnMapping[DictionaryColumnKey.ValueTable.ToString()].ColumnIndex], out IReadOnlyDictionary<int, string> valueTableMap);
+                    parsing_SignalReceiver(row, out string[] reveiver);
+                    if (signalParsingResult)
+                    {
+                        _dbcBuilder.AddSignal(
+                            new Signal()
+                            {
+                                Name = name,
+                                Comment = comment,
+                                ByteOrder = byteOrder,
+                                StartBit = startBit,
+                                Length = length,
+                                ValueType = valueType,
+                                Factor = factor,
+                                Offset = offset,
+                                Minimum = minimumPhysical,
+                                Maximum = maximumPhysical,
+                                Unit = unit,
+                                ValueTableMap = valueTableMap,
+                                Receiver = reveiver,
+                            });
+                    }
+
                 }
             }
             return;
         }
-        public IReadOnlyDictionary<int, string> ParseValueTableMap(string valueTableString)
+        private bool parsing_ValueTableMap(string valueTableString, out IReadOnlyDictionary<int, string> valueTableMap)
         {
-            var valueTableMap = new Dictionary<int, string>();
+            var tempValueTableMap = new Dictionary<int, string>();
 
             if (string.IsNullOrWhiteSpace(valueTableString))
             {
-                return valueTableMap;
+                valueTableMap = tempValueTableMap;
+                return false;
             }
-
-            var entries = valueTableString.Replace(",", ":").Replace("：", ":").Replace("，", ":").Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            var entries = valueTableString.Trim().Replace(",", ":").Replace("：", ":").Replace("，", ":").Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var entry in entries)
             {
                 var parts = entry.Split(new[] { ':' }, 2);
                 if (parts.Length == 2 && parts[0].StartsWith("0x") && int.TryParse(parts[0].Substring(2), System.Globalization.NumberStyles.HexNumber, null, out int key))
                 {
-                    valueTableMap[key] = parts[1];
+                    tempValueTableMap[key] = parts[1].Trim();
                 }
             }
-
-            return valueTableMap;
-        }
-        private uint convertToMsgId(string id)
-        {
-            if (id.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+            if (tempValueTableMap.Count > 0)
             {
-                return Convert.ToUInt32(id.Substring(2), 16);
+                valueTableMap = tempValueTableMap;
+                return true;
+            }
+            valueTableMap = tempValueTableMap;
+            return false;
+        }
+        private bool parsing_SignalName(string orignalString, out string name)
+        {
+            name = string.Empty;
+            if (string.IsNullOrEmpty(orignalString))
+            {
+                return false;
+            }
+            name = orignalString.Trim();
+            return true;
+        }
+        private bool parsing_Description(string orignalString, out string description)
+        {
+            description = string.Empty;
+            if (string.IsNullOrEmpty(orignalString))
+            {
+                return false;
+            }
+            description = orignalString.Trim();
+            return true;
+        }
+        private bool parsing_StartBit(string orignalString, out ushort startBit)
+        {
+            startBit = 0;
+            if (string.IsNullOrEmpty(orignalString))
+            {
+                return false;
+            }
+            else if (orignalString.Trim().StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+            {
+                return ushort.TryParse(orignalString.Substring(2), System.Globalization.NumberStyles.HexNumber, null, out startBit);
             }
             else
             {
-                return Convert.ToUInt32(id);
+                return ushort.TryParse(orignalString, out startBit);
             }
         }
-        private string[] getSignalReceiver(int row)
+        private bool parsing_SignalLength(string orignalString, out ushort signalLength)
         {
+            signalLength = 0;
+            bool result = false;
+            if (string.IsNullOrEmpty(orignalString))
+            {
+                return false;
+            }
+            else if (orignalString.Trim().StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+            {
+                result = ushort.TryParse(orignalString.Substring(2), System.Globalization.NumberStyles.HexNumber, null, out signalLength);
+                if (signalLength == 0)
+                {
+                    return false;
+                }
+                return result;
+            }
+            else
+            {
+                result = ushort.TryParse(orignalString, out signalLength);
+                if (signalLength == 0)
+                {
+                    return false;
+                }
+                return result;
+            }
+        }
+        private bool parsing_FrameFormat(string orignalString, out string frameFormat)
+        {
+            frameFormat = "StandardCAN";
+            if (orignalString.ToUpper().Contains("J1939"))
+            {
+                frameFormat = "J1939PG";
+                return true;
+            }
+            else if (orignalString.ToUpper().Contains("NORMAL") || orignalString.ToUpper().Contains("STANDARD"))
+            {
+                frameFormat = "StandardCAN";
+                return true;
+            }
+            else if (orignalString.ToUpper().Contains("EXTEND"))
+            {
+                frameFormat = "ExtendedCAN";
+                return true;
+            }
+            return false;
+        }
+        private bool parsing_MsgSendType(string originalString, out string messageSendType)
+        {
+            messageSendType = "cyclic";
+            if (string.IsNullOrEmpty(originalString))
+            {
+                return false;
+            }
+            if (originalString.ToUpper().Contains("cyclic".ToUpper()))
+            {
+                messageSendType = "cyclic";
+                return true;
+            }
+            else if (originalString.ToUpper().Contains("cyclicIfActive".ToUpper()))
+            {
+                messageSendType = "cyclicIfActive";
+                return true;
+            }
+            else if (originalString.ToUpper().Contains("noMsgSendType".ToUpper()))
+            {
+                messageSendType = "noMsgSendType";
+                return true;
+            }
+            return false;
+        }
+        private bool parsing_MessageTransmitter(int row, out string transmitter)
+        {
+            for (int col = _nodeStartIndex; col < table_column_count; col++)
+            {
+                if (!string.IsNullOrEmpty(table[row, col]) && string.Equals(table[row, col].Trim(), "S", StringComparison.OrdinalIgnoreCase))
+                {
+                    foreach (var key in columnMapping.Keys)
+                    {
+                        if (columnMapping[key].ColumnIndex == col)
+                        {
+                            transmitter = columnMapping[key].Header;
+                        }
+                    }
+                }
+            }
+            transmitter = "Vector__XXX";
+            return true;
+        }
+
+        private bool parsing_MessageId(string orignalString, out uint id)
+        {
+            id = 0;
+            if (string.IsNullOrEmpty(orignalString))
+            {
+                return false;
+            }
+            if (orignalString.Trim().StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+            {
+                return uint.TryParse(orignalString.Substring(2), System.Globalization.NumberStyles.HexNumber, null, out id);
+            }
+            else
+            {
+                return uint.TryParse(orignalString, out id);
+            }
+        }
+        private bool parsing_MessageCycleTime(string orignalString, out uint cycleTime)
+        {
+            if (orignalString.Trim().StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+            {
+                return uint.TryParse(orignalString.Substring(2), System.Globalization.NumberStyles.HexNumber, null, out cycleTime);
+            }
+            else
+            {
+                return uint.TryParse(orignalString, out cycleTime);
+            }
+        }
+        private bool parsing_SignalValueType(string orignalString, out DbcValueType valueType)
+        {
+            valueType = DbcValueType.Unsigned;
+            bool retVal = false;
+            if (string.IsNullOrEmpty(orignalString))
+            {
+                return false;
+            }
+            retVal = Enum.TryParse<DbcValueType>(orignalString, out valueType);
+            return retVal;
+        }
+        private bool parsing_SignalReceiver(int row, out string[] signalReceives)
+        {
+            signalReceives = null;
             List<string> receivers = new List<string>();
             if (!isMessageHeaderLine(row))
             {
@@ -550,12 +751,120 @@ namespace DbcParserLib.Parsers
                     }
 
                 }
-                return receivers.ToArray();
+                signalReceives = receivers.ToArray();
+                if (signalReceives.Length > 0)
+                {
+                    return true;
+                }
+                else
+                    return false;
+
             }
             else
             {
-                return null;
+
+                return false;
             }
+        }
+        private bool parsing_ByteOrder(string orignalString, out byte byteOrder)
+        {
+            byteOrder = 1;
+            if (string.IsNullOrEmpty(orignalString))
+            {
+                return false;
+            }
+            else if (orignalString.Trim().ToUpper().Contains("Intel".ToUpper()))
+            {
+                byteOrder = 1;
+            }
+            else if (orignalString.Trim().ToUpper().Contains("Motorola".ToUpper()))
+            {
+                byteOrder = 0;
+            }
+            return true;
+        }
+        private bool parsing_Factor(string orignalString, out double Factor)
+        {
+            Factor = 0;
+            if (string.IsNullOrEmpty(orignalString))
+            {
+                return false;
+            }
+            if (orignalString.Trim().StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+            {
+                return double.TryParse(orignalString.Substring(2), System.Globalization.NumberStyles.Float, null, out Factor);
+            }
+            else
+            {
+                return double.TryParse(orignalString, out Factor);
+            }
+        }
+        private bool parsing_Offset(string orignalString, out double Offset)
+        {
+            Offset = 0;
+            if (string.IsNullOrEmpty(orignalString))
+            {
+                return false;
+            }
+            if (orignalString.Trim().StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+            {
+                return double.TryParse(orignalString.Substring(2), System.Globalization.NumberStyles.Float, null, out Offset);
+            }
+            else
+            {
+                return double.TryParse(orignalString, out Offset);
+            }
+        }
+        private bool parsing_MinimumPhysical(string orignalString, out double minimumValue)
+        {
+            minimumValue = 0;
+            if (string.IsNullOrEmpty(orignalString))
+            {
+                return false;
+            }
+            if (orignalString.Trim().StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+            {
+                return double.TryParse(orignalString.Substring(2), System.Globalization.NumberStyles.Float, null, out minimumValue);
+            }
+            else
+            {
+                return double.TryParse(orignalString, out minimumValue);
+            }
+        }
+        private bool parsing_MaximumPhysical(string orignalString, out double maximumValue)
+        {
+            maximumValue = 0;
+            if (string.IsNullOrEmpty(orignalString))
+            {
+                return false;
+            }
+            if (orignalString.Trim().StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+            {
+                return double.TryParse(orignalString.Substring(2), System.Globalization.NumberStyles.Float, null, out maximumValue);
+            }
+            else
+            {
+                return double.TryParse(orignalString, out maximumValue);
+            }
+        }
+        private bool parsing_SignalUnit(string orignalString, out string unit)
+        {
+            unit = string.Empty;
+            if (string.IsNullOrEmpty(orignalString))
+            {
+                return false;
+            }
+            unit = orignalString.Trim();
+            return true;
+        }
+        private bool parsing_initialValue(string orignalString, out double initialValue)
+        {
+            initialValue = 0;
+            if (string.IsNullOrEmpty(orignalString))
+            {
+                return false;
+            }
+            return double.TryParse(orignalString, out initialValue);
         }
         private void AddCustomProperty()
         {
@@ -635,6 +944,7 @@ namespace DbcParserLib.Parsers
                         Maximum = 3600000,
                     }
                 });
+
             _dbcBuilder.AddCustomProperty(CustomPropertyObjectType.Global,
                 new CustomPropertyDefinition(m_observer)
                 {
@@ -645,34 +955,127 @@ namespace DbcParserLib.Parsers
                         Default = "CAN",
                     }
                 });
-            //_dbcBuilder.AddCustomProperty(CustomPropertyObjectType.Global,
-            //    new CustomPropertyDefinition(m_observer)
-            //    {
-            //        DataType = CustomPropertyDataType.String,
-            //        Name = ProtocolType,
-            //        StringCustomProperty = new StringCustomPropertyDefinition
-            //        {
-            //            Default = "J1939",
-            //        }
-            //    });
-        }
-        private string getMessageRowTransmitterName(int row)
-        {
-            for (int col = _nodeStartIndex; col < table_column_count; col++)
+            _dbcBuilder.AddCustomProperty(CustomPropertyObjectType.Global, new CustomPropertyDefinition(m_observer)
             {
-                if (!string.IsNullOrEmpty(table[row, col]) && string.Equals(table[row, col].Trim(), "S", StringComparison.OrdinalIgnoreCase))
+                DataType = CustomPropertyDataType.String,
+                Name = ProtocolType,
+                StringCustomProperty = new StringCustomPropertyDefinition
                 {
-                    foreach (var key in columnMapping.Keys)
-                    {
-                        if (columnMapping[key].ColumnIndex == col)
-                        {
-                            return columnMapping[key].Header;
-                        }
-                    }
+                    Default = _protocolType.ToString(),
                 }
+            });
+
+            switch (_protocolType)
+            {
+                case DbcProtocolType.J1939:
+                    AddCustomJ1939NodeProperty();
+                    break;
             }
-            return "Vector__XXX";
         }
+        private void AddCustomJ1939NodeProperty()
+        {
+            _dbcBuilder.AddCustomProperty(CustomPropertyObjectType.Node, new CustomPropertyDefinition(m_observer)
+            {
+                DataType = CustomPropertyDataType.Integer,
+                Name = NmStationAddress,
+                IntegerCustomProperty = new NumericCustomPropertyDefinition<int>
+                {
+                    Default = 254,
+                    Minimum = 0,
+                    Maximum = 255,
+                }
+            });
+            _dbcBuilder.AddCustomProperty(CustomPropertyObjectType.Node, new CustomPropertyDefinition(m_observer)
+            {
+                DataType = CustomPropertyDataType.Integer,
+                Name = NmJ1939IndustryGroup,
+                IntegerCustomProperty = new NumericCustomPropertyDefinition<int>
+                {
+                    Default = 0,
+                    Minimum = 0,
+                    Maximum = 7,
+                }
+            });
+            _dbcBuilder.AddCustomProperty(CustomPropertyObjectType.Node, new CustomPropertyDefinition(m_observer)
+            {
+                DataType = CustomPropertyDataType.Integer,
+                Name = NmJ1939System,
+                IntegerCustomProperty = new NumericCustomPropertyDefinition<int>
+                {
+                    Default = 0,
+                    Minimum = 0,
+                    Maximum = 127,
+                }
+            });
+            _dbcBuilder.AddCustomProperty(CustomPropertyObjectType.Node, new CustomPropertyDefinition(m_observer)
+            {
+                DataType = CustomPropertyDataType.Integer,
+                Name = NmJ1939Function,
+                IntegerCustomProperty = new NumericCustomPropertyDefinition<int>
+                {
+                    Default = 0,
+                    Minimum = 0,
+                    Maximum = 255,
+                }
+            });
+            _dbcBuilder.AddCustomProperty(CustomPropertyObjectType.Node, new CustomPropertyDefinition(m_observer)
+            {
+                DataType = CustomPropertyDataType.Integer,
+                Name = NmJ1939FunctionInstance,
+                IntegerCustomProperty = new NumericCustomPropertyDefinition<int>
+                {
+                    Default = 0,
+                    Minimum = 0,
+                    Maximum = 7,
+                }
+            });
+            _dbcBuilder.AddCustomProperty(CustomPropertyObjectType.Node, new CustomPropertyDefinition(m_observer)
+            {
+                DataType = CustomPropertyDataType.Integer,
+                Name = NmJ1939ECUInstance,
+                IntegerCustomProperty = new NumericCustomPropertyDefinition<int>
+                {
+                    Default = 0,
+                    Minimum = 0,
+                    Maximum = 3,
+                }
+            });
+            _dbcBuilder.AddCustomProperty(CustomPropertyObjectType.Node, new CustomPropertyDefinition(m_observer)
+            {
+                DataType = CustomPropertyDataType.Integer,
+                Name = NmJ1939SystemInstance,
+                IntegerCustomProperty = new NumericCustomPropertyDefinition<int>
+                {
+                    Default = 0,
+                    Minimum = 0,
+                    Maximum = 15,
+                }
+            });
+            _dbcBuilder.AddCustomProperty(CustomPropertyObjectType.Node, new CustomPropertyDefinition(m_observer)
+            {
+                DataType = CustomPropertyDataType.Integer,
+                Name = NmJ1939ManufacturerCode,
+                IntegerCustomProperty = new NumericCustomPropertyDefinition<int>
+                {
+                    Default = 0,
+                    Minimum = 0,
+                    Maximum = 2047,
+                }
+            });
+            _dbcBuilder.AddCustomProperty(CustomPropertyObjectType.Node, new CustomPropertyDefinition(m_observer)
+            {
+                DataType = CustomPropertyDataType.Integer,
+                Name = NmJ1939IdentityNumber,
+                IntegerCustomProperty = new NumericCustomPropertyDefinition<int>
+                {
+                    Default = 0,
+                    Minimum = 0,
+                    Maximum = 2097151,
+                }
+            });
+        }
+
+
         private bool isMessageHeaderLine(int row)
         {
             if (row < table_row_count)
@@ -733,5 +1136,67 @@ namespace DbcParserLib.Parsers
             return true;
         }
 
+        public void SetProtocolType(DbcProtocolType protocolType)
+        {
+            _protocolType = protocolType;
+        }
+
+        public void SetMessageFieldRowStartOffset(int startIndex = 1)
+        {
+            _messageRowStartOffset = startIndex;
+        }
+
+        public void SetNodeRowIndex(int nodeRowIndex = 0)
+        {
+            _nodeRowIndex = nodeRowIndex;
+        }
+
+        public string GetColumnIndexName(DictionaryColumnKey columnKey)
+        {
+            string retVal = "";
+            if (columnMapping.TryGetValue(columnKey.ToString(), out ExcelColumnConfigModel value))
+            {
+                retVal = convertIndexToColumnName(value.ColumnIndex);
+            }
+            return retVal;
+        }
+
+        public int GetColumnIndex(DictionaryColumnKey columnKey)
+        {
+            int retVal = -1;
+            if (columnMapping.TryGetValue(columnKey.ToString(), out ExcelColumnConfigModel value))
+            {
+                retVal = value.ColumnIndex;
+            }
+            return retVal;
+        }
+
+        public bool CheckColumnIndexConfiction(out List<int> confictionIndexList)
+        {
+            confictionIndexList = new List<int>();
+            var indexCount = new Dictionary<int, int>();
+
+            foreach (var column in columnMapping.Values)
+            {
+                if (indexCount.ContainsKey(column.ColumnIndex))
+                {
+                    indexCount[column.ColumnIndex]++;
+                }
+                else
+                {
+                    indexCount[column.ColumnIndex] = 1;
+                }
+            }
+
+            foreach (var kvp in indexCount)
+            {
+                if (kvp.Value > 1)
+                {
+                    confictionIndexList.Add(kvp.Key);
+                }
+            }
+
+            return confictionIndexList.Count > 0;
+        }
     }
 }

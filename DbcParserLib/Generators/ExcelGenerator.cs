@@ -54,12 +54,12 @@ namespace DbcParserLib.Generators
             AddColumn(nameof(DictionaryColumnKey.ByteOrder), "Byte\r\nOrder", 10);
             AddColumn(nameof(DictionaryColumnKey.StartBit), "Start\r\nBit", 10);
             AddColumn(nameof(DictionaryColumnKey.BitLength), "Bit\r\nLength", 15);
-            AddColumn(nameof(DictionaryColumnKey.Sign), "Sign", 10);
+            AddColumn(nameof(DictionaryColumnKey.DataType), "Sign", 10);
             AddColumn(nameof(DictionaryColumnKey.Factor), "Factor", 10);
             AddColumn(nameof(DictionaryColumnKey.Offset), "Offset", 10);
             AddColumn(nameof(DictionaryColumnKey.MinimumPhysical), "Minimum\r\nPhysical", 15);
             AddColumn(nameof(DictionaryColumnKey.MaximumPhysical), "Maximum\r\nPhysical", 15);
-            AddColumn(nameof(DictionaryColumnKey.DefaultValue), "Default\r\nValue", 15);
+            AddColumn(nameof(DictionaryColumnKey.InitialValue), "Default\r\nValue", 15);
             AddColumn(nameof(DictionaryColumnKey.Unit), "Unit", 10);
             AddColumn(nameof(DictionaryColumnKey.ValueTable), "Value\r\nTable", 25);
         }
@@ -629,7 +629,7 @@ namespace DbcParserLib.Generators
                 table[currentLine, BitLengthValue.ColumnIndex] = signal.Length.ToString();
             }
             //Sign
-            if (columnMapping.TryGetValue(DictionaryColumnKey.Sign.ToString(), out ExcelColumnConfigModel SignValue))
+            if (columnMapping.TryGetValue(DictionaryColumnKey.DataType.ToString(), out ExcelColumnConfigModel SignValue))
             {
                 table[currentLine, SignValue.ColumnIndex] = signal.ValueType.ToString();
             }
@@ -654,7 +654,7 @@ namespace DbcParserLib.Generators
                 table[currentLine, MaximumPhysicalValue.ColumnIndex] = signal.Maximum.ToString();
             }
             //DefaultValue
-            if (columnMapping.TryGetValue(DictionaryColumnKey.DefaultValue.ToString(), out ExcelColumnConfigModel DefaultValueValue))
+            if (columnMapping.TryGetValue(DictionaryColumnKey.InitialValue.ToString(), out ExcelColumnConfigModel DefaultValueValue))
             {
                 table[currentLine, DefaultValueValue.ColumnIndex] = signal.InitialValue.ToString();
             }
