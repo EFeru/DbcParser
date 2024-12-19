@@ -846,7 +846,7 @@ BA_DEF_  ""DBName"" STRING ;";
 
             Assert.That(dbc.Messages.First().Signals.First().Name, Is.EqualTo("New_Signal_2"));
             Assert.That(dbc.Messages.First().Signals.Last().Name, Is.EqualTo("New_Signal_1"));
-            Assert.That(dbc.Messages.First().Signals.Last().Comment, Is.EqualTo("Flag to indicate newly created object in CAN bus.\r\nObject history flag\r\n0x0: new object in the cycle;\r\n0x1: object existed in previous cycle"));
+            Assert.That(dbc.Messages.First().Signals.Last().Comment, Is.EqualTo($"Flag to indicate newly created object in CAN bus.{Environment.NewLine}Object history flag{Environment.NewLine}0x0: new object in the cycle;{Environment.NewLine}0x1: object existed in previous cycle"));
         }
     }
 }
