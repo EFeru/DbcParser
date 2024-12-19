@@ -90,12 +90,6 @@ namespace DbcParserLib
             line = HandleMultipleDefinitionsPerLine(line);
             line = HandleMultiline(line);
 
-            var test = line;
-            if (line.EndsWith(lineTermination) == false && keywords.Any(prefix => test.Equals(prefix)) == false) //correct missing terminations
-            {
-                line = line + lineTermination;
-            }
-
             return true;
         }
 
