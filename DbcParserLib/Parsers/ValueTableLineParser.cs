@@ -10,12 +10,12 @@ namespace DbcParserLib.Parsers
         private const string ValueTableGroup = "ValueTable";
         private const string EnvVarGroup = "EnvVarName";
         private const string ValueDescriptionGroup = "ValueDescription";
-        private const string EndValeDescriptionGroup = "ValueDescriptionEnd";
+        private const string EndValueDescriptionGroup = "ValueDescriptionEnd";
         private const string ValueTableLineStarter = "VAL_ ";
 
         private readonly string m_valueTableLinkParsingRegex = $@"VAL_\s+(?<{MessageIdGroup}>\d+)\s+(?<{SignalNameGroup}>[a-zA-Z_][\w]*)\s+(?<{ValueTableGroup}>[a-zA-Z_][\w]*)\s*;";
         private readonly string m_valueTableParsingRegex = $@"VAL_\s+(?:(?:(?<{MessageIdGroup}>\d+)\s+(?<{SignalNameGroup}>[a-zA-Z_][\w]*))|(?<{EnvVarGroup}>[a-zA-Z_][\w]*))\s+" +
-                                                           $@"(?<{ValueDescriptionGroup}>(?:(?:-?\d+)\s+(?:""[^""]*"")\s+)*)(?<{EndValeDescriptionGroup}>(?:(?:-?\d+)\s+(?:""[^""]*"")\s*));";
+                                                           $@"(?<{ValueDescriptionGroup}>(?:(?:-?\d+)\s+(?:""[^""]*"")\s+)*)(?<{EndValueDescriptionGroup}>(?:(?:-?\d+)\s+(?:""[^""]*"")\s*));";
 
         private readonly IParseFailureObserver m_observer;
 
@@ -42,8 +42,8 @@ namespace DbcParserLib.Parsers
             if (match.Success)
             {
                 var dictionary = string.IsNullOrEmpty(match.Groups[ValueDescriptionGroup].Value)
-                    ? match.Groups[EndValeDescriptionGroup].Value
-                    : string.Concat(match.Groups[ValueDescriptionGroup].Value, match.Groups[EndValeDescriptionGroup].Value);
+                    ? match.Groups[EndValueDescriptionGroup].Value
+                    : string.Concat(match.Groups[ValueDescriptionGroup].Value, match.Groups[EndValueDescriptionGroup].Value);
 
                 if (!string.IsNullOrEmpty(dictionary) && dictionary.TryParseToDict(out var valueTableDictionary))
                 {

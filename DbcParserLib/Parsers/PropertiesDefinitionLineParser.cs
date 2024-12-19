@@ -1,5 +1,7 @@
 ﻿using DbcParserLib.Model;
 using DbcParserLib.Observers;
+using System;
+using System.ComponentModel;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -23,7 +25,7 @@ namespace DbcParserLib.Parsers
         private const string PropertiesDefinitionDefaultLineStarter = "BA_DEF_DEF_ ";
 
         private readonly string m_propertyDefinitionParsingRegex = $@"BA_DEF_(?:\s+(?<{ObjectTypeGroup}>BU_|BO_|SG_|EV_))?\s+""(?<{AttributeNameGroup}>[a-zA-Z_][\w]*)""\s+" +
-                                                                   $@"(?:(?:(?<{IsIntegerValueGroup}>INT|HEX)\s+(?<{MinIntGroup}>-?\d+)\s+(?<{MaxIntGroup}>-?\d+))|" +
+                                                                   $@"(?:(?:(?<{IsIntegerValueGroup}>INT|HEX)\s+(?<{MinIntGroup}>-?[\d\+eE]+)\s+(?<{MaxIntGroup}>-?[\d\+eE]+))|" +
                                                                    $@"(?:(?<{IsFloatValueGroup}>FLOAT)\s+(?<{MinFloatGroup}>[\d\+\-eE.]+)\s+(?<{MaxFloatGroup}>[\d\+\-eE.]+))" +
                                                                    $@"|(?<{IsStringValueGroup}>STRING)|(?:(?<{IsEnumValueGroup}>ENUM)\s+(?<{EnumValueGroup}>(?:""[^""]*"",\s*)*(?:""[^""]*""))))\s*;";
 
@@ -80,10 +82,20 @@ namespace DbcParserLib.Parsers
                     CustomPropertyDataType dataType = CustomPropertyDataType.Integer;
                     if (match.Groups[IsIntegerValueGroup].Value.Equals("INT"))
                     {
+                        //Since int.TryParse() is not able to parse scientic notation string we need to:
+                        //Use double.TryParse() to parse digits or scientific notation string
+                        //Cast values to integer (safe since regex accept only integer digits and positive exponent)
+                        if(double.TryParse(match.Groups[MinIntGroup].Value, out var minValue) == false ||
+                           double.TryParse(match.Groups[MaxIntGroup].Value, out var maxValue) == false)
+                        {
+                            m_observer.PropertyDefinitionSyntaxError();
+                            return true;
+                        }
+
                         customProperty.IntegerCustomProperty = new NumericCustomPropertyDefinition<int>
                         {
-                            Minimum = int.Parse(match.Groups[MinIntGroup].Value, CultureInfo.InvariantCulture),
-                            Maximum = int.Parse(match.Groups[MaxIntGroup].Value, CultureInfo.InvariantCulture),
+                            Minimum = Convert.ToInt32(minValue),
+                            Maximum = Convert.ToInt32(maxValue)
                         };
                     }
                     else if (match.Groups[IsIntegerValueGroup].Value.Equals("HEX"))

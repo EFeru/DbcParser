@@ -132,7 +132,15 @@ namespace DbcParserLib.Observers
         {
         }
 
-        public void UnknownLine(string line)
+        public void ExtraMessageTransmittersSyntaxError()
+        {
+        }
+
+        public void ExtraMessageTransmittersDuplicate(uint messageId, string duplicateTransmitter)
+        {
+        }
+
+        public void UnknownLine()
         {
         }
 

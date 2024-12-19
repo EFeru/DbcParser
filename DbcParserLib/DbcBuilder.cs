@@ -180,6 +180,18 @@ namespace DbcParserLib
                 m_observer.PropertyNameNotFound(propertyName);
         }
 
+        public void AddMessageAdditionalTransmitters(uint messageId, string[] additonalTransmitters)
+        {
+            if (m_messages.TryGetValue(messageId, out var message))
+            {
+                message.AdditionalTransmitters = additonalTransmitters;
+            }
+            else
+            {
+                m_observer.MessageIdNotFound(messageId);
+            }
+        }
+
         public void AddSignalCustomProperty(string propertyName, uint messageId, string signalName, string value, bool isNumeric)
         {
             if (m_customProperties[CustomPropertyObjectType.Signal].TryGetValue(propertyName, out var customProperty))

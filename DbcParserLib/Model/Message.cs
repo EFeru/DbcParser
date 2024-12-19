@@ -9,6 +9,7 @@ namespace DbcParserLib.Model
         public string Name { get; }
         public ushort DLC { get; }
         public string Transmitter { get; }
+        public IReadOnlyCollection<string> AdditionalTransmitters { get; }
         public string Comment { get; }
         public int CycleTime { get; }
         public IReadOnlyList<ImmutableSignal> Signals { get; }
@@ -23,6 +24,7 @@ namespace DbcParserLib.Model
             Name = message.Name;
             DLC = message.DLC;
             Transmitter = message.Transmitter;
+            AdditionalTransmitters = message.AdditionalTransmitters;
             Comment = message.Comment;
             CycleTime = cycleTime;
             Signals = signals;
@@ -39,6 +41,7 @@ namespace DbcParserLib.Model
         public string Name;
         public ushort DLC;
         public string Transmitter;
+        public string[] AdditionalTransmitters;
         public string Comment;
         
         public List<Signal> Signals = new List<Signal>();
