@@ -848,5 +848,72 @@ BA_DEF_  ""DBName"" STRING ;";
             Assert.That(dbc.Messages.First().Signals.Last().Name, Is.EqualTo("New_Signal_1"));
             Assert.That(dbc.Messages.First().Signals.Last().Comment, Is.EqualTo($"Flag to indicate newly created object in CAN bus.{Environment.NewLine}Object history flag{Environment.NewLine}0x0: new object in the cycle;{Environment.NewLine}0x1: object existed in previous cycle"));
         }
+
+
+        [Test]
+        public void ParseFullFile()
+        {
+            var dbcString = @"
+VERSION """"
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_:
+
+BO_ 1160 DAS_steeringControl: 4 NEO
+ SG_ DAS_steeringControlType : 23|2@0+ (1,0) [0|0] """"  EPAS
+ SG_ DAS_steeringAngleRequest : 0|16@0+ (1,0) [0|0] """"  EPAS
+
+CM_ BO_ 1160 ""This is a very fine comment; Right?""; 
+VAL_ 1160 DAS_steeringControlType 1 ""ANGLE_CONTROL"" 3 ""DISABLED"" 0 ""NONE"" 2 ""RESERVED"";
+VAL_ 1160 DAS_steeringAngleRequest 16384 ""ZERO_ANGLE"";";
+
+            var failureObserver = new SimpleFailureObserver();
+            Parser.SetParsingFailuresObserver(failureObserver);
+            var dbc = Parser.Parse(dbcString);
+            var errorList = failureObserver.GetErrorList();
+
+            Assert.That(errorList, Has.Count.EqualTo(0));
+            Assert.That(dbc.Messages.Count(), Is.EqualTo(1));
+            Assert.That(dbc.Messages.First().Comment, Is.EqualTo("This is a very fine comment; Right?"));
+
+            Assert.That(dbc.Messages.First().Signals.Count(), Is.EqualTo(2));
+            Assert.That(dbc.Messages.First().Signals.First().ValueTableMap.Count, Is.EqualTo(4));
+            Assert.That(dbc.Messages.First().Signals.First().ValueTableMap.Last().Key, Is.EqualTo(2));
+            Assert.That(dbc.Messages.First().Signals.First().ValueTableMap.Last().Value, Is.EqualTo("RESERVED"));
+            Assert.That(dbc.Messages.First().Signals.Last().ValueTableMap.Count, Is.EqualTo(1));
+            Assert.That(dbc.Messages.First().Signals.Last().ValueTableMap.Last().Key, Is.EqualTo(16384));
+            Assert.That(dbc.Messages.First().Signals.Last().ValueTableMap.Last().Value, Is.EqualTo("ZERO_ANGLE"));
+        }
     }
 }
