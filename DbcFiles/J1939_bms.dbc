@@ -1,0 +1,1014 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_:
+VAL_TABLE_ Abort 2 "不可信" 1 "中止" 0 "正常" ;
+VAL_TABLE_ VoltageState 2 "不可信" 1 "电压异常" 0 "正常" ;
+VAL_TABLE_ CurrentState 2 "不可信" 1 "电流超过需求值" 0 "电流正常" ;
+VAL_TABLE_ Fault 2 "不可信" 1 "故障" 0 "正常" ;
+VAL_TABLE_ Achive 2 "不可信" 1 "到达" 0 "未到达" ;
+VAL_TABLE_ ChargerReady 255 "无效" 170 "充电机完成充电准备" 0 "充电机未做好充电准备" ;
+VAL_TABLE_ ChargeEnable 1 "允许" 0 "禁止" ;
+VAL_TABLE_ BatteryVoltageState 2 "过低" 1 "过高" 0 "正常" ;
+VAL_TABLE_ BatteryTempState 2 "不可信" 1 "过高" 0 "正常" ;
+VAL_TABLE_ State 2 "不可信" 1 "不正常" 0 "正常" ;
+VAL_TABLE_ BatteryCurrentState 2 "不可信" 1 "过流" 0 "正常" ;
+VAL_TABLE_ BMSChargeReady 255 "无效" 170 "BMS完成充电准备" 0 "BMS未做好充电准备" ;
+VAL_TABLE_ Timeout 2 "不可信" 1 "超时" 0 "正常" ;
+VAL_TABLE_ BCL_ChargeMode 2 "恒流充电" 1 "恒压充电" ;
+VAL_TABLE_ TPCM_Control 255 "Abort" 32 "BAM" 19 "ACK" 17 "CTS" 16 "RTS" ;
+VAL_TABLE_ BRM_BatteryType 255 "其他电池" 8 "钛酸锂电池" 7 "聚合物锂离子电池" 6 "三元材料电池" 5 "古酸锂电池" 4 "锰酸锂电池" 3 "磷酸铁锂电池" 2 "镍氢电池" 1 "铅酸电池" ;
+VAL_TABLE_ Recognition 170 "BMS能辨识" 0 "BMS不能辨识" ;
+
+
+BO_ 2551709438 BSOC: 16 Vector__XXX
+ SG_ BSOC_0 : 0|8@1- (1,0) [0|100] "%" Vector__XXX
+ SG_ BSOC_1 : 8|8@1- (1,0) [0|100] "%" Vector__XXX
+ SG_ BSOC_2 : 16|8@1- (1,0) [0|100] "%" Vector__XXX
+ SG_ BSOC_3 : 24|8@1- (1,0) [0|100] "%" Vector__XXX
+ SG_ BSOC_4 : 32|8@1- (1,0) [0|100] "%" Vector__XXX
+ SG_ BSOC_5 : 40|8@1- (1,0) [0|100] "%" Vector__XXX
+ SG_ BSOC_6 : 48|8@1- (1,0) [0|100] "%" Vector__XXX
+ SG_ BSOC_7 : 56|8@1- (1,0) [0|100] "%" Vector__XXX
+ SG_ BSOC_8 : 64|8@1- (1,0) [0|100] "%" Vector__XXX
+ SG_ BSOC_9 : 72|8@1- (1,0) [0|100] "%" Vector__XXX
+ SG_ BSOC_10 : 80|8@1- (1,0) [0|100] "%" Vector__XXX
+ SG_ BSOC_11 : 88|8@1- (1,0) [0|100] "%" Vector__XXX
+ SG_ BSOC_12 : 96|8@1- (1,0) [0|100] "%" Vector__XXX
+ SG_ BSOC_13 : 104|8@1- (1,0) [0|100] "%" Vector__XXX
+ SG_ BSOC_14 : 112|8@1- (1,0) [0|100] "%" Vector__XXX
+ SG_ BSOC_15 : 120|8@1- (1,0) [0|100] "%" Vector__XXX
+
+BO_ 2632711934 TPDT: 8 Vector__XXX
+ SG_ TPDT_SerialNumber : 0|8@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 2632777470 TPCM: 8 Vector__XXX
+ SG_ TPCM_PGN : 40|24@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ TPCM_Control : 0|8@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 2283798270 CEM: 4 Vector__XXX
+ SG_ CEM_BMSIdentifyTimout : 0|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ CEM_BMSFinishChargeTimeout : 10|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ CEM_BMSChargeStatisticsTimeout : 24|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ CEM_BMSAbortChargeTimeout : 20|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ CEM_BatteryStateTimeout : 16|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ CEM_BatteryParameterTimout : 8|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ CEM_BatteryChargeRequireTimeout : 18|2@1- (1,0) [0|2] "" Vector__XXX
+
+BO_ 2283732734 BEM: 4 Vector__XXX
+ SG_ BEM_TimesyncOrPowerTimeout : 8|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ BEM_ChargeStatisticsTimeout : 24|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ BEM_ChargeStateTimeout : 16|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ BEM_ChargerIdTimeout1 : 2|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ BEM_ChargerIdTimeout0 : 0|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ BEM_ChargeFinishTimeout : 10|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ BEM_ChargeAbortTimeout : 18|2@1- (1,0) [0|2] "" Vector__XXX
+
+BO_ 2552102654 CSD: 5 Vector__XXX
+ SG_ CSD_TotalChargeTime : 0|16@1- (1,0) [0|600] "min" Vector__XXX
+ SG_ CSD_OutputEnerge : 16|16@1- (0.1,0) [0|1000] "kWh" Vector__XXX
+ SG_ CSD_ChargerNo : 32|8@1- (1,1) [1|100] "" Vector__XXX
+
+BO_ 2552037118 BSD: 7 Vector__XXX
+ SG_ BSD_BatteryTempMax : 40|8@1- (1,-50) [-50|200] "degC" Vector__XXX
+ SG_ BSD_BatteryVoltageMin : 8|16@1- (0.01,0) [0|24] "V" Vector__XXX
+ SG_ BSD_BatteryVoltageMax : 24|16@1- (0.01,0) [0|24] "V" Vector__XXX
+ SG_ BSD_BatteryTempMin : 48|8@1- (1,-50) [-50|200] "degC" Vector__XXX
+ SG_ BSD_AbortSOC : 0|8@1- (1,0) [0|100] "%" Vector__XXX
+
+BO_ 2417688318 CST: 4 Vector__XXX
+ SG_ CST_AbortFaultOther : 18|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ CST_AbortFaultEnergeTransmit : 14|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ CST_AbortFaultConnetor : 10|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ CST_AbortFaultChargerStop : 16|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ CST_AbortFaultChargerInnerTemp : 12|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ CST_AbortErrorVoltage : 26|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ CST_AbortByUser : 2|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ CST_AbortByFault : 4|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ CST_AbortFaultChargerTemp : 8|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ CST_AbortErrorCurrent : 24|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ CST_AbortAchiveCondition : 0|2@1- (1,0) [0|2] "" Vector__XXX
+
+BO_ 2417622782 BST: 4 Vector__XXX
+ SG_ BST_AbortFaultBatteryTemp : 16|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ BST_AbortFaultOther : 18|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ BST_AbortFaultInsulation : 8|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ BST_AbortFaultConnectorTemp : 10|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ BST_AbortFaultConnector : 14|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ BST_AbortErrorVoltage : 26|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ BST_AbortErrorCurrent : 24|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ BST_AbortAchiveTotalVolt : 2|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ BST_AbortAchiveSOC : 0|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ BST_AbortFaultBMSTemp : 12|2@1- (1,0) [0|2] "" Vector__XXX
+ SG_ BST_AbortAchiveSingleVolt : 4|2@1- (1,0) [0|2] "" Vector__XXX
+
+BO_ 2551643902 BMT: 16 Vector__XXX
+ SG_ BMT_BatteryTemp0 : 0|8@1- (1,-50) [-50|200] "degC" Vector__XXX
+ SG_ BMT_BatteryTemp1 : 8|8@1- (1,-50) [-50|200] "degC" Vector__XXX
+ SG_ BMT_BatteryTemp2 : 16|8@1- (1,-50) [-50|200] "degC" Vector__XXX
+ SG_ BMT_BatteryTemp3 : 24|8@1- (1,-50) [-50|200] "degC" Vector__XXX
+ SG_ BMT_BatteryTemp4 : 32|8@1- (1,-50) [-50|200] "degC" Vector__XXX
+ SG_ BMT_BatteryTemp5 : 40|8@1- (1,-50) [-50|200] "degC" Vector__XXX
+ SG_ BMT_BatteryTemp6 : 48|8@1- (1,-50) [-50|200] "degC" Vector__XXX
+ SG_ BMT_BatteryTemp7 : 56|8@1- (1,-50) [-50|200] "degC" Vector__XXX
+ SG_ BMT_BatteryTemp8 : 64|8@1- (1,-50) [-50|200] "degC" Vector__XXX
+ SG_ BMT_BatteryTemp9 : 72|8@1- (1,-50) [-50|200] "degC" Vector__XXX
+ SG_ BMT_BatteryTemp10 : 80|8@1- (1,-50) [-50|200] "degC" Vector__XXX
+ SG_ BMT_BatteryTemp11 : 88|8@1- (1,-50) [-50|200] "degC" Vector__XXX
+ SG_ BMT_BatteryTemp12 : 96|8@1- (1,-50) [-50|200] "degC" Vector__XXX
+ SG_ BMT_BatteryTemp13 : 104|8@1- (1,-50) [-50|200] "degC" Vector__XXX
+ SG_ BMT_BatteryTemp14 : 112|8@1- (1,-50) [-50|200] "degC" Vector__XXX
+ SG_ BMT_BatteryTemp15 : 120|8@1- (1,-50) [-50|200] "degC" Vector__XXX
+
+BO_ 2551578366 BMV: 512 Vector__XXX
+ SG_ BMV_BatteryVoltageMin0 : 0|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID0 : 12|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin1 : 16|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID1 : 28|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin2 : 32|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID2 : 44|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin3 : 48|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID3 : 60|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin4 : 64|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID4 : 76|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin5 : 80|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID5 : 92|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin6 : 96|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID6 : 108|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin7 : 112|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID7 : 124|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin8 : 128|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID8 : 140|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin9 : 144|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID9 : 156|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin10 : 160|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID10 : 172|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin11 : 176|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID11 : 188|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin12 : 192|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID12 : 204|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin13 : 208|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID13 : 220|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin14 : 224|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID14 : 236|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin15 : 240|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID15 : 252|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin16 : 256|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID16 : 268|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin17 : 272|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID17 : 284|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin18 : 288|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID18 : 300|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin19 : 304|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID19 : 316|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin20 : 320|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID20 : 332|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin21 : 336|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID21 : 348|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin22 : 352|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID22 : 364|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin23 : 368|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID23 : 380|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin24 : 384|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID24 : 396|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin25 : 400|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID25 : 412|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin26 : 416|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID26 : 428|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin27 : 432|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID27 : 444|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin28 : 448|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID28 : 460|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin29 : 464|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID29 : 476|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin30 : 480|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID30 : 492|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin31 : 496|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID31 : 508|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin32 : 512|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID32 : 524|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin33 : 528|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID33 : 540|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin34 : 544|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID34 : 556|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin35 : 560|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID35 : 572|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin36 : 576|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID36 : 588|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin37 : 592|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID37 : 604|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin38 : 608|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID38 : 620|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin39 : 624|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID39 : 636|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin40 : 640|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID40 : 652|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin41 : 656|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID41 : 668|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin42 : 672|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID42 : 684|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin43 : 688|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID43 : 700|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin44 : 704|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID44 : 716|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin45 : 720|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID45 : 732|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin46 : 736|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID46 : 748|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin47 : 752|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID47 : 764|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin48 : 768|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID48 : 780|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin49 : 784|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID49 : 796|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin50 : 800|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID50 : 812|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin51 : 816|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID51 : 828|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin52 : 832|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID52 : 844|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin53 : 848|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID53 : 860|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin54 : 864|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID54 : 876|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin55 : 880|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID55 : 892|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin56 : 896|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID56 : 908|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin57 : 912|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID57 : 924|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin58 : 928|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID58 : 940|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin59 : 944|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID59 : 956|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin60 : 960|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID60 : 972|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin61 : 976|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID61 : 988|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin62 : 992|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID62 : 1004|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin63 : 1008|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID63 : 1020|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin64 : 1024|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID64 : 1036|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin65 : 1040|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID65 : 1052|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin66 : 1056|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID66 : 1068|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin67 : 1072|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID67 : 1084|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin68 : 1088|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID68 : 1100|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin69 : 1104|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID69 : 1116|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin70 : 1120|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID70 : 1132|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin71 : 1136|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID71 : 1148|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin72 : 1152|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID72 : 1164|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin73 : 1168|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID73 : 1180|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin74 : 1184|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID74 : 1196|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin75 : 1200|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID75 : 1212|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin76 : 1216|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID76 : 1228|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin77 : 1232|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID77 : 1244|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin78 : 1248|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID78 : 1260|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin79 : 1264|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID79 : 1276|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin80 : 1280|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID80 : 1292|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin81 : 1296|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID81 : 1308|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin82 : 1312|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID82 : 1324|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin83 : 1328|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID83 : 1340|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin84 : 1344|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID84 : 1356|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin85 : 1360|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID85 : 1372|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin86 : 1376|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID86 : 1388|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin87 : 1392|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID87 : 1404|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin88 : 1408|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID88 : 1420|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin89 : 1424|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID89 : 1436|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin90 : 1440|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID90 : 1452|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin91 : 1456|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID91 : 1468|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin92 : 1472|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID92 : 1484|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin93 : 1488|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID93 : 1500|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin94 : 1504|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID94 : 1516|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin95 : 1520|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID95 : 1532|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin96 : 1536|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID96 : 1548|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin97 : 1552|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID97 : 1564|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin98 : 1568|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID98 : 1580|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin99 : 1584|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID99 : 1596|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin100 : 1600|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID100 : 1612|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin101 : 1616|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID101 : 1628|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin102 : 1632|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID102 : 1644|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin103 : 1648|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID103 : 1660|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin104 : 1664|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID104 : 1676|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin105 : 1680|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID105 : 1692|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin106 : 1696|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID106 : 1708|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin107 : 1712|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID107 : 1724|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin108 : 1728|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID108 : 1740|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin109 : 1744|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID109 : 1756|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin110 : 1760|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID110 : 1772|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin111 : 1776|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID111 : 1788|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin112 : 1792|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID112 : 1804|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin113 : 1808|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID113 : 1820|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin114 : 1824|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID114 : 1836|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin115 : 1840|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID115 : 1852|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin116 : 1856|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID116 : 1868|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin117 : 1872|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID117 : 1884|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin118 : 1888|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID118 : 1900|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin119 : 1904|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID119 : 1916|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin120 : 1920|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID120 : 1932|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin121 : 1936|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID121 : 1948|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin122 : 1952|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID122 : 1964|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin123 : 1968|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID123 : 1980|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin124 : 1984|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID124 : 1996|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin125 : 2000|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID125 : 2012|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin126 : 2016|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID126 : 2028|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin127 : 2032|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID127 : 2044|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin128 : 2048|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID128 : 2060|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin129 : 2064|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID129 : 2076|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin130 : 2080|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID130 : 2092|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin131 : 2096|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID131 : 2108|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin132 : 2112|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID132 : 2124|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin133 : 2128|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID133 : 2140|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin134 : 2144|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID134 : 2156|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin135 : 2160|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID135 : 2172|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin136 : 2176|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID136 : 2188|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin137 : 2192|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID137 : 2204|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin138 : 2208|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID138 : 2220|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin139 : 2224|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID139 : 2236|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin140 : 2240|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID140 : 2252|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin141 : 2256|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID141 : 2268|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin142 : 2272|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID142 : 2284|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin143 : 2288|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID143 : 2300|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin144 : 2304|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID144 : 2316|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin145 : 2320|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID145 : 2332|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin146 : 2336|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID146 : 2348|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin147 : 2352|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID147 : 2364|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin148 : 2368|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID148 : 2380|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin149 : 2384|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID149 : 2396|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin150 : 2400|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID150 : 2412|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin151 : 2416|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID151 : 2428|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin152 : 2432|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID152 : 2444|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin153 : 2448|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID153 : 2460|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin154 : 2464|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID154 : 2476|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin155 : 2480|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID155 : 2492|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin156 : 2496|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID156 : 2508|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin157 : 2512|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID157 : 2524|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin158 : 2528|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID158 : 2540|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin159 : 2544|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID159 : 2556|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin160 : 2560|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID160 : 2572|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin161 : 2576|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID161 : 2588|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin162 : 2592|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID162 : 2604|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin163 : 2608|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID163 : 2620|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin164 : 2624|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID164 : 2636|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin165 : 2640|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID165 : 2652|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin166 : 2656|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID166 : 2668|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin167 : 2672|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID167 : 2684|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin168 : 2688|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID168 : 2700|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin169 : 2704|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID169 : 2716|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin170 : 2720|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID170 : 2732|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin171 : 2736|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID171 : 2748|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin172 : 2752|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID172 : 2764|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin173 : 2768|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID173 : 2780|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin174 : 2784|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID174 : 2796|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin175 : 2800|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID175 : 2812|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin176 : 2816|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID176 : 2828|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin177 : 2832|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID177 : 2844|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin178 : 2848|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID178 : 2860|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin179 : 2864|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID179 : 2876|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin180 : 2880|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID180 : 2892|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin181 : 2896|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID181 : 2908|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin182 : 2912|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID182 : 2924|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin183 : 2928|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID183 : 2940|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin184 : 2944|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID184 : 2956|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin185 : 2960|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID185 : 2972|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin186 : 2976|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID186 : 2988|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin187 : 2992|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID187 : 3004|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin188 : 3008|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID188 : 3020|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin189 : 3024|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID189 : 3036|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin190 : 3040|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID190 : 3052|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin191 : 3056|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID191 : 3068|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin192 : 3072|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID192 : 3084|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin193 : 3088|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID193 : 3100|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin194 : 3104|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID194 : 3116|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin195 : 3120|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID195 : 3132|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin196 : 3136|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID196 : 3148|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin197 : 3152|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID197 : 3164|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin198 : 3168|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID198 : 3180|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin199 : 3184|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID199 : 3196|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin200 : 3200|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID200 : 3212|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin201 : 3216|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID201 : 3228|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin202 : 3232|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID202 : 3244|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin203 : 3248|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID203 : 3260|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin204 : 3264|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID204 : 3276|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin205 : 3280|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID205 : 3292|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin206 : 3296|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID206 : 3308|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin207 : 3312|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID207 : 3324|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin208 : 3328|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID208 : 3340|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin209 : 3344|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID209 : 3356|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin210 : 3360|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID210 : 3372|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin211 : 3376|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID211 : 3388|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin212 : 3392|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID212 : 3404|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin213 : 3408|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID213 : 3420|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin214 : 3424|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID214 : 3436|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin215 : 3440|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID215 : 3452|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin216 : 3456|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID216 : 3468|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin217 : 3472|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID217 : 3484|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin218 : 3488|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID218 : 3500|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin219 : 3504|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID219 : 3516|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin220 : 3520|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID220 : 3532|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin221 : 3536|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID221 : 3548|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin222 : 3552|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID222 : 3564|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin223 : 3568|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID223 : 3580|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin224 : 3584|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID224 : 3596|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin225 : 3600|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID225 : 3612|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin226 : 3616|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID226 : 3628|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin227 : 3632|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID227 : 3644|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin228 : 3648|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID228 : 3660|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin229 : 3664|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID229 : 3676|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin230 : 3680|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID230 : 3692|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin231 : 3696|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID231 : 3708|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin232 : 3712|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID232 : 3724|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin233 : 3728|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID233 : 3740|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin234 : 3744|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID234 : 3756|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin235 : 3760|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID235 : 3772|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin236 : 3776|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID236 : 3788|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin237 : 3792|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID237 : 3804|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin238 : 3808|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID238 : 3820|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin239 : 3824|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID239 : 3836|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin240 : 3840|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID240 : 3852|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin241 : 3856|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID241 : 3868|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin242 : 3872|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID242 : 3884|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin243 : 3888|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID243 : 3900|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin244 : 3904|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID244 : 3916|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin245 : 3920|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID245 : 3932|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin246 : 3936|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID246 : 3948|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin247 : 3952|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID247 : 3964|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin248 : 3968|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID248 : 3980|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin249 : 3984|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID249 : 3996|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin250 : 4000|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID250 : 4012|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin251 : 4016|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID251 : 4028|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin252 : 4032|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID252 : 4044|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin253 : 4048|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID253 : 4060|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin254 : 4064|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID254 : 4076|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BMV_BatteryVoltageMin255 : 4080|12@1- (0.01,0) [0|24] "" Vector__XXX
+ SG_ BMV_BatteryGroupID255 : 4092|4@1- (1,0) [0|16] "" Vector__XXX
+
+BO_ 2551447294 BSM: 7 Vector__XXX
+ SG_ BSM_BatteryTempState : 48|2@1- (1,0) [0|1] "" Vector__XXX
+ SG_ BSM_BatteryTempMinNo : 32|8@1- (1,1) [1|128] "" Vector__XXX
+ SG_ BSM_BatteryTempMin : 24|8@1- (1,-50) [-50|200] "degC" Vector__XXX
+ SG_ BSM_BatteryTempMaxNo : 16|8@1- (1,1) [1|128] "" Vector__XXX
+ SG_ BSM_InsulationState : 50|2@1- (1,0) [0|1] "" Vector__XXX
+ SG_ BSM_ChargeEnable : 54|2@1- (1,0) [0|1] "" Vector__XXX
+ SG_ BSM_BatteryTempMax : 8|8@1- (1,-50) [-50|200] "degC" Vector__XXX
+ SG_ BSM_SOC : 44|2@1- (1,0) [0|1] "" Vector__XXX
+ SG_ BSM_BatteryOutpuConnectorState : 52|2@1- (1,0) [0|1] "" Vector__XXX
+ SG_ BSM_BatteryVoltageMaxNo : 0|8@1- (1,1) [1|256] "" Vector__XXX
+ SG_ BSM_BatteryVoltageState : 40|2@1- (1,0) [0|1] "" Vector__XXX
+ SG_ BSM_BatteryCurrentState : 46|2@1- (1,0) [0|1] "" Vector__XXX
+
+BO_ 2551381758 CCS: 6 Vector__XXX
+ SG_ CCS_OutputVoltage : 0|16@1- (0.1,0) [0|750] "V" Vector__XXX
+ SG_ CCS_OutputCurrent : 16|16@1- (0.1,-400) [-400|0] "A" Vector__XXX
+ SG_ CCS_ChargeTotalTime : 32|16@1- (1,0) [0|600] "min" Vector__XXX
+
+BO_ 2551316222 BCS: 9 Vector__XXX
+ SG_ BCS_SOC : 48|8@1- (1,0) [0|100] "%" Vector__XXX
+ SG_ BCS_EstimatedTimeRemaining : 56|16@1- (1,0) [0|600] "min" Vector__XXX
+ SG_ BCS_ChargeVoltageMeasure : 0|16@1- (0.1,0) [0|750] "V" Vector__XXX
+ SG_ BCS_ChargeCurrentMeasure : 16|16@1- (0.1,-400) [-400|0] "A" Vector__XXX
+ SG_ BCS_BatteryVoltMaxGroup : 44|4@1- (1,0) [0|16] "" Vector__XXX
+ SG_ BCS_BatteryVoltMax : 32|12@1- (0.01,0) [0|24] "V" Vector__XXX
+
+BO_ 2551250686 BCL: 5 Vector__XXX
+ SG_ BCL_VolltageRequire : 0|16@1- (0.1,0) [0|750] "V" Vector__XXX
+ SG_ BCL_CurrentRequire : 16|16@1- (0.1,-400) [-400|0] "A" Vector__XXX
+ SG_ BCL_ChargeMode : 32|8@1- (1,0) [0|2] "" Vector__XXX
+
+BO_ 2483748606 CRO: 1 Vector__XXX
+ SG_ CRO_ChargerReady : 0|8@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 2483683070 BRO: 1 Vector__XXX
+ SG_ BRO_BMSChargeReady : 0|8@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 2550726398 CML: 6 Vector__XXX
+ SG_ CML_OutpuVoltageMax : 0|16@1- (0.1,0) [0|750] "V" Vector__XXX
+ SG_ CML_OutputVoltageMin : 16|16@1- (0.1,0) [0|750] "" Vector__XXX
+ SG_ CML_OutputCurrentMax : 32|16@1- (0.1,-400) [-400|0] "A" Vector__XXX
+
+BO_ 2550660862 CTS: 7 Vector__XXX
+ SG_ CTS_Year : 40|16@1- (1,0) [0|0] "" Vector__XXX
+ SG_ CTS_Second : 0|8@1- (1,0) [0|0] "" Vector__XXX
+ SG_ CTS_Month : 32|8@1- (1,0) [0|0] "" Vector__XXX
+ SG_ CTS_Minute : 8|8@1- (1,0) [0|0] "" Vector__XXX
+ SG_ CTS_Hour : 16|8@1- (1,0) [0|0] "" Vector__XXX
+ SG_ CTS_Day : 24|8@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 2550595326 BCP: 13 Vector__XXX
+ SG_ BCP_BatteryNominalEnergy : 32|16@1- (0.1,0) [0|1000] "kWh" Vector__XXX
+ SG_ BCP_AllowTempMax : 64|8@1- (1,-50) [-50|200] "degC" Vector__XXX
+ SG_ BCP_AllowChargeVoltageMax : 48|16@1- (0.1,0) [0|750] "V" Vector__XXX
+ SG_ BCP_ChargeCurrentMax : 16|16@1- (0.1,-400) [-400|0] "A" Vector__XXX
+ SG_ BCP_BatteryTotalVoltage : 88|16@1- (0.1,0) [0|750] "V" Vector__XXX
+ SG_ BCP_SOC : 72|16@1- (0.1,0) [0|100] "%" Vector__XXX
+ SG_ BCP_BatteryChargeVoltageMax : 0|16@1- (0.01,0) [0|24] "V" Vector__XXX
+
+BO_ 2550333182 BRM: 41 Vector__XXX
+ SG_ BRM_Reserve : 184|8@1- (1,0) [0|0] "" Vector__XXX
+ SG_ BRM_VehicleIdByte17 : 320|8@1- (1,0) [0|0] "" Vector__XXX
+ SG_ BRM_VehicleIdByte9_16 : 256|64@1- (1,0) [0|0] "" Vector__XXX
+ SG_ BRM_VehicleIdByte1_8 : 192|64@1- (1,0) [0|0] "" Vector__XXX
+ SG_ BRM_ProtocolVersion : 0|24@1- (1,0) [0|0] "" Vector__XXX
+ SG_ BRM_Manufacturer : 64|32@1- (1,0) [0|0] "" Vector__XXX
+ SG_ BRM_BatteryType : 24|8@1- (1,0) [0|0] "" Vector__XXX
+ SG_ BRM_BatterySystemRatedVoltage : 48|16@1- (0.1,0) [0|750] "V" Vector__XXX
+ SG_ BRM_BatterySystemRatedCapacity : 32|16@1- (0.1,0) [0|1000] "Ah" Vector__XXX
+ SG_ BRM_BatterySN : 96|32@1- (1,0) [0|0] "" Vector__XXX
+ SG_ BRM_BatteryProperty : 176|8@1- (1,0) [0|0] "" Vector__XXX
+ SG_ BRM_BatteryProductYear : 128|8@1- (1,1985) [0|0] "" Vector__XXX
+ SG_ BRM_BatteryProductMonth : 136|8@1- (1,0) [0|12] "" Vector__XXX
+ SG_ BRM_BatteryProductDay : 144|8@1- (1,0) [0|31] "" Vector__XXX
+ SG_ BRM_BatteryChargeTimes : 152|24@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 2550267646 CRM: 8 Vector__XXX
+ SG_ CRM_RegionCode : 16|48@1- (1,0) [0|0] "" Vector__XXX
+ SG_ CRM_RecognitionResult : 0|8@1- (1,0) [0|170] "" Vector__XXX
+ SG_ CRM_ChargerNo : 8|8@1- (1,1) [1|100] "" Vector__XXX
+
+
+
+CM_ BO_ 2632777470 "传输控制管理报文";
+CM_ SG_ 2632777470 TPCM_PGN "所装载数据的参数群编号";
+CM_ SG_ 2632777470 TPCM_Control "16-指定目标地址请求发送（RTS）；17-指定目标地址准备发送（CTS）；19-消息结束应答；32-广播公告消息（BAM）；255-放弃连接；";
+CM_ BO_ 2283798270 "充电机错误报文";
+CM_ SG_ 2283798270 CEM_BMSIdentifyTimout "接收BMS和车辆的辨识报文超时";
+CM_ SG_ 2283798270 CEM_BMSFinishChargeTimeout "接收BMS完成充电准备报文超时";
+CM_ SG_ 2283798270 CEM_BMSChargeStatisticsTimeout "接收BMS充电统计报文超时";
+CM_ SG_ 2283798270 CEM_BMSAbortChargeTimeout "接收BMS中止充电报文超时";
+CM_ SG_ 2283798270 CEM_BatteryStateTimeout "接收电池充电总状态报文超时";
+CM_ SG_ 2283798270 CEM_BatteryParameterTimout "接收电池充电参数报文超时";
+CM_ SG_ 2283798270 CEM_BatteryChargeRequireTimeout "接收电池充电要求报文超时";
+CM_ BO_ 2283732734 "BMS错误报文";
+CM_ SG_ 2283732734 BEM_TimesyncOrPowerTimeout "接收充电机的时间同步和充电机最大输出能力超时";
+CM_ SG_ 2283732734 BEM_ChargeStatisticsTimeout "接收充电机充电统计报文超时";
+CM_ SG_ 2283732734 BEM_ChargeStateTimeout "接收充电机充电状态报文超时";
+CM_ SG_ 2283732734 BEM_ChargerIdTimeout1 "接收SPN2560=0XAA的充电机辨识报文超时";
+CM_ SG_ 2283732734 BEM_ChargerIdTimeout0 "接收SPN2560=0X00的充电机辨识报文超时";
+CM_ SG_ 2283732734 BEM_ChargeFinishTimeout "接收充电机完成充电准备报文超时";
+CM_ SG_ 2283732734 BEM_ChargeAbortTimeout "接收充电机中止充电报文超时";
+CM_ BO_ 2552102654 "充电机统计数据报文";
+CM_ SG_ 2552102654 CSD_TotalChargeTime "累计充电时间";
+CM_ SG_ 2552102654 CSD_OutputEnerge "输出能量";
+CM_ SG_ 2552102654 CSD_ChargerNo "充电机编号";
+CM_ BO_ 2552037118 "BMS统计数据报文";
+CM_ SG_ 2552037118 BSD_BatteryTempMax "动力蓄电池最低温度";
+CM_ SG_ 2552037118 BSD_BatteryVoltageMin "动力蓄电池单体最低电压";
+CM_ SG_ 2552037118 BSD_BatteryVoltageMax "动力蓄电池单体最高电压";
+CM_ SG_ 2552037118 BSD_BatteryTempMin "动力蓄电池最高温度";
+CM_ SG_ 2552037118 BSD_AbortSOC "中止荷电状态";
+CM_ BO_ 2417688318 "充电机中止充电报文";
+CM_ SG_ 2417688318 CST_AbortFaultOther "其他故障";
+CM_ SG_ 2417688318 CST_AbortFaultEnergeTransmit "所需电量不能传送";
+CM_ SG_ 2417688318 CST_AbortFaultConnetor "充电机连接器故障";
+CM_ SG_ 2417688318 CST_AbortFaultChargerStop "充电机急停故障";
+CM_ SG_ 2417688318 CST_AbortFaultChargerInnerTemp "充电机内部过温故障";
+CM_ SG_ 2417688318 CST_AbortErrorVoltage "电压异常";
+CM_ SG_ 2417688318 CST_AbortByUser "人工中止";
+CM_ SG_ 2417688318 CST_AbortByFault "故障中止";
+CM_ SG_ 2417688318 CST_AbortFaultChargerTemp "充电机过温故障";
+CM_ SG_ 2417688318 CST_AbortErrorCurrent "电流不匹配";
+CM_ SG_ 2417688318 CST_AbortAchiveCondition "到达充电机设定的条件中止";
+CM_ BO_ 2417622782 "BMS中止充电报文";
+CM_ SG_ 2417622782 BST_AbortFaultBatteryTemp "电池组温度过高故障";
+CM_ SG_ 2417622782 BST_AbortFaultOther "其他故障";
+CM_ SG_ 2417622782 BST_AbortFaultInsulation "绝缘故障";
+CM_ SG_ 2417622782 BST_AbortFaultConnectorTemp "输出连接器过温故障";
+CM_ SG_ 2417622782 BST_AbortFaultConnector "充电连接器故障";
+CM_ SG_ 2417622782 BST_AbortErrorVoltage "电压异常";
+CM_ SG_ 2417622782 BST_AbortErrorCurrent "电流过大";
+CM_ SG_ 2417622782 BST_AbortAchiveTotalVolt "达到总电压设定值";
+CM_ SG_ 2417622782 BST_AbortAchiveSOC "达到所需的SOC目标值";
+CM_ SG_ 2417622782 BST_AbortFaultBMSTemp "BMS元件、输出连接线过温";
+CM_ SG_ 2417622782 BST_AbortAchiveSingleVolt "到达单体电压设定值";
+CM_ BO_ 2551643902 "动力蓄电池温度";
+CM_ BO_ 2551578366 "单体动力蓄电池电压";
+CM_ BO_ 2551447294 "BMS发送动力蓄电池状态信息报文";
+CM_ SG_ 2551447294 BSM_BatteryTempState "动力蓄电池温度状态(0-正常；1-过高；2-不可信)";
+CM_ SG_ 2551447294 BSM_BatteryTempMinNo "最低温度检测点编号";
+CM_ SG_ 2551447294 BSM_BatteryTempMin "最低动力蓄电池温度";
+CM_ SG_ 2551447294 BSM_BatteryTempMaxNo "最高温度检测点编号";
+CM_ SG_ 2551447294 BSM_InsulationState "动力蓄电池绝缘状态(0-正常；1-不正常；2-不可信)";
+CM_ SG_ 2551447294 BSM_ChargeEnable "充电允许(0-禁止；1-允许)";
+CM_ SG_ 2551447294 BSM_BatteryTempMax "最高动力蓄电池温度";
+CM_ SG_ 2551447294 BSM_SOC "动力蓄电池状态SOC(0-正常；1-过高；2-过低)";
+CM_ SG_ 2551447294 BSM_BatteryOutpuConnectorState "动力蓄电池组输出连接器连接状态(0-正常；1-不正常；2-不可信)";
+CM_ SG_ 2551447294 BSM_BatteryVoltageMaxNo "最高单体动力蓄电池电压所在编号";
+CM_ SG_ 2551447294 BSM_BatteryVoltageState "动力蓄电池电压状态(0-正常；1-过高；2-过低)";
+CM_ SG_ 2551447294 BSM_BatteryCurrentState "动力蓄电池电流(0-正常；1-过流；2-不可信)";
+CM_ BO_ 2551381758 "充电机充电状态报文";
+CM_ SG_ 2551381758 CCS_OutputVoltage "输出电压";
+CM_ SG_ 2551381758 CCS_OutputCurrent "输出电流";
+CM_ SG_ 2551381758 CCS_ChargeTotalTime "累计充电时间";
+CM_ BO_ 2551316222 "电池充电总状态报文";
+CM_ SG_ 2551316222 BCS_SOC "当前荷电状态";
+CM_ SG_ 2551316222 BCS_EstimatedTimeRemaining "估计剩余充电时间";
+CM_ SG_ 2551316222 BCS_ChargeVoltageMeasure "充电电压测量值";
+CM_ SG_ 2551316222 BCS_ChargeCurrentMeasure "充电电流测量值";
+CM_ SG_ 2551316222 BCS_BatteryVoltMaxGroup "最高单体动力蓄电池电压所在组号";
+CM_ SG_ 2551316222 BCS_BatteryVoltMax "最高单体动力蓄电池电压";
+CM_ BO_ 2551250686 "电池充电需求报文";
+CM_ SG_ 2551250686 BCL_VolltageRequire "电压需求";
+CM_ SG_ 2551250686 BCL_CurrentRequire "电流需求";
+CM_ SG_ 2551250686 BCL_ChargeMode "充电模式(0x01:恒压充电；0x02恒流充电)";
+CM_ BO_ 2483748606 "充电机输出准备就绪报文";
+CM_ SG_ 2483748606 CRO_ChargerReady "充电机是否充电准备好";
+CM_ BO_ 2483683070 "充电机准备就绪报文";
+CM_ SG_ 2483683070 BRO_BMSChargeReady "BMS是否充电准备好";
+CM_ BO_ 2550726398 "充电机最大输出能力报文";
+CM_ SG_ 2550726398 CML_OutpuVoltageMax "最高输出电压";
+CM_ SG_ 2550726398 CML_OutputVoltageMin "最低输出电压";
+CM_ SG_ 2550726398 CML_OutputCurrentMax "最大输出电流";
+CM_ BO_ 2550660862 "充电机发送时间同步信息报文";
+CM_ SG_ 2550660862 CTS_Year "年(BCD码)";
+CM_ SG_ 2550660862 CTS_Second "秒(BCD码)";
+CM_ SG_ 2550660862 CTS_Month "月(BCD码)";
+CM_ SG_ 2550660862 CTS_Minute "分(BCD码)";
+CM_ SG_ 2550660862 CTS_Hour "时(BCD码)";
+CM_ SG_ 2550660862 CTS_Day "日(BCD码)";
+CM_ BO_ 2550595326 "动力蓄电池充电参数";
+CM_ SG_ 2550595326 BCP_BatteryNominalEnergy "动力蓄电池标称总能量";
+CM_ SG_ 2550595326 BCP_AllowTempMax "总高容许温度";
+CM_ SG_ 2550595326 BCP_AllowChargeVoltageMax "最高容许充电总电压";
+CM_ SG_ 2550595326 BCP_ChargeCurrentMax "最高容许充电电流";
+CM_ SG_ 2550595326 BCP_BatteryTotalVoltage "整车动力蓄电池总电压";
+CM_ SG_ 2550595326 BCP_SOC "整车动力蓄电池荷电状态";
+CM_ SG_ 2550595326 BCP_BatteryChargeVoltageMax "单体动力蓄电池最高容许充电电压";
+CM_ BO_ 2550333182 "BMS和车辆识别";
+CM_ SG_ 2550333182 BRM_Reserve "预留";
+CM_ SG_ 2550333182 BRM_VehicleIdByte17 "车辆识别码";
+CM_ SG_ 2550333182 BRM_VehicleIdByte9_16 "车辆识别码";
+CM_ SG_ 2550333182 BRM_VehicleIdByte1_8 "车辆识别码";
+CM_ SG_ 2550333182 BRM_ProtocolVersion "BMS通信协议版本号";
+CM_ SG_ 2550333182 BRM_Manufacturer "电池生产厂商名称";
+CM_ SG_ 2550333182 BRM_BatteryType "电池类型";
+CM_ SG_ 2550333182 BRM_BatterySystemRatedVoltage "整车动力蓄电池系统额定总电压";
+CM_ SG_ 2550333182 BRM_BatterySystemRatedCapacity "整车动力蓄电池系统额定容量";
+CM_ SG_ 2550333182 BRM_BatterySN "电池序列号";
+CM_ SG_ 2550333182 BRM_BatteryProperty "电池组产权标识";
+CM_ SG_ 2550333182 BRM_BatteryProductYear "电池组生产日期-年";
+CM_ SG_ 2550333182 BRM_BatteryProductMonth "电池组生产日期-月";
+CM_ SG_ 2550333182 BRM_BatteryProductDay "电池组生产日期-日";
+CM_ SG_ 2550333182 BRM_BatteryChargeTimes "电池组充电次数";
+CM_ BO_ 2550267646 "充电机识别";
+CM_ SG_ 2550267646 CRM_RegionCode "充电机/充电站所在区域编码，标准ASCII码";
+CM_ SG_ 2550267646 CRM_RecognitionResult "辨识结果：0x00(BMS不能辨识)；0xAA(BMS能辨识)";
+CM_ SG_ 2550267646 CRM_ChargerNo "充电机编号，1/位，1偏移量，数据范围：1~100";
+BA_DEF_ SG_  "SigType" ENUM  "Default","Range","RangeSigned","ASCII","Discrete","Control","ReferencePGN","DTC","StringDelimiter","StringLength","StringLengthControl";
+BA_DEF_ SG_  "GenSigEVName" STRING ;
+BA_DEF_ SG_  "GenSigILSupport" ENUM  "Yes","No";
+BA_DEF_ SG_  "GenSigSendType" ENUM  "Cyclic","OnWrite","reserved","OnChange","reserved","reserved","reserved","NoSigSendType";
+BA_DEF_ SG_  "GenSigStartValue" INT 0 10000;
+BA_DEF_ BO_  "GenMsgDelayTime" INT 0 1000;
+BA_DEF_ BO_  "GenMsgILSupport" ENUM  "Yes","No";
+BA_DEF_ BO_  "GenMsgStartDelayTime" INT 0 100000;
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "ECU" STRING ;
+BA_DEF_ BU_  "NmJ1939SystemInstance" INT 0 15;
+BA_DEF_ BU_  "NmJ1939System" INT 0 127;
+BA_DEF_ BU_  "NmJ1939ManufacturerCode" INT 0 2047;
+BA_DEF_ BU_  "NmJ1939IndustryGroup" INT 0 7;
+BA_DEF_ BU_  "NmJ1939IdentityNumber" INT 0 2097151;
+BA_DEF_ BU_  "NmJ1939FunctionInstance" INT 0 7;
+BA_DEF_ BU_  "NmJ1939Function" INT 0 255;
+BA_DEF_ BU_  "NmJ1939ECUInstance" INT 0 3;
+BA_DEF_ BU_  "NmJ1939AAC" INT 0 1;
+BA_DEF_ BU_  "NmStationAddress" INT 0 255;
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "cyclic","reserved","cyclicIfActive","reserved","reserved","reserved","reserved","reserved","noMsgSendType";
+BA_DEF_ BO_  "GenMsgRequestable" INT 0 1;
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 3600000;
+BA_DEF_ SG_  "SPN" INT 0 524287;
+BA_DEF_  "DBName" STRING ;
+BA_DEF_  "BusType" STRING ;
+BA_DEF_  "ProtocolType" STRING ;
+BA_DEF_ BO_  "VFrameFormat" ENUM  "StandardCAN","ExtendedCAN","reserved","J1939PG";
+BA_DEF_DEF_  "SigType" "Default";
+BA_DEF_DEF_  "GenSigEVName" "Env@Nodename_@Signame";
+BA_DEF_DEF_  "GenSigILSupport" "Yes";
+BA_DEF_DEF_  "GenSigSendType" "NoSigSendType";
+BA_DEF_DEF_  "GenSigStartValue" 0;
+BA_DEF_DEF_  "GenMsgDelayTime" 0;
+BA_DEF_DEF_  "GenMsgILSupport" "Yes";
+BA_DEF_DEF_  "GenMsgStartDelayTime" 0;
+BA_DEF_DEF_  "NodeLayerModules" "";
+BA_DEF_DEF_  "ECU" "";
+BA_DEF_DEF_  "NmJ1939SystemInstance" 0;
+BA_DEF_DEF_  "NmJ1939System" 0;
+BA_DEF_DEF_  "NmJ1939ManufacturerCode" 0;
+BA_DEF_DEF_  "NmJ1939IndustryGroup" 0;
+BA_DEF_DEF_  "NmJ1939IdentityNumber" 0;
+BA_DEF_DEF_  "NmJ1939FunctionInstance" 0;
+BA_DEF_DEF_  "NmJ1939Function" 0;
+BA_DEF_DEF_  "NmJ1939ECUInstance" 0;
+BA_DEF_DEF_  "NmJ1939AAC" 0;
+BA_DEF_DEF_  "NmStationAddress" 254;
+BA_DEF_DEF_  "GenMsgSendType" "noMsgSendType";
+BA_DEF_DEF_  "GenMsgRequestable" 1;
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_DEF_DEF_  "SPN" 0;
+BA_DEF_DEF_  "DBName" "";
+BA_DEF_DEF_  "BusType" "CAN";
+BA_DEF_DEF_  "ProtocolType" "J1939";
+BA_DEF_DEF_  "VFrameFormat" "J1939PG";
+BA_ "BusType" "CAN";
+BA_ "ProtocolType" "J1939";
+BA_ "DBName" "J1939_bms";
+BA_ "VFrameFormat" BO_ 2551709438 3;
+BA_ "VFrameFormat" BO_ 2632711934 3;
+BA_ "VFrameFormat" BO_ 2632777470 3;
+BA_ "VFrameFormat" BO_ 2283798270 3;
+BA_ "VFrameFormat" BO_ 2283732734 3;
+BA_ "VFrameFormat" BO_ 2552102654 3;
+BA_ "VFrameFormat" BO_ 2552037118 3;
+BA_ "VFrameFormat" BO_ 2417688318 3;
+BA_ "VFrameFormat" BO_ 2417622782 3;
+BA_ "VFrameFormat" BO_ 2551643902 3;
+BA_ "VFrameFormat" BO_ 2551578366 3;
+BA_ "VFrameFormat" BO_ 2551447294 3;
+BA_ "VFrameFormat" BO_ 2551381758 3;
+BA_ "VFrameFormat" BO_ 2551316222 3;
+BA_ "VFrameFormat" BO_ 2551250686 3;
+BA_ "VFrameFormat" BO_ 2483748606 3;
+BA_ "VFrameFormat" BO_ 2483683070 3;
+BA_ "VFrameFormat" BO_ 2550726398 3;
+BA_ "VFrameFormat" BO_ 2550660862 3;
+BA_ "VFrameFormat" BO_ 2550595326 3;
+BA_ "VFrameFormat" BO_ 2550333182 3;
+BA_ "VFrameFormat" BO_ 2550267646 3;
+BA_ "SigType" SG_ 2550333182 BRM_VehicleIdByte17 3;
+BA_ "SigType" SG_ 2550333182 BRM_VehicleIdByte9_16 3;
+BA_ "SigType" SG_ 2550333182 BRM_VehicleIdByte1_8 3;
+BA_ "SigType" SG_ 2550333182 BRM_Manufacturer 3;
+BA_ "SigType" SG_ 2550267646 CRM_RegionCode 3;
+VAL_ 2632777470 TPCM_Control 255 "Abort" 32 "BAM" 19 "ACK" 17 "CTS" 16 "RTS" ;
+VAL_ 2283798270 CEM_BMSIdentifyTimout 2 "不可信" 1 "超时" 0 "正常" ;
+VAL_ 2283798270 CEM_BMSFinishChargeTimeout 2 "不可信" 1 "超时" 0 "正常" ;
+VAL_ 2283798270 CEM_BMSChargeStatisticsTimeout 2 "不可信" 1 "超时" 0 "正常" ;
+VAL_ 2283798270 CEM_BMSAbortChargeTimeout 2 "不可信" 1 "超时" 0 "正常" ;
+VAL_ 2283798270 CEM_BatteryStateTimeout 2 "不可信" 1 "超时" 0 "正常" ;
+VAL_ 2283798270 CEM_BatteryParameterTimout 2 "不可信" 1 "超时" 0 "正常" ;
+VAL_ 2283798270 CEM_BatteryChargeRequireTimeout 2 "不可信" 1 "超时" 0 "正常" ;
+VAL_ 2283732734 BEM_TimesyncOrPowerTimeout 2 "不可信" 1 "超时" 0 "正常" ;
+VAL_ 2283732734 BEM_ChargeStatisticsTimeout 2 "不可信" 1 "超时" 0 "正常" ;
+VAL_ 2283732734 BEM_ChargeStateTimeout 2 "不可信" 1 "超时" 0 "正常" ;
+VAL_ 2283732734 BEM_ChargerIdTimeout1 2 "不可信" 1 "超时" 0 "正常" ;
+VAL_ 2283732734 BEM_ChargerIdTimeout0 2 "不可信" 1 "超时" 0 "正常" ;
+VAL_ 2283732734 BEM_ChargeFinishTimeout 2 "不可信" 1 "超时" 0 "正常" ;
+VAL_ 2283732734 BEM_ChargeAbortTimeout 2 "不可信" 1 "超时" 0 "正常" ;
+VAL_ 2417688318 CST_AbortFaultOther 2 "不可信" 1 "故障" 0 "正常" ;
+VAL_ 2417688318 CST_AbortFaultEnergeTransmit 2 "不可信" 1 "故障" 0 "正常" ;
+VAL_ 2417688318 CST_AbortFaultConnetor 2 "不可信" 1 "故障" 0 "正常" ;
+VAL_ 2417688318 CST_AbortFaultChargerStop 2 "不可信" 1 "故障" 0 "正常" ;
+VAL_ 2417688318 CST_AbortFaultChargerInnerTemp 2 "不可信" 1 "故障" 0 "正常" ;
+VAL_ 2417688318 CST_AbortErrorVoltage 2 "不可信" 1 "中止" 0 "正常" ;
+VAL_ 2417688318 CST_AbortByUser 2 "不可信" 1 "中止" 0 "正常" ;
+VAL_ 2417688318 CST_AbortByFault 2 "不可信" 1 "中止" 0 "正常" ;
+VAL_ 2417688318 CST_AbortFaultChargerTemp 2 "不可信" 1 "故障" 0 "正常" ;
+VAL_ 2417688318 CST_AbortErrorCurrent 2 "不可信" 1 "中止" 0 "正常" ;
+VAL_ 2417688318 CST_AbortAchiveCondition 2 "不可信" 1 "到达" 0 "未到达" ;
+VAL_ 2417622782 BST_AbortFaultBatteryTemp 2 "不可信" 1 "过高" 0 "正常" ;
+VAL_ 2417622782 BST_AbortFaultOther 2 "不可信" 1 "故障" 0 "正常" ;
+VAL_ 2417622782 BST_AbortFaultInsulation 2 "不可信" 1 "故障" 0 "正常" ;
+VAL_ 2417622782 BST_AbortFaultConnectorTemp 2 "不可信" 1 "故障" 0 "正常" ;
+VAL_ 2417622782 BST_AbortFaultConnector 2 "不可信" 1 "故障" 0 "正常" ;
+VAL_ 2417622782 BST_AbortErrorVoltage 2 "不可信" 1 "电压异常" 0 "正常" ;
+VAL_ 2417622782 BST_AbortErrorCurrent 2 "不可信" 1 "电流超过需求值" 0 "电流正常" ;
+VAL_ 2417622782 BST_AbortAchiveTotalVolt 2 "不可信" 1 "到达" 0 "未到达" ;
+VAL_ 2417622782 BST_AbortAchiveSOC 2 "不可信" 1 "到达" 0 "未到达" ;
+VAL_ 2417622782 BST_AbortFaultBMSTemp 2 "不可信" 1 "过高" 0 "正常" ;
+VAL_ 2417622782 BST_AbortAchiveSingleVolt 2 "不可信" 1 "到达" 0 "未到达" ;
+VAL_ 2551447294 BSM_BatteryTempState 2 "不可信" 1 "过高" 0 "正常" ;
+VAL_ 2551447294 BSM_InsulationState 2 "不可信" 1 "不正常" 0 "正常" ;
+VAL_ 2551447294 BSM_ChargeEnable 1 "允许" 0 "禁止" ;
+VAL_ 2551447294 BSM_SOC 2 "过低" 1 "过高" 0 "正常" ;
+VAL_ 2551447294 BSM_BatteryOutpuConnectorState 2 "不可信" 1 "不正常" 0 "正常" ;
+VAL_ 2551447294 BSM_BatteryVoltageState 2 "过低" 1 "过高" 0 "正常" ;
+VAL_ 2551447294 BSM_BatteryCurrentState 2 "不可信" 1 "过流" 0 "正常" ;
+VAL_ 2551250686 BCL_ChargeMode 2 "恒流充电" 1 "恒压充电" ;
+VAL_ 2483748606 CRO_ChargerReady 255 "无效" 170 "充电机完成充电准备" 0 "充电机未做好充电准备" ;
+VAL_ 2483683070 BRO_BMSChargeReady 255 "无效" 170 "BMS完成充电准备" 0 "BMS未做好充电准备" ;
+VAL_ 2550333182 BRM_BatteryType 255 "其他电池" 8 "钛酸锂电池" 7 "聚合物锂离子电池" 6 "三元材料电池" 5 "钴酸锂电池" 4 "锰酸锂电池" 3 "磷酸铁锂电池" 2 "镍氢电池" 1 "铅酸电池" ;
+VAL_ 2550267646 CRM_RecognitionResult 170 "BMS能辨识" 0 "BMS不能辨识" ;
+

@@ -13,11 +13,16 @@
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <PackageReleaseNotes></PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.7.0</Version>
+    <Version>1.8.0</Version>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup> 
 
   <ItemGroup>
-    <None Include="..\README.md" Pack="true" PackagePath="\"/>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup> 
+
+  <ItemGroup>
+    <PackageReference Include="NPOI" />
   </ItemGroup>
 </Project>
