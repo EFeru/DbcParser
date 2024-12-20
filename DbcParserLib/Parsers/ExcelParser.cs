@@ -553,7 +553,7 @@ namespace DbcParserLib.Parsers
                 valueTableMap = tempValueTableMap;
                 return false;
             }
-            var entries = valueTableString.Trim().Replace(",", ":").Replace("：", ":").Replace("，", ":").Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            var entries = valueTableString.Trim().Replace(",", ":").Replace("：", ":").Replace("，", ":").Split(new[] { "\r\n", "\r","\n" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var entry in entries)
             {
                 var parts = entry.Split(new[] { ':' }, 2);

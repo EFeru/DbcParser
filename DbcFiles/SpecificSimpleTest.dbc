@@ -348,67 +348,9 @@ BA_ "GenMsgCycleTime" BO_ 2566615697 1000;
 BA_ "GenMsgCycleTime" BO_ 2566883985 50;
 BA_ "GenMsgCycleTime" BO_ 2566884497 10;
 
-VAL_ 2351337761 MG1IC_modLimOvrd_u16 0 "NoLimit
-0x1:TorqueLimitMode
-0x2:SpeedLimitMode
-0x3:DcSideVoltageLimitMode
-0x4:DcSideCurrentLimitMode
-0x5:DcSidePowerLimitMode
-0x6:MechanicalPowerLimitMode
-0xE:Error
-0xF:NoRequest" ;
-VAL_ 2351337761 MG1IC_SpModRqrm_u16 0 "PowerOn
-0x1:SaeReserved
-0x2:Standby
-0x5:ManufacturerSpecificPassiveMode1
-0x6:ManufacturerSpecificPassiveMode2
-0x7:EnableTorqueControlMode
-0x8:EnableSpeedControlMode
-0x9:EnableDcSideVoltageMode
-0xA:EnableDcSideCurrentMode
-0xB:EnableDcPowerControlMode
-0xC:EnableMechanicalPowerControlMode
-0x12:ManufacturerSpecificActiveMode1
-0x13:ManufacturerSpecificActiveMode2
-0x14:InverterActiveDischargeModeEg
-0x15:InverterPowerDownCommandMode
-0x1C:ManufacturerSpecificSpecialMode1
-0x1D:ManufacturerSpecificSpecialMode2
-0x1F:Don'tCare/takeNoAction" ;
-VAL_ 2364637585 MG1IMF1_ModLimOvrdCtrl_u16 0 "OperatingLimitsAreNotOverridden
-0x1:TorqueLimitsMode
-0x2:SpeedLimitsMode
-0x3:DcSideVoltageLimitsMode
-0x4:DcSideCurrentLimitsMode
-0x5:DcSidePowerLimitsMode
-0x6:MechanicalPowerLimitsMode
-0xE:Error
-0xF:NotAvailable" ;
-VAL_ 2364637585 MG1IMF1_ModSetCtrl_u16 0 "PoweredOn
-0x1:WaitingForOperationalConditions
-0x2:Standby
-0x5:ManufacturerSpecificPassiveMode1
-0x6:ManufacturerSpecificPassiveMode2
-0x7:TorqueControlMode
-0x8:SpeedControlMode
-0x9:DcSideVoltageMode
-0xA:DcSideCurrentMode
-0xB:MechanicalPowerControlMode
-0xC:DcPowerControlMode
-0xD:DcSideVoltageControlMode
-0x12:ManufacturerSpecificActiveMode1
-0x13:ManufacturerSpecificActiveMode2
-0x14:InverterActiveDischargeModeEg
-0x15:InverterPowerDownCommand
-0x1C:ManufacturerSpecificSpecialMode1
-0x1D:ManufacturerSpecificSpecialMode2
-0x1E:Error
-0x1F:NotAvailable" ;
-VAL_ 2364637585 MG1IMF1_stHvil_u16 0 "HVIL Closed
-0x1 : HVIL Open
-0x2 : Error
-0x3 : Not Available" ;
-VAL_ 2566883985 MG1IS3_FltLvl_u16 0 "Normal(No fault)
-0x1:1Level(Only report: no handling)
-0x2:2Level(Derating: zero torque:recoverable fault)
-0x3:3Level(Unrecoverable fault)" ;
+VAL_ 2351337761 MG1IC_modLimOvrd_u16 0 "NoLimit" 1 "TorqueLimitMode" 2 "SpeedLimitMode" 3 "DcSideVoltageLimitMode" 4 "DcSideCurrentLimitMode" 5 "DcSidePowerLimitMode" 6 "MechanicalPowerLimitMode" 14 "Error" 15 "NoRequest" ;
+VAL_ 2351337761 MG1IC_SpModRqrm_u16 0 "PowerOn" 1 "SaeReserved" 2 "Standby" 5 "ManufacturerSpecificPassiveMode1" 6 "ManufacturerSpecificPassiveMode2" 7 "EnableTorqueControlMode" 8 "EnableSpeedControlMode" 9 "EnableDcSideVoltageMode" 10 "EnableDcSideCurrentMode" 11 "EnableDcPowerControlMode" 12 "EnableMechanicalPowerControlMode" 18 "ManufacturerSpecificActiveMode1" 19 "ManufacturerSpecificActiveMode2" 20 "InverterActiveDischargeModeEg" 21 "InverterPowerDownCommandMode" 28 "ManufacturerSpecificSpecialMode1" 29 "ManufacturerSpecificSpecialMode2" 31 "Don'tCare/takeNoAction" ;
+VAL_ 2364637585 MG1IMF1_ModLimOvrdCtrl_u16 0 "OperatingLimitsAreNotOverridden" 1 "TorqueLimitsMode" 2 "SpeedLimitsMode" 3 "DcSideVoltageLimitsMode" 4 "DcSideCurrentLimitsMode" 5 "DcSidePowerLimitsMode" 6 "MechanicalPowerLimitsMode" 14 "Error" 15 "NotAvailable" ;
+VAL_ 2364637585 MG1IMF1_ModSetCtrl_u16 0 "PoweredOn" 1 "WaitingForOperationalConditions" 2 "Standby" 5 "ManufacturerSpecificPassiveMode1" 6 "ManufacturerSpecificPassiveMode2" 7 "TorqueControlMode" 8 "SpeedControlMode" 9 "DcSideVoltageMode" 10 "DcSideCurrentMode" 11 "MechanicalPowerControlMode" 12 "DcPowerControlMode" 13 "DcSideVoltageControlMode" 18 "ManufacturerSpecificActiveMode1" 19 "ManufacturerSpecificActiveMode2" 20 "InverterActiveDischargeModeEg" 21 "InverterPowerDownCommand" 28 "ManufacturerSpecificSpecialMode1" 29 "ManufacturerSpecificSpecialMode2" 30 "Error" 31 "NotAvailable" ;
+VAL_ 2364637585 MG1IMF1_stHvil_u16 0 "HVIL Closed" 1 "HVIL Open" 2 "Error" 3 "Not Available" ;
+VAL_ 2566883985 MG1IS3_FltLvl_u16 0 "Normal(No fault)" 1 "1Level(Only report: no handling)" 2 "2Level(Derating: zero torque:recoverable fault)" 3 "3Level(Unrecoverable fault)" ;

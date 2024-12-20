@@ -1,14 +1,8 @@
 ﻿using DbcParserLib.Generators;
 using DbcParserLib.Model;
 using DbcParserLib.Parsers;
-using NPOI.SS.Formula.Functions;
-using NPOI.Util;
 using NUnit.Framework;
-using SixLabors.ImageSharp;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.IO;
 
 namespace DbcParserLib.Tests
