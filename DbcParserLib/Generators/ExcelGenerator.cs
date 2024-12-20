@@ -7,6 +7,7 @@ using DbcParserLib.Model;
 using NPOI.HSSF.UserModel;
 using NPOI.POIFS.Crypt.Dsig;
 using NPOI.SS.UserModel;
+using NPOI.SS.Util;
 using NPOI.XSSF.UserModel;
 
 namespace DbcParserLib.Generators
@@ -15,7 +16,7 @@ namespace DbcParserLib.Generators
     {
         private readonly string _xlsExt = ".xls";
         private readonly string _xlsxExt = ".xlsx";
-
+        IDataValidationHelper _validationHelper;
         //For message Group
         private List<int> _messageHeaderIndexList = new List<int>();
         private List<ExcelGroupMessageModel> _messageGroupList = new List<ExcelGroupMessageModel>();
@@ -54,7 +55,7 @@ namespace DbcParserLib.Generators
             AddColumn(nameof(DictionaryColumnKey.ByteOrder), "Byte\r\nOrder", 10);
             AddColumn(nameof(DictionaryColumnKey.StartBit), "Start\r\nBit", 10);
             AddColumn(nameof(DictionaryColumnKey.BitLength), "Bit\r\nLength", 15);
-            AddColumn(nameof(DictionaryColumnKey.DataType), "Sign", 10);
+            AddColumn(nameof(DictionaryColumnKey.DataType), "Data\r\nType", 10);
             AddColumn(nameof(DictionaryColumnKey.Factor), "Factor", 10);
             AddColumn(nameof(DictionaryColumnKey.Offset), "Offset", 10);
             AddColumn(nameof(DictionaryColumnKey.MinimumPhysical), "Minimum\r\nPhysical", 15);
@@ -125,7 +126,7 @@ namespace DbcParserLib.Generators
             columnConfig.IsVisible = isVisible;
             return UpdateColumnConfigState.Success;
         }
-        public UpdateColumnConfigState UpdateColumnConfig(DictionaryColumnKey columnKey,  int columnIndex)
+        public UpdateColumnConfigState UpdateColumnConfig(DictionaryColumnKey columnKey, int columnIndex)
         {
             if (!columnMapping.ContainsKey(columnKey.ToString()))
             {
@@ -145,7 +146,7 @@ namespace DbcParserLib.Generators
             columnConfig.ColumnIndex = columnIndex;
             return UpdateColumnConfigState.Success;
         }
-        public UpdateColumnConfigState UpdateColumnConfig(DictionaryColumnKey columnKey,  string header)
+        public UpdateColumnConfigState UpdateColumnConfig(DictionaryColumnKey columnKey, string header)
         {
             if (!columnMapping.ContainsKey(columnKey.ToString()))
             {
@@ -239,6 +240,8 @@ namespace DbcParserLib.Generators
                 writeMessages(dbc);
                 // Write the table to the Excel file
                 WriteTableToExcel(sheeName);
+                // Add Data Validation
+                SetExcelDataValidation();
                 // Save the workbook to the file
                 using (var fileData = new FileStream(_path, FileMode.Create))
                 {
@@ -258,6 +261,50 @@ namespace DbcParserLib.Generators
             {
                 return WriteStatus.UnknownError;
             }
+        }
+        private void SetExcelDataValidation()
+        {
+            _validationHelper = _workbook is XSSFWorkbook
+            ? new XSSFDataValidationHelper((XSSFSheet)_sheet)
+            : (IDataValidationHelper)new HSSFDataValidationHelper((HSSFSheet)_sheet);
+
+            string[] dropdownOptions_MessageSendType = new string[] { "cyclic", "cyclicIfActive", "noMsgSendType" };
+            string[] dropdownOptions_FrameType = new string[] { "StandardCAN", "ExtendedCAN", "J1939PG" };
+            string[] dropdownOptions_SignalDataType = new string[] { "Unsigned", "Signed", "IEEEFloat", "IEEEDouble" };
+            string[] dropdownOptions_ByteOrder = new string[] { "Intel", "Motorola" };
+
+            if (columnMapping.TryGetValue(DictionaryColumnKey.ByteOrder.ToString(), out ExcelColumnConfigModel ByteOrderValue))
+            {
+                AddDropdownToColumn(_sheet, _validationHelper, dropdownOptions_ByteOrder, ByteOrderValue.ColumnIndex);
+
+            }
+            if (columnMapping.TryGetValue(DictionaryColumnKey.FrameFormat.ToString(), out ExcelColumnConfigModel FrameFormatValue))
+            {
+                AddDropdownToColumn(_sheet, _validationHelper, dropdownOptions_FrameType, FrameFormatValue.ColumnIndex);
+            }
+            if (columnMapping.TryGetValue(DictionaryColumnKey.MessageSendType.ToString(), out ExcelColumnConfigModel MessageSendTypeValue))
+            {
+                AddDropdownToColumn(_sheet, _validationHelper, dropdownOptions_MessageSendType, MessageSendTypeValue.ColumnIndex);
+            }
+            if (columnMapping.TryGetValue(DictionaryColumnKey.DataType.ToString(), out ExcelColumnConfigModel SignalDataTypeValue))
+            {
+                AddDropdownToColumn(_sheet, _validationHelper, dropdownOptions_SignalDataType, SignalDataTypeValue.ColumnIndex);
+            }
+        }
+        private void AddDropdownToColumn(ISheet sheet, IDataValidationHelper validationHelper, string[] dropdownOptions, int columnIndex)
+        {
+
+            var addressList = validationHelper.CreateExplicitListConstraint(dropdownOptions);
+
+
+            CellRangeAddressList addressListRange = new CellRangeAddressList(1, table_row_count + 100, columnIndex, columnIndex);
+
+
+            var dataValidation = validationHelper.CreateValidation(addressList, addressListRange);
+            dataValidation.ShowErrorBox = true;
+
+
+            sheet.AddValidationData(dataValidation);
         }
 
         private void SetColumnWidths()

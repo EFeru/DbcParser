@@ -448,7 +448,8 @@ namespace DbcParserLib
             {
                 message.Value.Signals.Clear();
                 if(m_signals.TryGetValue(message.Key, out var signals) && signals != null)
-                    message.Value.Signals.AddRange(signals.Values);
+                    
+                    message.Value.Signals.AddRange(signals.Values.ToList().Sort((x, y) => x.StartBit.CompareTo(y.StartBit)));
 
                 message.Value.AdjustExtendedId();
             }
