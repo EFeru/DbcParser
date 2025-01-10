@@ -6,6 +6,9 @@ namespace DbcParserLib.Parsers
 {
     internal class CommentLineParser : ILineParser
     {
+        //Comments end of line must contain both " and ; chars to allow semicolon inside comment string
+        private static readonly string CheckEndLineComment = @"""\s*;";
+
         private const string CharGroup = "CharString";
         private const string NodeNameGroup = "NodeName";
         private const string MessageIdGroup = "MessageId";
@@ -13,11 +16,11 @@ namespace DbcParserLib.Parsers
         private const string EnvVarNameGroup = "EnvVarName";
         private const string CommentLineStarter = "CM_ ";
 
-        private readonly string m_genericCommentParsingRegex = $@"CM_\s+""*(?<{CharGroup}>[^""]*)""*\s*;";
-        private readonly string m_nodeParsingRegex = $@"CM_ BU_\s+(?<{NodeNameGroup}>[a-zA-Z_][\w]*)\s+""*(?<{CharGroup}>[^""]*)""*\s*;";
-        private readonly string m_messageParsingRegex = $@"CM_ BO_\s+(?<{MessageIdGroup}>\d+)\s+""*(?<{CharGroup}>[^""]*)""*\s*;";
-        private readonly string m_signalParsingRegex = $@"CM_ SG_\s+(?<{MessageIdGroup}>\d+)\s+(?<{SignalNameGroup}>[a-zA-Z_][\w]*)\s+""*(?<{CharGroup}>[^""]*)""*\s*;";
-        private readonly string m_environmentVariableParsingRegex = $@"CM_ EV_\s+(?<{EnvVarNameGroup}>[a-zA-Z_][\w]*)\s+""*(?<{CharGroup}>[^""]*)""*\s*;";
+        private readonly string m_genericCommentParsingRegex = $@"CM_\s+""(?<{CharGroup}>[^""]*)""\s*;";
+        private readonly string m_nodeParsingRegex = $@"CM_ BU_\s+(?<{NodeNameGroup}>[a-zA-Z_][\w]*)\s+""(?<{CharGroup}>[^""]*)""\s*;";
+        private readonly string m_messageParsingRegex = $@"CM_ BO_\s+(?<{MessageIdGroup}>\d+)\s+""(?<{CharGroup}>[^""]*)""\s*;";
+        private readonly string m_signalParsingRegex = $@"CM_ SG_\s+(?<{MessageIdGroup}>\d+)\s+(?<{SignalNameGroup}>[a-zA-Z_][\w]*)\s+""(?<{CharGroup}>[^""]*)""\s*;";
+        private readonly string m_environmentVariableParsingRegex = $@"CM_ EV_\s+(?<{EnvVarNameGroup}>[a-zA-Z_][\w]*)\s+""(?<{CharGroup}>[^""]*)""\s*;";
 
         private readonly IParseFailureObserver m_observer;
 
@@ -33,7 +36,8 @@ namespace DbcParserLib.Parsers
             if (cleanLine.StartsWith(CommentLineStarter) == false)
                 return false;
 
-            if (!cleanLine.EndsWith(";"))
+            var isSingleLine = Regex.Match(cleanLine, CheckEndLineComment);
+            if (!isSingleLine.Success)
                 cleanLine = GetNextLines(cleanLine, m_observer, nextLineProvider);
 
             if (cleanLine.StartsWith("CM_ SG_"))
@@ -117,11 +121,10 @@ namespace DbcParserLib.Parsers
             {
                 observer.CurrentLine++;
                 stringBuilder.AppendLine(nextLine);
-                if (nextLine.EndsWith(";"))
+                if (Regex.Match(nextLine, CheckEndLineComment).Success)
                     break;
             }
             return stringBuilder.ToString();
         }
-
     }
 }
