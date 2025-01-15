@@ -192,3 +192,8 @@ Contributions are appreciated! Feel free to create pull requests to improve this
 This project is supported by JetBrains for Open Source development
 
 ![JetBrains Logo (Main) logo](https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg)
+
+
+## [![Repography logo](https://images.repography.com/logo.svg)](https://repography.com) / Structure
+[![Structure](https://images.repography.com/59604055/Starkxim/DbcParser/structure/MX6Ur434fIKjggD8pMTN2zwJarX0HuHaJX8yWh6pkvo/l6Wvd3xA8xT20EM4qYEyhEIEQt7FC5tTA93o6pFOIfs_table.svg)](https://github.com/Starkxim/DbcParser)
+

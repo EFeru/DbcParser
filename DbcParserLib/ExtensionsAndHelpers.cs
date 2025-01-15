@@ -80,11 +80,18 @@ namespace DbcParserLib
 
             if (message.CustomProperties.TryGetValue("GenMsgCycleTime", out var property))
             {
-                cycleTime = property.IntegerCustomProperty.Value;
-                return true;
+                if (property.IntegerCustomProperty != null)
+                {
+                    cycleTime = property.IntegerCustomProperty.Value;
+                    return true;
+                }
+                else if (property.FloatCustomProperty != null)
+                {
+                    cycleTime = (int)property.FloatCustomProperty.Value;
+                    return true;
+                }
             }
-            else
-                return false;
+            return false;
         }
 
         internal static bool InitialValue(this Signal signal, out double initialValue)
