@@ -60,7 +60,7 @@ namespace DbcParserLib
             }
         }
 
-        private static Dbc ParseFromReader(TextReader reader)
+        public static Dbc ParseFromReader(TextReader reader)
         {
             CreateLineParsers();
             m_parseObserver.Clear();
