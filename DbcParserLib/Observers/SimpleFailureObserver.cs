@@ -184,6 +184,11 @@ namespace DbcParserLib.Observers
             AddError($"Duplicate additional transmitter '{duplicateTransmitter}' in message '{messageId}'");
         }
 
+        public void SignalExtendedMultiplexingSyntaxError()
+        {
+            AddError("[SG_MUL_VAL_] Signal extended multiplexing syntax error");
+        }
+
         public void UnknownLine()
         {
             AddError("Unknown syntax");

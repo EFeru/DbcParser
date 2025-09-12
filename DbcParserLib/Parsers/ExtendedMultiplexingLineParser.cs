@@ -13,7 +13,7 @@ namespace DbcParserLib.Parsers
         private const string MultiplexValueRangesGroup = "MultiplexValueRanges";
 
         private const string SignalLineStarter = "SG_MUL_VAL_ ";
-        private readonly string ExtendedMultiplexingRegex = $@"SG_MUL_VAL_\s+(?<{MessageIdGroup}>\d+)\s+(?<{SignalGroup}>\S+)\s+(?<{MultiplexorSignalGroup}>\S+)\s+(?<{MultiplexValueRangesGroup}>(?:\d+-\d+,?\s*)+);?";
+        private readonly string ExtendedMultiplexingRegex = $@"SG_MUL_VAL_\s+(?<{MessageIdGroup}>\d+)\s+(?<{SignalGroup}>\w+)\s+(?<{MultiplexorSignalGroup}>\w+)\s+(?<{MultiplexValueRangesGroup}>(?:\d+-\d+(?:,\s*)?)+);?";
 
         private readonly IParseFailureObserver m_observer;
 
