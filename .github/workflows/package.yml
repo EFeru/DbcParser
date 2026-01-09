@@ -32,7 +32,7 @@ jobs:
           nuget push "DbcParserLib\bin\Release\*.nupkg" -SkipDuplicate -Source https://api.nuget.org/v3/index.json
 
       - name: 💾 Store Packages
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: DbcParserLib-Packages
           retention-days: 3
