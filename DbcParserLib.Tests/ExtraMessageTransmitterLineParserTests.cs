@@ -209,6 +209,7 @@ BO_TX_BU_ 200 : Transmitter2 , Transmitter2 ;";
             });
         }
 
+        [Test]
         public void ParseExtraTransmittersMessageNotFoundErrorIsObserved()
         {
             var dbcString = @"

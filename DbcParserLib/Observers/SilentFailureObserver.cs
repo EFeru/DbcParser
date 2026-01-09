@@ -140,6 +140,10 @@ namespace DbcParserLib.Observers
         {
         }
 
+        public void SignalExtendedMultiplexingSyntaxError()
+        {
+        }
+
         public void UnknownLine()
         {
         }

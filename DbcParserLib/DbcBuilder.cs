@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DbcParserLib.Model;
@@ -334,6 +335,11 @@ namespace DbcParserLib
             }
             else
                 m_observer.TableMapNameNotFound(tableName);
+        }
+
+        public void AddSignalExtendedMultiplexingInfo(uint messageId, string signalName, string multiplexorSignal, List<Tuple<uint, uint>> multiplexorRanges)
+        {
+            // ToDo: Define what to do with the data
         }
 
         private bool TryGetValueMessageSignal(uint messageId, string signalName, out Signal signal)

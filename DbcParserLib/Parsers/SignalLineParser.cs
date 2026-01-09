@@ -10,7 +10,7 @@ namespace DbcParserLib.Parsers
     {
         private const string NameGroup = "Name";
         private const string MultiplexerGroup = "Multiplexer";
-        private const string StartBirGroup = "StartBit";
+        private const string StartBitGroup = "StartBit";
         private const string SizeGroup = "Size";
         private const string ByteOrderGroup = "ByteOrder";
         private const string ValueTypeGroup = "ValueType";
@@ -24,7 +24,7 @@ namespace DbcParserLib.Parsers
         private const string SignedSymbol = "-";
         private static readonly string[] CommaSpaceSeparator = { Helpers.Space, Helpers.Comma };
 
-        private readonly string m_signalRegex = $@"\s*SG_\s+(?<{NameGroup}>[\w]+)\s*(?<{MultiplexerGroup}>[Mm\d]*)\s*:\s*(?<{StartBirGroup}>\d+)\|(?<{SizeGroup}>\d+)@(?<{ByteOrderGroup}>[01])" +
+        private readonly string m_signalRegex = $@"\s*SG_\s+(?<{NameGroup}>[\w]+)\s*(?<{MultiplexerGroup}>[Mm\d]*)\s*:\s*(?<{StartBitGroup}>\d+)\|(?<{SizeGroup}>\d+)@(?<{ByteOrderGroup}>[01])" +
                                                 $@"(?<{ValueTypeGroup}>[+-])\s+\((?<{FactorGroup}>[\d\+\-eE.]+),(?<{OffsetGroup}>[\d\+\-eE.]+)\)\s+\[(?<{MinGroup}>[\d\+\-eE.]+)\|(?<{MaxGroup}>[\d\+\-eE.]+)\]" +
                                                 $@"\s+""(?<{UnitGroup}>.*)""\s+(?<{ReceiverGroup}>[\w\s,]+)";
 
@@ -48,7 +48,7 @@ namespace DbcParserLib.Parsers
                 {
                     Multiplexing = match.Groups[MultiplexerGroup].Value,
                     Name = match.Groups[NameGroup].Value,
-                    StartBit = ushort.Parse(match.Groups[StartBirGroup].Value, CultureInfo.InvariantCulture),
+                    StartBit = ushort.Parse(match.Groups[StartBitGroup].Value, CultureInfo.InvariantCulture),
                     Length = ushort.Parse(match.Groups[SizeGroup].Value, CultureInfo.InvariantCulture),
                     ByteOrder = byte.Parse(match.Groups[ByteOrderGroup].Value, CultureInfo.InvariantCulture),   // 0 = MSB (Motorola), 1 = LSB (Intel)
                     ValueType = (match.Groups[ValueTypeGroup].Value == SignedSymbol ? DbcValueType.Signed : DbcValueType.Unsigned),

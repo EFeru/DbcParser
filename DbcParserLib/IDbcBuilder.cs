@@ -1,4 +1,5 @@
 ﻿using DbcParserLib.Model;
+using System;
 using System.Collections.Generic;
 
 namespace DbcParserLib
@@ -28,5 +29,6 @@ namespace DbcParserLib
         void AddEnvironmentVariableComment(string variableName, string comment);
         void AddEnvironmentDataVariable(string variableName, uint dataSize);
         void AddNodeEnvironmentVariable(string nodeName, string variableName);
+        void AddSignalExtendedMultiplexingInfo(uint messageId, string signalName, string multiplexorSignal, List<Tuple<uint, uint>> multiplexorRanges);
     }
 }
